@@ -28,6 +28,12 @@ typedef enum{
    SHIELD    
 }Items;
 
+enum skin{
+    JOSUE,
+    JOSIAS,
+    MATIAS
+};
+
 typedef struct{
 
     unsigned char ID;
@@ -36,7 +42,7 @@ typedef struct{
     unsigned short posX, posY;
     Box boxArray[5];
     unsigned char itemArray[3];
-    
+    char skin;
 }Player_Data; 
 
 
