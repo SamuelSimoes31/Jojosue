@@ -7,31 +7,39 @@
  * 
  * */
 
-typedef enum{
+enum BoxType{
   NONE,
   PAC,
   SEDEX,
   EXPRESS
-}BoxType;
+};
 
 typedef struct{
     unsigned short int timeLast;
-    BoxType type;
+    char type;
 }Box;
 
-typedef enum{
+enum Items{
    NONE,
    SHURICARD,
    MADDOG,
    TRAP,
    SPEED,
    SHIELD    
-}Items;
+};
 
 enum skin{
     JOSUE,
     JOSIAS,
     MATIAS
+};
+
+enum MsgIdentifier{
+    POS,
+    MONEY,
+    HP,
+    ITEM,
+    BOX
 };
 
 typedef struct{
@@ -43,6 +51,7 @@ typedef struct{
     Box boxArray[5];
     unsigned char itemArray[3];
     char skin;
+    char ident;
 }Player_Data; 
 
 
