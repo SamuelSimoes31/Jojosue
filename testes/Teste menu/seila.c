@@ -5,10 +5,10 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
-#define LARGURA_TELA 1500
+#define LARGURA_TELA 1600
 #define ALTURA_TELA 900
 #define FPS 60.0
-//dale
+//dale dbv
     ALLEGRO_BITMAP *botao_jogar = NULL;
     ALLEGRO_BITMAP *botao_tutorial = NULL;
     ALLEGRO_BITMAP *botao_leaderboard = NULL;
@@ -47,7 +47,13 @@ int inicializar() {
     }
 
     al_init_font_addon();
- 
+    
+    fundo = al_load_bitmap("background.png");
+    if(!fundo) {
+        fprintf(stderr, "Falha ao criar fundo.\n");
+        return 0;
+    }
+
     // Inicialização do add-on para uso de fontes True Type
     if (!al_init_ttf_addon()){
         printf("Falha ao inicializar add-on allegro_ttf");
@@ -256,7 +262,10 @@ int main()
         /*al_draw_bitmap(fundo, 0, 0, 0);
         al_draw_bitmap(imagem, LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 - 100,
         ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 - 200, 0);*/
-
+        //al_draw_bitmap(fundo, 0, 0, 0);
+        al_draw_scaled_bitmap(fundo,
+        0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
+        0, 0, LARGURA_TELA, ALTURA_TELA, 0);
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 + 45,
         ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 5, ALLEGRO_ALIGN_CENTER, "JOGAR");
