@@ -47,7 +47,7 @@
         }
      
         //carrega a folha de sprites na variavel
-        folha_sprite = al_load_bitmap("Josue.png");
+        folha_sprite = al_load_bitmap("Josias.png");
         if (!folha_sprite){
             printf("Falha ao carregar sprites");
             al_destroy_timer(timer);
@@ -81,13 +81,13 @@
         int sair = 0;
      
         //largura e altura de cada sprite dentro da folha
-        int altura_sprite=32, largura_sprite=32;
+        int altura_sprite=74, largura_sprite=64;
         //quantos sprites tem em cada linha da folha, e a atualmente mostrada
-        int colunas_folha=8, coluna_atual=0;
+        int colunas_folha=4, coluna_atual=0;
         //quantos sprites tem em cada coluna da folha, e a atualmente mostrada
-        int linha_atual=1, linhas_folha=2; //linha_atual = 1 para pegar só a de baixo
+        int linha_atual=3, linhas_folha=4; //linha_atual = 1 para pegar só a de baixo
         //posicoes X e Y da folha de sprites que serao mostradas na tela
-        int regiao_x_folha=0, regiao_y_folha=0;
+        int regiao_x_folha=coluna_atual * largura_sprite, regiao_y_folha=linha_atual * altura_sprite;
         //quantos frames devem se passar para atualizar para o proximo sprite
         int frames_sprite=6, cont_frames=0;
         //posicao X Y da janela em que sera mostrado o sprite
@@ -102,36 +102,36 @@
         while(!sair){
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos, &evento);
+
      
             /* -- EVENTOS -- */
             if(evento.type == ALLEGRO_EVENT_TIMER){
                 //a cada disparo do timer, incrementa cont_frames
                 cont_frames++;
+                if (pos_x_sprite + largura_sprite > LARGURA_TELA - 70 || pos_x_sprite < 20){
+                    //inverte o sentido da velocidade X, para andar no outro sentido
+                    vel_x_sprite = -vel_x_sprite;
+                    if(vel_x_sprite<0) linha_atual = 2;
+                        else linha_atual = 3;
+                        //calcula a posicao Y da folha que sera mostrada
+                        regiao_y_folha = linha_atual * altura_sprite;
+                }
                 //se alcancou a quantidade de frames que precisa passar para mudar para o proximo sprite
                 if (cont_frames >= frames_sprite){
                     //reseta cont_frames
                     cont_frames=0;
                     //incrementa a coluna atual, para mostrar o proximo sprite
-                    coluna_atual+=2;
+                    coluna_atual++;
                     //se coluna atual passou da ultima coluna
                     if (coluna_atual >= colunas_folha){
                         //volta pra coluna inicial
-                        if(!coluna_atual%2) coluna_atual=0;
-                        else coluna_atual=1;
-                        //incrementa a linha, se passar da ultima, volta pra primeira
-                        //linha_atual = (linha_atual+1) % linhas_folha;
-                        //calcula a posicao Y da folha que sera mostrada
-                        regiao_y_folha = linha_atual * altura_sprite;
+                        coluna_atual = 0;
+                        
                     }
                     //calcula a regiao X da folha que sera mostrada
                     regiao_x_folha = coluna_atual * largura_sprite;
                 }
                 //se o sprite estiver perto da borda direita ou esquerda da tela
-                if ( pos_x_sprite + largura_sprite > LARGURA_TELA - 20 || pos_x_sprite < 20 ){
-                    //inverte o sentido da velocidade X, para andar no outro sentido
-                    vel_x_sprite = -vel_x_sprite;
-                }
-     
                 //atualiza as posicoes X Y do sprite de acordo com a velocidade, positiva ou negativa
                 pos_x_sprite += vel_x_sprite;
                 pos_y_sprite += vel_y_sprite;
@@ -161,7 +161,7 @@
                         regiao_x_folha,regiao_y_folha,
                         largura_sprite,altura_sprite,
                         pos_x_sprite+largura_sprite,pos_y_sprite,
-                        -largura_sprite,altura_sprite,0);
+                        largura_sprite,altura_sprite,0);
      
                 al_flip_display();
      
