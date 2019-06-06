@@ -12,11 +12,11 @@
 
 enum conn_ret_t tryConnect() {
   char server_ip[30];
-  //printf("Please enter the server IP: ");
-  //scanf(" %s", server_ip);
-  //getchar();
-  //return connectToServer(server_ip);
-  return connectToServer("172.20.4.24");
+  printf("Please enter the server IP: ");
+  scanf(" %s", server_ip);
+  getchar();
+  return connectToServer(server_ip);
+  //return connectToServer("172.20.4.24");
 }
 
 void printHello() {
