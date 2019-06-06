@@ -1,14 +1,5 @@
-/**
- * 
- * 
- * 
- * 
- * 
- * 
- * */
-
 enum BoxType{
-  NONE,
+  NO_BOX,
   PAC,
   SEDEX,
   EXPRESS
@@ -20,7 +11,7 @@ typedef struct{
 }Box;
 
 enum Items{
-   NONE,
+   NO_ITEM,
    SHURICARD,
    MADDOG,
    TRAP,
@@ -53,5 +44,3 @@ typedef struct{
     char skin;
     char ident;
 }Player_Data; 
-
-

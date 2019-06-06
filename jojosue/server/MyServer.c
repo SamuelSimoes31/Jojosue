@@ -16,7 +16,7 @@ enum Game_states{
 };
 
 int main() {
-    
+    puts("JOJOSUE SERVER IS UP, MAAAN\n");
     char serverState = WAITING_CON;
     Player_Data players[2];
     char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
