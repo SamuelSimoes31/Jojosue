@@ -33,6 +33,13 @@ enum MsgIdentifier{
     BOX
 };
 
+enum playerFace{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT
+};
+
 typedef struct{
 
     unsigned char ID;
@@ -41,6 +48,14 @@ typedef struct{
     unsigned short posX, posY;
     Box boxArray[5];
     unsigned char itemArray[3];
-    char skin;
+    unsigned char skin;
     char ident;
+    unsigned char face;
+    char nome[20];
 }Player_Data; 
+
+typedef struct{
+    unsigned char posX, posY;
+    unsigned char face;
+    unsigned char skin;
+}Enemy_Data;

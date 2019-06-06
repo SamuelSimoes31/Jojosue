@@ -30,16 +30,24 @@ int main() {
         while(serverState == WAITING_CON){
             int id = acceptConnection();
             if (id != NO_CONNECTION) {
-                if(++players_connected == 2) serverState = IN_GAME;
+                if(++players_connected == 1) serverState = IN_GAME;
                 recvMsgFromClient(client_names[id], id, WAIT_FOR_IT);
                 printf("%s connected id = %d\n", client_names[id], id);
             }
         }
 
         while(serverState == IN_GAME){
+            Player_Data recieved_player;
+            struct msg_ret_t ret = recvMsg(&recieved_player);
             
+            if(ret.status==MESSAGE_OK){
+                
+                printf("Nome : %s\nSkin : %d\n",recieved_player.nome,recieved_player.skin);
+                printf("Ret status = %d\nRet id = %d\nRet size = %d\n",ret.status, ret.client_id, ret.size);
+                }
+            
+            //serverState = ENDGAME;
         }
-
 
         struct msg_ret_t msg_ret = recvMsg(aux_buffer);
         if (msg_ret.status == MESSAGE_OK) {
