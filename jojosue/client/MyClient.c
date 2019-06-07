@@ -116,31 +116,34 @@ void runChat() {
 
 int main() {
     int ret;
-    Player_Data jogadorDeTeste;
-    jogadorDeTeste.skin = assertConnection();
-    ret = recvMsgFromServer(&jogadorDeTeste, WAIT_FOR_IT);
-    printf("Jogador: %s\nPosx = %d\nPosy = %d\n",jogadorDeTeste.nome,jogadorDeTeste.posX,jogadorDeTeste.posY);
+    Enemy_Data enemy;
+    Player_Data player;
+    player.skin = assertConnection();
+    ret = recvMsgFromServer(&player, WAIT_FOR_IT);
+    ret = recvMsgFromServer(&enemy, WAIT_FOR_IT);
+    printf("Jogador: %s\nPosx = %d\nPosy = %d\n",player.nome,player.posX,player.posY);
+    printf("Jogador: %s\nPosx = %d\nPosy = %d\n",enemy.nome,enemy.posX,enemy.posY);
     //getchar();
 
     int contagem = 0;
     
-    strcpy(jogadorDeTeste.nome,"HAHaHA");
+    strcpy(player.nome,"HAHaHA");
     char serverResponse;
     
     ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
     //while(serverResponse!=GAME_START) ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
 
     
-    ret = sendMsgToServer(&jogadorDeTeste, sizeof(Player_Data));
-    ret = sendMsgToServer(&jogadorDeTeste, sizeof(Player_Data));
+    ret = sendMsgToServer(&player, sizeof(Player_Data));
+    ret = sendMsgToServer(&player, sizeof(Player_Data));
     while(1){
     }
     /*
-    strcpy(jogadorDeTeste.nome,"Josias");
-    jogadorDeTeste.skin = JOSIAS;
-    int ret = sendMsgToServer(&jogadorDeTeste, sizeof(Player_Data));
-    printf("sizeof(Player_Data)=%d sizeof(jogadorDeTeste)=%d\n",sizeof(Player_Data),sizeof(jogadorDeTeste));
-    printf("ret=%d nome=%s skin=%d",ret,jogadorDeTeste.nome,jogadorDeTeste.skin);
+    strcpy(player.nome,"Josias");
+    player.skin = JOSIAS;
+    int ret = sendMsgToServer(&player, sizeof(Player_Data));
+    printf("sizeof(Player_Data)=%d sizeof(player)=%d\n",sizeof(Player_Data),sizeof(player));
+    printf("ret=%d nome=%s skin=%d",ret,player.nome,player.skin);
     */
     /*
     while(1) {
