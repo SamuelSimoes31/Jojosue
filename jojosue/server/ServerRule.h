@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+
+
 unsigned char map[][1] = {{0},{0}};
 
 enum message_status{

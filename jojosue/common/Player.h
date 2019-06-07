@@ -1,4 +1,16 @@
+#define DOWN_ARROW  48
+#define UP_ARROW 49
+#define LEFT_ARROW 50
+#define RIGHT_ARROW 51
+#define PACKAGE_BUTTON 52
+#define ITEM1_BUTTON 53
+#define ITEM2_BUTTON 54
+#define ITEM3_BUTTON 55
 
+enum flagAccept{
+    YES,
+    NO
+};
 
 enum BoxType{
   NO_BOX,
@@ -26,15 +38,18 @@ enum skin{
     JOSIAS,
     MATIAS
 };
-
+/*
 enum MsgIdentifier{
-    POS,
-    MONEY,
-    HP,
-    ITEM,
-    BOX
+    DOWN_ARROW = 48,
+    UP_ARROW,
+    LEFT_ARROW,
+    RIGHT_ARROW,
+    PACKAGE_BUTTON,
+    ITEM1_BUTTON,
+    ITEM2_BUTTON,
+    ITEM3_BUTTON
 };
-
+*/
 enum playerFace{
     UP,
     DOWN,
@@ -43,15 +58,15 @@ enum playerFace{
 };
 
 typedef struct{
-
     unsigned char ID;
     unsigned char HP;
     unsigned char money;
+    unsigned char reputation;
     unsigned short posX, posY;
     Box boxArray[5];
+    char holdingBoxes[2];
     unsigned char itemArray[3];
     unsigned char skin;
-    char ident;
     unsigned char face;
     char nome[20];
 }Player_Data; 

@@ -12,7 +12,7 @@
 
 enum conn_ret_t tryConnect() {
   char server_ip[30];
-  char server_ID[3];
+  char server_ID[5];
   strcpy(server_ip,"172.20.4.");
   printf("Please enter the server IP: ");
   scanf(" %s", server_ID);
@@ -118,6 +118,7 @@ int main() {
     int ret;
     Enemy_Data enemy;
     Player_Data player;
+    Player_Data auxPlayer;
     player.skin = assertConnection();
     ret = recvMsgFromServer(&player, WAIT_FOR_IT);
     ret = recvMsgFromServer(&enemy, WAIT_FOR_IT);
@@ -133,11 +134,75 @@ int main() {
     ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
     //while(serverResponse!=GAME_START) ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
 
-    
-    ret = sendMsgToServer(&player, sizeof(Player_Data));
-    ret = sendMsgToServer(&player, sizeof(Player_Data));
+    char choice;
+    char truth=1;
+    char lastChoice = 1;
+    printf("DOWN[%c]\n",DOWN_ARROW);
     while(1){
+      while(truth){
+      //printf("DOWN[%c]\n",DOWN_ARROW);
+      printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
+      choice = getch();
+      if(lastChoice != choice){
+      
+        switch (choice)
+      {
+      case DOWN_ARROW:
+        sendMsgToServer((char *)&choice,1);
+        printf("Entrou DOWN_ARROW!\n");
+        break;
+        case UP_ARROW:
+        sendMsgToServer((char *)&choice,1);
+        printf("Entrou UP_ARROW!\n");
+        break;
+        case LEFT_ARROW:
+        sendMsgToServer((char *)LEFT_ARROW,1);
+        break;
+        case RIGHT_ARROW:
+        sendMsgToServer((char *)RIGHT_ARROW,1);
+        break;
+        default: //printf("É UQ PÔ\n");
+        break;
+      }
+      }
+      
+      lastChoice = choice;
+      }
+      int ret = recvMsgFromServer(&auxPlayer,DONT_WAIT);
+      if(ret != NO_MESSAGE){
+        if(auxPlayer.ID == player.ID) player = auxPlayer;
+        else{
+          enemy.posX = auxPlayer.posX;
+          enemy.posY = auxPlayer.posY;
+        }
+      }
     }
+    
+    /*
+    while(truth){
+      printf("1 - Baixo ;\n2 - LifeChange\n3 - Shutdown client\n");
+      scanf("%d",&choice);
+      switch (choice)
+      {
+      case 1: choice = DOWN_ARROW;
+              sendMsgToServer(&choice,1);
+              ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
+              if(serverResponse == YES){
+                ret = recvMsgFromServer(&player, WAIT_FOR_IT);
+                printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
+              }
+              
+        break;
+
+      case 2: truth = 0;
+        break;
+
+      default:  printf("Opcao errada!\n");
+        break;
+      }
+    }
+    */
+    
     /*
     strcpy(player.nome,"Josias");
     player.skin = JOSIAS;

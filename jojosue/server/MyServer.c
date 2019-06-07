@@ -7,11 +7,11 @@
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
-#define MAX_CHAT_CLIENTS 2
+#define MAX_CLIENTS 2
 
 
-
-enum Game_states{
+const char GAME_START = 99;
+enum Game_state{
     WAITING_CON,
     IN_GAME,
     ENDGAME
@@ -24,9 +24,9 @@ int main() {
     Enemy_Data enemy;
     //char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
     char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
-    serverInit(MAX_CHAT_CLIENTS);
+    serverInit(MAX_CLIENTS);
     puts("Server is running!!");
-    const char GAME_START = 99;
+    
     char players_connected=0;
     while (serverState != ENDGAME) {
 
@@ -74,17 +74,51 @@ int main() {
                 //broadcast((Player_Data *),size);
             }
         }
-
+        char typeOfChange;
         printf("Estado IN_GAME!\n");
         while(serverState == IN_GAME){
             Player_Data recieved_player;
-            struct msg_ret_t ret = recvMsg(&recieved_player);
-            
+
+            struct msg_ret_t ret = recvMsg(&typeOfChange);
+
             if(ret.status==MESSAGE_OK){
-                
-                printf("Nome : %s\nSkin : %d\n",recieved_player.nome,recieved_player.skin);
-                printf("Ret status = %d\nRet id = %d\nRet size = %d\n",ret.status, ret.client_id, ret.size);
+
+                if(typeOfChange == UP_ARROW){  
+                    players[ret.client_id].posY--;
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
+
+                else if(typeOfChange == DOWN_ARROW){
+                    players[ret.client_id].posY++;
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                    printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
+                }
+
+                else if(typeOfChange == LEFT_ARROW){
+                    players[ret.client_id].posX--;
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                    printf("Chegou aqui o enum!\n");
+                }
+
+                else if(typeOfChange == RIGHT_ARROW){
+                    players[ret.client_id].posY++;
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                }
+
+                else if(typeOfChange == PACKAGE_BUTTON){}
+
+                else if(typeOfChange == ITEM1_BUTTON){}
+
+                else if(typeOfChange == ITEM1_BUTTON){}
+
+                else if(typeOfChange == ITEM1_BUTTON){}
+
+
+                else puts("Invalid message!");
+            }
+            else if(ret.status==DISCONNECT_MSG){
+                                
+            }
             
             //serverState = ENDGAME;
         }
