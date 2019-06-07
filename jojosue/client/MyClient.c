@@ -12,9 +12,12 @@
 
 enum conn_ret_t tryConnect() {
   char server_ip[30];
+  char server_ID[3];
+  strcpy(server_ip,"172.20.4.");
   printf("Please enter the server IP: ");
-  scanf(" %s", server_ip);
+  scanf(" %s", server_ID);
   getchar();
+  strcat(server_ip,server_ID);
   return connectToServer(server_ip);
   //return connectToServer("172.20.4.24");
 }
@@ -24,7 +27,7 @@ void printHello() {
   puts("We need some infos to start up!");
 }
 
-void assertConnection() {
+char assertConnection() {
   printHello();
   enum conn_ret_t ans = tryConnect();
   while (ans != SERVER_UP) {
@@ -53,6 +56,13 @@ void assertConnection() {
   getchar();
   int len = (int)strlen(login);
   sendMsgToServer(login, len + 1);
+  printf("Please enter your skin 0 1 2:");
+  char skin;
+  scanf(" %d",&skin);
+  getchar();
+  sendMsgToServer(&skin,1+1);
+
+  return skin;
 }
 
 void runChat() {
@@ -105,22 +115,34 @@ void runChat() {
 }
 
 int main() {
-    assertConnection();
+    Player_Data jogadorDeTeste;
+    jogadorDeTeste.skin = assertConnection();
 
     puts("Welcome to the chat example");
     puts("Just type your messages e talk to your friends");
     puts("Press [Enter] to continue");
     //getchar();
 
-    Player_Data jogadorDeTeste;
+    int contagem = 0;
+    
+    strcpy(jogadorDeTeste.nome,"HAHaHA");
+    char serverResponse;
+    int ret;
+    ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
+    //while(serverResponse!=GAME_START) ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
 
+    
+    ret = sendMsgToServer(&jogadorDeTeste, sizeof(Player_Data));
+    ret = sendMsgToServer(&jogadorDeTeste, sizeof(Player_Data));
+    while(1){
+    }
+    /*
     strcpy(jogadorDeTeste.nome,"Josias");
     jogadorDeTeste.skin = JOSIAS;
-    
     int ret = sendMsgToServer(&jogadorDeTeste, sizeof(Player_Data));
     printf("sizeof(Player_Data)=%d sizeof(jogadorDeTeste)=%d\n",sizeof(Player_Data),sizeof(jogadorDeTeste));
     printf("ret=%d nome=%s skin=%d",ret,jogadorDeTeste.nome,jogadorDeTeste.skin);
-
+    */
     /*
     while(1) {
         runChat();
