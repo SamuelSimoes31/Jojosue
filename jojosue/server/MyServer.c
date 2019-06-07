@@ -20,7 +20,8 @@ enum Game_states{
 int main() {
     puts("JOJOSUE SERVER IS UP, MAAAN\n");
     char serverState = WAITING_CON;
-    Player_Data players[3];
+    Player_Data players[2];
+    Enemy_Data enemy;
     //char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
     char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
     serverInit(MAX_CHAT_CLIENTS);
@@ -59,6 +60,15 @@ int main() {
             }
 
             if(players_connected==2){
+                int i;
+                for(i=0;i<2;i++){
+                    enemy.posX = players[i].posX;
+                    enemy.posY = players[i].posY;
+                    enemy.face = players[i].face;
+                    enemy.skin = players[i].skin;
+                    strcpy(enemy.nome,players[i].nome);
+                    sendMsgToClient((Enemy_Data *)&enemy,sizeof(Enemy_Data),(i==0?1:0));
+                }
                 serverState = IN_GAME;
                 broadcast((char *)&GAME_START,1);
                 //broadcast((Player_Data *),size);

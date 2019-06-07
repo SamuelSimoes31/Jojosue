@@ -57,7 +57,8 @@ typedef struct{
 }Player_Data; 
 
 typedef struct{
-    unsigned char posX, posY;
+    unsigned short posX, posY;
     unsigned char face;
     unsigned char skin;
+    char nome[20];
 }Enemy_Data;
