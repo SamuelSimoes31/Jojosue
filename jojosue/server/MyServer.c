@@ -36,10 +36,21 @@ int main() {
                     recvMsgFromClient(players[id].nome, id, WAIT_FOR_IT);
                     recvMsgFromClient(&players[id].skin, id, WAIT_FOR_IT);
                     printf("%s connected id = %d players_connected=%d\n", players[id].nome, id,players_connected);
+                    players[id].ID = id;
+                    players[id].HP = 5;
+                    players[id].face = (id==0 ? DOWN:UP);
+                    players[id].money = 0;
+                    players[id].posX = (id==0 ? 0:100);
+                    players[id].posY = (id==0 ? 0:100);
+                    int i;
+                    for(i=0;i<3;i++) players[id].itemArray[i] = NO_ITEM;
+                    for(i=0;i<5;i++) {
+                        players[id].boxArray[i].type = NO_BOX;
+                        players[id].boxArray[i].timeLast = 0;
+                    }
+                    sendMsgToClient((Player_Data *)&players[id],sizeof(Player_Data),id);
                 }
-               
             }
-
             struct msg_ret_t msg_ret = recvMsg(aux_buffer);
             if(msg_ret.status == DISCONNECT_MSG){
                 --players_connected;
@@ -48,10 +59,12 @@ int main() {
             }
 
             if(players_connected==2){
-                 serverState = IN_GAME;
-                 broadcast((char *)&GAME_START,1);
-                 }
+                serverState = IN_GAME;
+                broadcast((char *)&GAME_START,1);
+                //broadcast((Player_Data *),size);
+            }
         }
+
         printf("Estado IN_GAME!\n");
         while(serverState == IN_GAME){
             Player_Data recieved_player;

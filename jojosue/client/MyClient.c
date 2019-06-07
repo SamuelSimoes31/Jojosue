@@ -60,7 +60,7 @@ char assertConnection() {
   char skin;
   scanf(" %d",&skin);
   getchar();
-  sendMsgToServer(&skin,1+1);
+  sendMsgToServer(&skin,1);
 
   return skin;
 }
@@ -115,19 +115,18 @@ void runChat() {
 }
 
 int main() {
+    int ret;
     Player_Data jogadorDeTeste;
     jogadorDeTeste.skin = assertConnection();
-
-    puts("Welcome to the chat example");
-    puts("Just type your messages e talk to your friends");
-    puts("Press [Enter] to continue");
+    ret = recvMsgFromServer(&jogadorDeTeste, WAIT_FOR_IT);
+    printf("Jogador: %s\nPosx = %d\nPosy = %d\n",jogadorDeTeste.nome,jogadorDeTeste.posX,jogadorDeTeste.posY);
     //getchar();
 
     int contagem = 0;
     
     strcpy(jogadorDeTeste.nome,"HAHaHA");
     char serverResponse;
-    int ret;
+    
     ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
     //while(serverResponse!=GAME_START) ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
 
