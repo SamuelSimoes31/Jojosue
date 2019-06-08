@@ -3,11 +3,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "Player.h"
+#include "ServerRule.h"
 
 #define MSG_MAX_SIZE 350
 #define BUFFER_SIZE (MSG_MAX_SIZE + 100)
 #define LOGIN_MAX_SIZE 13
 #define MAX_CLIENTS 2
+
 
 
 const char GAME_START = 99;
@@ -26,7 +28,10 @@ int main() {
     char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
     serverInit(MAX_CLIENTS);
     puts("Server is running!!\n");
-    
+    char mapMatrix[30][44];
+    //char mapMatrix[][44] = {"11111111111111111111111111100000000000011111","00001111111111111111111111100000000000011111","00000000000000000000000000000000001110011111","00000000001111000000000000000111101110000000","00111111101111001111110111000111101110000000","00111111101111001111110111000111101110011100","00110110101111001111110000000111100000011100","00000000000000001111110000000000000000000000","00000000000000000000000000000000001111000000","11111110011111100000000000000111001111001110","11111110011111100000000000000111001111001110","11111110011111100111101111000111001111001110","11111110011111100111101111000000001111000000","11111110011111100011111110000000000000000111","11111110011111100011111110000000000000000111","11100000000000000011111110001111000000000111","11100011100000000011111110001111000111100111","11100011100000000011101110001111000111100111","11110000000011110011101110001111000111100000","11110000000011110000000000000000000111100111","11110001110011110000000111000000000000000111","11110001110011110000000111000000000000000011","11000000000000000000000000011110000000000000","11000000000000000000111100011110001110011111","11111110011110000000111100011110001110011111","11111110011110011101111110011110000000011111","11111110011110011101111110000000000000011111","11111110011110000001111110000000111000011111","00000000000000000000000000000000111000000000","00000000000000000000000000000000000000000000","11111111111111111111111111111111111111111111"};
+    readMap(mapMatrix);
+    printf("OLA\n");
     char players_connected=0;
     while (serverState != ENDGAME) {
         while(serverState == WAITING_CON){
@@ -41,8 +46,8 @@ int main() {
                     players[id].reputation = 100;
                     players[id].face = (id==0 ? DOWN:UP);
                     players[id].money = 0;
-                    players[id].posX = (id==0 ? 0:100);
-                    players[id].posY = (id==0 ? 0:100);
+                    players[id].posX = (id==0 ? 1:42);
+                    players[id].posY = (id==0 ? 1:27);
                     int i;
                     for(i=0;i<3;i++) players[id].itemArray[i] = NO_ITEM;
                     for(i=0;i<5;i++) {
@@ -85,29 +90,35 @@ int main() {
             if(ret.status==MESSAGE_OK){
 
                 if(typeOfChange == UP_ARROW){
-                    players[ret.client_id].posY--;
+                    if(players[ret.client_id].posY-1>=0) {
+                        if(mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1) players[ret.client_id].posY--;
+                    }
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
-                    printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
+                    //printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
                 }
 
                 else if(typeOfChange == DOWN_ARROW){
-                    players[ret.client_id].posY++;
+                    if(players[ret.client_id].posY+1<30){
+                        if(mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX]!=1) players[ret.client_id].posY++;
+                    }
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
-                    //sendMsgToClient((Player_Data *)&players[ret.client_id],sizeof(Player_Data),ret.client_id);
-                    printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
+                    //printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
                 }
 
                 else if(typeOfChange == LEFT_ARROW){
-                    players[ret.client_id].posX--;
+                    if(players[ret.client_id].posX-1>=0){
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1]!=1) players[ret.client_id].posX--;
+                    }
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
-                    //printf("Chegou aqui o enum!\n");
-                    printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
+                    //printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
                 }
 
                 else if(typeOfChange == RIGHT_ARROW){
-                    players[ret.client_id].posX++;
+                    if(players[ret.client_id].posY+1<44){
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1]!=1) players[ret.client_id].posX++;
+                    }
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
-                    printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
+                    //printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
                 }
 
                 else if(typeOfChange == PACKAGE_BUTTON){}
@@ -142,3 +153,5 @@ int main() {
   }
   
 }
+
+

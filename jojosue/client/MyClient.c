@@ -10,6 +10,17 @@
 #define LOGIN_MAX_SIZE 13
 #define HIST_MAX_SIZE 200
 
+enum Game_state{
+    MAIN_MENU,
+	PLAY_SCREEN,
+	OPTION_SCREEN,
+	WAITING_ENEMY,
+	PRE_GAME,
+	IN_GAME,
+	RANKING_SCREEN,
+    ENDGAME
+};
+
 enum conn_ret_t tryConnect() {
 	char server_ip[30];
 	char server_ID[5];
@@ -113,76 +124,80 @@ void runChat() {
   }
 }
 
+
+void attMatrix(char matrix[][44],int x, int y, char id){
+
+}
+
 int main() {
-    int ret;
-    Enemy_Data enemy;
-    Player_Data player;
-    Player_Data auxPlayer;
-    player.skin = assertConnection();
-    ret = recvMsgFromServer(&player, WAIT_FOR_IT);
-    ret = recvMsgFromServer(&enemy, WAIT_FOR_IT);
-    printf("Jogador: %s\nPosx = %d\nPosy = %d\n",player.nome,player.posX,player.posY);
-    printf("Jogador: %s\nPosx = %d\nPosy = %d\n",enemy.nome,enemy.posX,enemy.posY);
-    //getchar();
+	int state = PLAY_SCREEN;
+	//PRE_GAME
+	char mapMatrix[30][44];
+	char choice;
+	char lastChoice = !choice;
 
-    int contagem = 0;
-    
-    strcpy(player.nome,"HAHaHA");
-    char serverResponse;
-    
-    ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
-    //while(serverResponse!=GAME_START) ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
+	//PLAY_SCREEN
+	Enemy_Data enemy;
+	Player_Data player;
+	Player_Data auxPlayer;
 
-    char choice;
-    char truth=1;
-    char lastChoice = 1;
-    printf("DOWN[%c]\n",DOWN_ARROW);
-   	// while(1){
-      while(truth){
-          //printf("DOWN[%c]\n",DOWN_ARROW);
-          
-        choice = getch();
-        if(lastChoice != choice){
-          
-            switch (choice)
-            {
-            case DOWN_ARROW:
+    while(state != ENDGAME){
+
+		if(state == PLAY_SCREEN){
+			int ret;
+			player.skin = assertConnection();
+			ret = recvMsgFromServer(&player, WAIT_FOR_IT);
+			ret = recvMsgFromServer(&enemy, WAIT_FOR_IT);
+			printf("Jogador: %s\nPosx = %d\nPosy = %d\n",player.nome,player.posX,player.posY);
+			printf("Jogador: %s\nPosx = %d\nPosy = %d\n",enemy.nome,enemy.posX,enemy.posY);
+			state=WAITING_ENEMY;
+		}
+
+		while(state == WAITING_ENEMY){
+			char serverResponse;
+			int ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
+			if(serverResponse==99) state = IN_GAME;
+		}
+
+		while(state == PRE_GAME){
+			readMap(mapMatrix);
+			mapMatrix[player.posY][player.posX] = 'J'; //D
+			mapMatrix[enemy.posY][enemy.posX] = 'M'; //D
+			state = IN_GAME;
+		}
+		//Debug
+		printMap(mapMatrix);
+
+		while(state == IN_GAME){
+			choice = getch();
+			if(lastChoice != choice){
 				sendMsgToServer((char *)&choice,1);
-				//printf("Entrou DOWN_ARROW!\n");
-				break;
-			case UP_ARROW:
-				sendMsgToServer((char *)&choice,1);
-				//printf("Entrou UP_ARROW!\n");
-				break;
-			case LEFT_ARROW:
-					sendMsgToServer((char *)&choice,1);
-					break;
-			case RIGHT_ARROW:
-				sendMsgToServer((char *)&choice,1);
-				break;
-				default: //printf("É UQ PÔ\n");
-				break;
-            }
-          }
-          
-          lastChoice = choice;
-          
-          ret = recvMsgFromServer(&auxPlayer,DONT_WAIT);
+				lastChoice = choice;
+			}
+			int ret = recvMsgFromServer(&auxPlayer,DONT_WAIT);
+			if(ret == SERVER_DISCONNECTED){
 
-          if(ret != NO_MESSAGE){
-            //printf("OIIII\n");
-            if(auxPlayer.ID == player.ID){
-				player = auxPlayer;
-				printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
-              }
-            else{
-				enemy.posX = auxPlayer.posX;
-				enemy.posY = auxPlayer.posY;
-				printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
-            }
-          
-          }
+			}
+			else if(ret != NO_MESSAGE){
+				if(auxPlayer.ID == player.ID){ //se for a estrutura deste jogador
+					mapMatrix[player.posY][player.posX] = 0;
+					mapMatrix[auxPlayer.posY][auxPlayer.posX] = 'J';
+					player = auxPlayer;	
+					//printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
+				}
+				else{ //se for a estrututura do cliente
+					mapMatrix[enemy.posY][enemy.posX] = 0;
+					mapMatrix[auxPlayer.posY][auxPlayer.posX] = 'M';
+					enemy.posX = auxPlayer.posX;
+					enemy.posY = auxPlayer.posY;
+					//printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
+				}
+			
+			}
+			printMap(mapMatrix);
 
-      }
+		}
+
+	}
   return 0;
 }

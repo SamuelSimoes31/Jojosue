@@ -1,3 +1,9 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
+#include <stdio.h>
+#include <stdlib.h>
+
 #define DOWN_ARROW  48
 #define UP_ARROW 49
 #define LEFT_ARROW 50
@@ -77,3 +83,8 @@ typedef struct{
     unsigned char skin;
     char nome[20];
 }Enemy_Data;
+
+void readMap(char matrix[][44]);
+void printMap(char matrix[][44]);
+
+#endif
