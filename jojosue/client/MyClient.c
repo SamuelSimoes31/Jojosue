@@ -164,7 +164,7 @@ int main() {
 
 		while(state == PRE_GAME){
 			//readMap(mapMatrix);
-			mapMatrix[player.posY][player.posX] = 'X'; //D
+			mapMatrix[player.posY][player.posX] = '%'; //D
 			mapMatrix[enemy.posY][enemy.posX] = '*'; //D
 			state = IN_GAME;
 		}
@@ -185,7 +185,7 @@ int main() {
 			if(ret != NO_MESSAGE){
 				if(auxPlayer.ID == player.ID){ //se for a estrutura deste jogador
 					mapMatrix[player.posY][player.posX] = 0;
-					mapMatrix[auxPlayer.posY][auxPlayer.posX] = 'X';
+					mapMatrix[auxPlayer.posY][auxPlayer.posX] = '%';
 					printf("%c - %d - %d\n",mapMatrix[auxPlayer.posY][auxPlayer.posX],auxPlayer.posY,auxPlayer.posX);
 					player = auxPlayer;	
 					printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);

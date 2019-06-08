@@ -90,6 +90,7 @@ int main() {
             if(ret.status==MESSAGE_OK){
                 //printf("%d\n",typeOfChange);
                 if(typeOfChange == UP_ARROW){
+                    //printf("typeOfChange:%d\n",typeOfChange);
                     if(players[ret.client_id].posY-1>=0) {
                         if(mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1) players[ret.client_id].posY--;
                     }
@@ -98,6 +99,7 @@ int main() {
                 }
 
                 else if(typeOfChange == DOWN_ARROW){
+                    //printf("typeOfChange:%d\n",typeOfChange);
                     if(players[ret.client_id].posY+1<30){
                         if(mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX]!=1) players[ret.client_id].posY++;
                     }
@@ -106,6 +108,7 @@ int main() {
                 }
 
                 else if(typeOfChange == LEFT_ARROW){
+                    //printf("typeOfChange:%d\n",typeOfChange);
                     if(players[ret.client_id].posX-1>=0){
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1]!=1) players[ret.client_id].posX--;
                     }
@@ -114,6 +117,7 @@ int main() {
                 }
 
                 else if(typeOfChange == RIGHT_ARROW){
+                    //printf("typeOfChange:%d\n",typeOfChange);
                     if(players[ret.client_id].posY+1<44){
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1]!=1) players[ret.client_id].posX++;
                     }
@@ -130,10 +134,12 @@ int main() {
                 else if(typeOfChange == ITEM1_BUTTON){}
 
 
-                else puts("Invalid message!");
+                else {
+                    printf("Invalid message!\nret.status=%d\n%d\n",ret.status,typeOfChange);
+                }
             }
             else if(ret.status==DISCONNECT_MSG){
-                                
+                printf("PLAYER(%d) DESCONECTOU\n",ret.client_id);
             }
             
             //serverState = ENDGAME;
