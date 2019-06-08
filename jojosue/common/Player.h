@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DOWN_ARROW  48
-#define UP_ARROW 49
-#define LEFT_ARROW 50
-#define RIGHT_ARROW 51
+#define DOWN_ARROW  's'
+#define UP_ARROW 'w'
+#define LEFT_ARROW 'a'
+#define RIGHT_ARROW 'd'
 #define PACKAGE_BUTTON 52
 #define ITEM1_BUTTON 53
 #define ITEM2_BUTTON 54

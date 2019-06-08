@@ -28,7 +28,7 @@ void printMap(char matrix[][44]){
     system("clear");
     for(int i = 0;i<30;i++){
         for(int j = 0;j<44;j++){
-            printf("%c",matrix[i][j]+48);
+            printf("%c",(matrix[i][j]<10)?matrix[i][j]+48:matrix[i][j]);
         }
         printf("\n");
     }

@@ -132,7 +132,8 @@ void attMatrix(char matrix[][44],int x, int y, char id){
 int main() {
 	int state = PLAY_SCREEN;
 	//PRE_GAME
-	char mapMatrix[30][44];
+	char mapMatrix[][44] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,1,1,1,0,0,0,1,1,1,1,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,0,1,1,0,1,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+    
 	char choice;
 	char lastChoice = !choice;
 
@@ -151,50 +152,54 @@ int main() {
 			printf("Jogador: %s\nPosx = %d\nPosy = %d\n",player.nome,player.posX,player.posY);
 			printf("Jogador: %s\nPosx = %d\nPosy = %d\n",enemy.nome,enemy.posX,enemy.posY);
 			state=WAITING_ENEMY;
+			printf("WAITING PLAYER\n");
 		}
 
 		while(state == WAITING_ENEMY){
 			char serverResponse;
 			int ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
 			if(serverResponse==99) state = IN_GAME;
+			printf("GAME_START RECEBIDO\n");			
 		}
 
 		while(state == PRE_GAME){
-			readMap(mapMatrix);
-			mapMatrix[player.posY][player.posX] = 'J'; //D
-			mapMatrix[enemy.posY][enemy.posX] = 'M'; //D
+			//readMap(mapMatrix);
+			mapMatrix[player.posY][player.posX] = 'X'; //D
+			mapMatrix[enemy.posY][enemy.posX] = '*'; //D
 			state = IN_GAME;
 		}
 		//Debug
-		printMap(mapMatrix);
+		//printMap(mapMatrix);
 
 		while(state == IN_GAME){
 			choice = getch();
-			if(lastChoice != choice){
+			if(choice!=0){
 				sendMsgToServer((char *)&choice,1);
+				printf("%d\n",choice);
 				lastChoice = choice;
 			}
 			int ret = recvMsgFromServer(&auxPlayer,DONT_WAIT);
-			if(ret == SERVER_DISCONNECTED){
+			// if(ret == SERVER_DISCONNECTED){
 
-			}
-			else if(ret != NO_MESSAGE){
+			// }
+			if(ret != NO_MESSAGE){
 				if(auxPlayer.ID == player.ID){ //se for a estrutura deste jogador
 					mapMatrix[player.posY][player.posX] = 0;
-					mapMatrix[auxPlayer.posY][auxPlayer.posX] = 'J';
+					mapMatrix[auxPlayer.posY][auxPlayer.posX] = 'X';
+					printf("%c - %d - %d\n",mapMatrix[auxPlayer.posY][auxPlayer.posX],auxPlayer.posY,auxPlayer.posX);
 					player = auxPlayer;	
-					//printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
+					printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
 				}
 				else{ //se for a estrututura do cliente
 					mapMatrix[enemy.posY][enemy.posX] = 0;
-					mapMatrix[auxPlayer.posY][auxPlayer.posX] = 'M';
+					mapMatrix[auxPlayer.posY][auxPlayer.posX] = '*';
 					enemy.posX = auxPlayer.posX;
 					enemy.posY = auxPlayer.posY;
-					//printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
+					printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
 				}
-			
-			}
 			printMap(mapMatrix);
+			}
+			
 
 		}
 
