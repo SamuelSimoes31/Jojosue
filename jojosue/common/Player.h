@@ -64,7 +64,7 @@ typedef struct{
     unsigned char reputation;
     unsigned short posX, posY;
     Box boxArray[5];
-    char holdingBoxes[2];
+    char holdingBoxes[2];//indica qual o index das caixas que o jogador está carregando(baseado no vetor de caixas para entregar);
     unsigned char itemArray[3];
     unsigned char skin;
     unsigned char face;
