@@ -21,15 +21,14 @@ int main() {
     puts("JOJOSUE SERVER IS UP, MAAAN\n");
     char serverState = WAITING_CON;
     Player_Data players[2];
-    Enemy_Data enemy;
+    
     //char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
     char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
     serverInit(MAX_CLIENTS);
-    puts("Server is running!!");
+    puts("Server is running!!\n");
     
     char players_connected=0;
     while (serverState != ENDGAME) {
-
         while(serverState == WAITING_CON){
             int id = acceptConnection();
             if (id != NO_CONNECTION) {
@@ -39,6 +38,7 @@ int main() {
                     printf("%s connected id = %d players_connected=%d\n", players[id].nome, id,players_connected);
                     players[id].ID = id;
                     players[id].HP = 5;
+                    players[id].reputation = 100;
                     players[id].face = (id==0 ? DOWN:UP);
                     players[id].money = 0;
                     players[id].posX = (id==0 ? 0:100);
@@ -49,6 +49,8 @@ int main() {
                         players[id].boxArray[i].type = NO_BOX;
                         players[id].boxArray[i].timeLast = 0;
                     }
+                    players[id].holdingBoxes[0] = players[id].holdingBoxes[1] = -1;
+
                     sendMsgToClient((Player_Data *)&players[id],sizeof(Player_Data),id);
                 }
             }
@@ -61,6 +63,7 @@ int main() {
 
             if(players_connected==2){
                 int i;
+                Enemy_Data enemy;
                 for(i=0;i<2;i++){
                     enemy.posX = players[i].posX;
                     enemy.posY = players[i].posY;
@@ -71,19 +74,17 @@ int main() {
                 }
                 serverState = IN_GAME;
                 broadcast((char *)&GAME_START,1);
-                //broadcast((Player_Data *),size);
             }
         }
         char typeOfChange;
         printf("Estado IN_GAME!\n");
         while(serverState == IN_GAME){
-            Player_Data recieved_player;
 
             struct msg_ret_t ret = recvMsg(&typeOfChange);
 
             if(ret.status==MESSAGE_OK){
 
-                if(typeOfChange == UP_ARROW){  
+                if(typeOfChange == UP_ARROW){
                     players[ret.client_id].posY--;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
@@ -139,4 +140,5 @@ int main() {
             broadcast(str_buffer, (int)strlen(str_buffer) + 1);
         }
   }
+  
 }

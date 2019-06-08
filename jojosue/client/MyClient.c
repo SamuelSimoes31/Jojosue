@@ -150,14 +150,14 @@ int main() {
 				sendMsgToServer((char *)&choice,1);
 				//printf("Entrou DOWN_ARROW!\n");
 				break;
-				case UP_ARROW:
+			case UP_ARROW:
 				sendMsgToServer((char *)&choice,1);
 				//printf("Entrou UP_ARROW!\n");
 				break;
-				case LEFT_ARROW:
-				sendMsgToServer((char *)&choice,1);
-				break;
-				case RIGHT_ARROW:
+			case LEFT_ARROW:
+					sendMsgToServer((char *)&choice,1);
+					break;
+			case RIGHT_ARROW:
 				sendMsgToServer((char *)&choice,1);
 				break;
 				default: //printf("É UQ PÔ\n");
