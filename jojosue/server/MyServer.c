@@ -86,23 +86,27 @@ int main() {
                 if(typeOfChange == UP_ARROW){  
                     players[ret.client_id].posY--;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                    printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
                 }
 
                 else if(typeOfChange == DOWN_ARROW){
                     players[ret.client_id].posY++;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                    //sendMsgToClient((Player_Data *)&players[ret.client_id],sizeof(Player_Data),ret.client_id);
                     printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
                 }
 
                 else if(typeOfChange == LEFT_ARROW){
                     players[ret.client_id].posX--;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
-                    printf("Chegou aqui o enum!\n");
+                    //printf("Chegou aqui o enum!\n");
+                    printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
                 }
 
                 else if(typeOfChange == RIGHT_ARROW){
-                    players[ret.client_id].posY++;
+                    players[ret.client_id].posX++;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                    printf("new pos of (user that id is:%d)is :%d\n",ret.client_id,players[ret.client_id].posY);
                 }
 
                 else if(typeOfChange == PACKAGE_BUTTON){}

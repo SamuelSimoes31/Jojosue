@@ -11,104 +11,103 @@
 #define HIST_MAX_SIZE 200
 
 enum conn_ret_t tryConnect() {
-  char server_ip[30];
-  char server_ID[5];
-  strcpy(server_ip,"172.20.4.");
-  printf("Please enter the server IP: ");
-  scanf(" %s", server_ID);
-  getchar();
-  strcat(server_ip,server_ID);
-  return connectToServer(server_ip);
-  //return connectToServer("172.20.4.24");
+	char server_ip[30];
+	char server_ID[5];
+	strcpy(server_ip,"172.20.4.");
+	printf("Please enter the server IP: ");
+	scanf(" %s", server_ID);
+	getchar();
+	strcat(server_ip,server_ID);
+	return connectToServer(server_ip);
+	//return connectToServer("172.20.4.24");
 }
 
 void printHello() {
-  puts("Hello! Welcome to simple chat example.");
-  puts("We need some infos to start up!");
+	puts("Hello! Welcome to simple chat example.");
+	puts("We need some infos to start up!");
 }
 
 char assertConnection() {
-  printHello();
-  enum conn_ret_t ans = tryConnect();
-  while (ans != SERVER_UP) {
-    if (ans == SERVER_DOWN) {
-      puts("Server is down!");
-    } else if (ans == SERVER_FULL) {
-      puts("Server is full!");
-    } else if (ans == SERVER_CLOSED) {
-      puts("Server is closed for new connections!");
-    } else {
-      puts("Server didn't respond to connection!");
-    }
-    printf("Want to try again? [Y/n] ");
-    int res;
-    while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
-      puts("anh???");
-    }
-    if (res == 'n') {
-      exit(EXIT_SUCCESS);
-    }
-    ans = tryConnect();
-  }
-  char login[LOGIN_MAX_SIZE + 4];
-  printf("Please enter your login (limit = %d): ", LOGIN_MAX_SIZE);
-  scanf(" %[^\n]", login);
-  getchar();
-  int len = (int)strlen(login);
-  sendMsgToServer(login, len + 1);
-  printf("Please enter your skin 0 1 2:");
-  char skin;
-  scanf(" %d",&skin);
-  getchar();
-  sendMsgToServer(&skin,1);
+	printHello();
+	enum conn_ret_t ans = tryConnect();
+	while (ans != SERVER_UP) {
+		if (ans == SERVER_DOWN) {
+			puts("Server is down!");
+		} else if (ans == SERVER_FULL) {
+			puts("Server is full!");
+		} else if (ans == SERVER_CLOSED) {
+			puts("Server is closed for new connections!");
+		} else {
+			puts("Server didn't respond to connection!");
+		}
+		printf("Want to try again? [Y/n] ");
+		int res;
+		while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
+			puts("anh???");
+		}
+		if (res == 'n') {
+			exit(EXIT_SUCCESS);
+		}
+		ans = tryConnect();
+  	}
+	char login[LOGIN_MAX_SIZE + 4];
+	printf("Please enter your login (limit = %d): ", LOGIN_MAX_SIZE);
+	scanf(" %[^\n]", login);
+	getchar();
+	int len = (int)strlen(login);
+	sendMsgToServer(login, len + 1);
+	printf("Please enter your skin 0 1 2:");
+	char skin;
+	scanf(" %d",&skin);
+	getchar();
+	sendMsgToServer(&skin,1);
 
-  return skin;
+  	return skin;
 }
 
 void runChat() {
-  char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
-  char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
-  int type_pointer = 0;
+	char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
+	char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
+	int type_pointer = 0;
   
-  while (1) {
-    // LER UMA TECLA DIGITADA
-    char ch = getch();
-    if (ch == '\n') {
-      type_buffer[type_pointer++] = '\0';
-      int ret = sendMsgToServer((void *)type_buffer, type_pointer);
-      if (ret == SERVER_DISCONNECTED) {
-        return;
-      }
-      type_pointer = 0;
-      type_buffer[type_pointer] = '\0';
-    } else if (ch == 127 || ch == 8) {
-      if (type_pointer > 0) {
-        --type_pointer;
-        type_buffer[type_pointer] = '\0';
-      }
-    } else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
-      type_buffer[type_pointer++] = ch;
-      type_buffer[type_pointer] = '\0';
-      
+  	while (1) {
+		// LER UMA TECLA DIGITADA
+		char ch = getch();
+		if (ch == '\n') {
+			type_buffer[type_pointer++] = '\0';
+			int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+		if (ret == SERVER_DISCONNECTED) {
+			return;
+		}
+			type_pointer = 0;
+			type_buffer[type_pointer] = '\0';
+		} else if (ch == 127 || ch == 8) {
+		if (type_pointer > 0) {
+			--type_pointer;
+			type_buffer[type_pointer] = '\0';
+		}
+		} else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+			type_buffer[type_pointer++] = ch;
+			type_buffer[type_pointer] = '\0';
     }
 
     // LER UMA MENSAGEM DO SERVIDOR
     int ret = recvMsgFromServer(str_buffer, DONT_WAIT);
     if (ret == SERVER_DISCONNECTED) {
-      return;
+      	return;
     } else if (ret != NO_MESSAGE) {
-      int i;
-      for (i = 0; i < HIST_MAX_SIZE - 1; ++i) {
-        strcpy(msg_history[i], msg_history[i + 1]);
-      }
-      strcpy(msg_history[HIST_MAX_SIZE - 1], str_buffer);
+		int i;
+		for (i = 0; i < HIST_MAX_SIZE - 1; ++i) {
+			strcpy(msg_history[i], msg_history[i + 1]);
+		}
+		strcpy(msg_history[HIST_MAX_SIZE - 1], str_buffer);
     }
 
     // PRINTAR NOVO ESTADO DO CHAT
     system("clear");
     int i;
     for (i = 0; i < HIST_MAX_SIZE; ++i) {
-      printf("%s\n", msg_history[i]);
+      	printf("%s\n", msg_history[i]);
     }
     printf("\nYour message: %s\n", type_buffer);
   }
@@ -138,92 +137,52 @@ int main() {
     char truth=1;
     char lastChoice = 1;
     printf("DOWN[%c]\n",DOWN_ARROW);
-    while(1){
+   	// while(1){
       while(truth){
-      //printf("DOWN[%c]\n",DOWN_ARROW);
-      printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
-      choice = getch();
-      if(lastChoice != choice){
-      
-        switch (choice)
-      {
-      case DOWN_ARROW:
-        sendMsgToServer((char *)&choice,1);
-        printf("Entrou DOWN_ARROW!\n");
-        break;
-        case UP_ARROW:
-        sendMsgToServer((char *)&choice,1);
-        printf("Entrou UP_ARROW!\n");
-        break;
-        case LEFT_ARROW:
-        sendMsgToServer((char *)LEFT_ARROW,1);
-        break;
-        case RIGHT_ARROW:
-        sendMsgToServer((char *)RIGHT_ARROW,1);
-        break;
-        default: //printf("É UQ PÔ\n");
-        break;
-      }
-      }
-      
-      lastChoice = choice;
-      }
-      int ret = recvMsgFromServer(&auxPlayer,DONT_WAIT);
-      if(ret != NO_MESSAGE){
-        if(auxPlayer.ID == player.ID) player = auxPlayer;
-        else{
-          enemy.posX = auxPlayer.posX;
-          enemy.posY = auxPlayer.posY;
-        }
-      }
-    }
-    
-    /*
-    while(truth){
-      printf("1 - Baixo ;\n2 - LifeChange\n3 - Shutdown client\n");
-      scanf("%d",&choice);
-      switch (choice)
-      {
-      case 1: choice = DOWN_ARROW;
-              sendMsgToServer(&choice,1);
-              ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
-              if(serverResponse == YES){
-                ret = recvMsgFromServer(&player, WAIT_FOR_IT);
-                printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
+          //printf("DOWN[%c]\n",DOWN_ARROW);
+          
+        choice = getch();
+        if(lastChoice != choice){
+          
+            switch (choice)
+            {
+            case DOWN_ARROW:
+				sendMsgToServer((char *)&choice,1);
+				//printf("Entrou DOWN_ARROW!\n");
+				break;
+				case UP_ARROW:
+				sendMsgToServer((char *)&choice,1);
+				//printf("Entrou UP_ARROW!\n");
+				break;
+				case LEFT_ARROW:
+				sendMsgToServer((char *)&choice,1);
+				break;
+				case RIGHT_ARROW:
+				sendMsgToServer((char *)&choice,1);
+				break;
+				default: //printf("É UQ PÔ\n");
+				break;
+            }
+          }
+          
+          lastChoice = choice;
+          
+          ret = recvMsgFromServer(&auxPlayer,DONT_WAIT);
+
+          if(ret != NO_MESSAGE){
+            //printf("OIIII\n");
+            if(auxPlayer.ID == player.ID){
+				player = auxPlayer;
+				printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
               }
-              
-        break;
+            else{
+				enemy.posX = auxPlayer.posX;
+				enemy.posY = auxPlayer.posY;
+				printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
+            }
+          
+          }
 
-      case 2: truth = 0;
-        break;
-
-      default:  printf("Opcao errada!\n");
-        break;
       }
-    }
-    */
-    
-    /*
-    strcpy(player.nome,"Josias");
-    player.skin = JOSIAS;
-    int ret = sendMsgToServer(&player, sizeof(Player_Data));
-    printf("sizeof(Player_Data)=%d sizeof(player)=%d\n",sizeof(Player_Data),sizeof(player));
-    printf("ret=%d nome=%s skin=%d",ret,player.nome,player.skin);
-    */
-    /*
-    while(1) {
-        runChat();
-        printf("Server disconnected! Want to try again? [Y/N] ");
-        int res;
-        while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
-        puts("anh???");
-        }
-        if (res == 'y' || res == '\n') {
-        assertConnection();
-        } else {
-        break;
-        }
-    }
-    */
   return 0;
 }
