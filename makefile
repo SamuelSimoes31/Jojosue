@@ -8,11 +8,12 @@
 #SERVERDIR := examples/graphicChat/server
 #COMMONDIR := examples/graphicChat/common
 
-#UNCOMMENT THESE TO COMPILE JOJOSUE
+#UNCOMMENT THESE TO COMPILE JOJOSUE GAME
+CLIENTDIR := source/client
+SERVERDIR := source/server
+COMMONDIR := source/common
+
 #CLIENTDIR := testes/Teste_menu
-CLIENTDIR := jojosue/client
-SERVERDIR := jojosue/server
-COMMONDIR := jojosue/common
 
 CC := gcc -std=c99
 RM := rm -f
