@@ -1,15 +1,21 @@
 #include "Player.h"
+#include "errno.h"
 
 void readMap(char matrix[][44]){
     char a;
-    printf("OIIII\n");
-    FILE *file = NULL;
-    file = fopen("Matriz.txt","rt");
-    if(file==NULL)exit(-5);
+    printf("entrou no readMap\n");
+    FILE *arq = NULL;
+    arq = fopen("mano.txt", "a+");
+    if(arq==NULL){
+        printf("n abriu o arq\n");
+        printf("%s\n", strerror(errno));
+        exit(1);
+        }
+    else printf("funfou");
     printf("OIIIII\n");
     for(int i = 0;i<30;i++){
         for(int j = 0;j<44;j++){
-            fscanf(file," %c",&a);
+            fscanf(arq," %c",&a);
             matrix[i][j] = a-48;
         }
     }
@@ -20,7 +26,7 @@ void readMap(char matrix[][44]){
         }
         printf("\n");
     }*/
-    fclose(file);
+    fclose(arq);
 }
 
 //USADA PRA DEBUG NO LCIENT DE TESTE
