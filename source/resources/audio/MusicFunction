@@ -1,0 +1,8 @@
+void setAudio(char k[]){ //comeca musiquinha
+    al_set_audio_stream_playing(musica, false);
+    musica = al_load_audio_stream(k, 4, 1024);
+    al_attach_audio_stream_to_mixer(musica, al_get_default_mixer());
+    al_set_audio_stream_playing(musica, true);
+}
+ 
+setAudio("Resources/audios/mapa1.ogg");
