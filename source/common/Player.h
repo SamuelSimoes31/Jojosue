@@ -82,6 +82,8 @@ typedef struct{
     unsigned char face;
     unsigned char skin;
     char nome[20];
+    unsigned char HP;
+    
 }Enemy_Data;
 
 void readMap(char matrix[][44]);
