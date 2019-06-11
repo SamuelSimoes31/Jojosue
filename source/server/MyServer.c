@@ -43,7 +43,7 @@ int main() {
                     recvMsgFromClient(&players[id].skin, id, WAIT_FOR_IT);
                     printf("%s connected id = %d players_connected=%d\n", players[id].nome, id,players_connected);
                     players[id].ID = id;
-                    players[id].HP = 5;
+                    players[id].HP = 3;
                     players[id].reputation = 100;
                     players[id].face = (id==0 ? DOWN:UP);
                     players[id].money = 0;
@@ -75,6 +75,7 @@ int main() {
                     enemy.posY = players[i].posY;
                     enemy.face = players[i].face;
                     enemy.skin = players[i].skin;
+                    enemy.HP = 3;
                     strcpy(enemy.nome,players[i].nome);
                     sendMsgToClient((Enemy_Data *)&enemy,sizeof(Enemy_Data),(i==0?1:0));
                 }
@@ -93,6 +94,8 @@ int main() {
                 if(typeOfChange == UP_ARROW){
                     if(players[ret.client_id].posY-1>=0 && mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY--;
+                        players[ret.client_id].face = UP;
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP = 0;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
                 }
@@ -100,6 +103,8 @@ int main() {
                 else if(typeOfChange == DOWN_ARROW){
                     if(players[ret.client_id].posY+1<30 && mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY++;
+                        players[ret.client_id].face = DOWN;
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP = 0;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
                 }
@@ -107,6 +112,8 @@ int main() {
                 else if(typeOfChange == LEFT_ARROW){
                     if(players[ret.client_id].posX-1>=0 && mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1]!=1){
                         players[ret.client_id].posX--;
+                        players[ret.client_id].face = LEFT;
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP = 0;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
                 }
@@ -114,13 +121,39 @@ int main() {
                 else if(typeOfChange == RIGHT_ARROW){
                     if(players[ret.client_id].posY+1<44 && mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1]!=1){
                         players[ret.client_id].posX++;
+                        players[ret.client_id].face = RIGHT;
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP = 0;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
                 }
 
                 else if(typeOfChange == PACKAGE_BUTTON){}
 
-                else if(typeOfChange == ITEM1_BUTTON){}
+                else if(typeOfChange == ITEM1_BUTTON){
+                    if(players[ret.client_id].face == UP){
+                        if((mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY>0)){
+                           mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = 'X'; 
+                        }
+                    }
+
+                    else if(players[ret.client_id].face == DOWN){
+                        if((mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY<30)){
+                            mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] = 'X';
+                        }
+                    }
+
+                    else if(players[ret.client_id].face == LEFT){
+                        if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] != 1) && (players[ret.client_id].posX>0)){
+                           mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] = 'X'; 
+                        }
+                    }
+
+                    else{
+                        if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44)){
+                           mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = 'X'; 
+                        }
+                    }
+                }
 
                 else if(typeOfChange == ITEM1_BUTTON){}
 

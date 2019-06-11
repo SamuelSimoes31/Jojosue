@@ -18,6 +18,8 @@ enum Game_state{
 	PRE_GAME,
 	IN_GAME,
 	RANKING_SCREEN,
+	WIN_SCREEN,
+	LOSE_SCREEN,
     ENDGAME
 };
 
@@ -135,6 +137,7 @@ void attMatrix(char matrix[][44],int x, int y, char id){
 }
 
 int main() {
+
 	int state = PLAY_SCREEN;
 	//PRE_GAME
 	
@@ -194,21 +197,38 @@ int main() {
 				if(auxPlayer.ID == player.ID){ //se for a estrutura deste jogador
 					mapMatrix[player.posY][player.posX] = 0;
 					mapMatrix[auxPlayer.posY][auxPlayer.posX] = '+';
-					printf("%c - %d - %d\n",mapMatrix[auxPlayer.posY][auxPlayer.posX],auxPlayer.posY,auxPlayer.posX);
+					//printf("%c - %d - %d\n",mapMatrix[auxPlayer.posY][auxPlayer.posX],auxPlayer.posY,auxPlayer.posX);
 					player = auxPlayer;	
-					printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
+					//printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
+					if(player.HP == 0){
+						state = LOSE_SCREEN;
+					}
 				}
 				else{ //se for a estrututura do cliente
 					mapMatrix[enemy.posY][enemy.posX] = 0;
 					mapMatrix[auxPlayer.posY][auxPlayer.posX] = '*';
 					enemy.posX = auxPlayer.posX;
 					enemy.posY = auxPlayer.posY;
-					printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
+					enemy.HP = auxPlayer.HP;
+					//printf("-----------------%d\n",enemy.HP);
+					//printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
+					if(enemy.HP == 0){
+						state = WIN_SCREEN;
+					}
 				}
 			printMap(mapMatrix);
 			}
 			
 
+		}
+		
+		closeConnection();
+
+		if(state == WIN_SCREEN){
+			printf("TU GANHOU RAPA!\n");
+		}
+		else if(state == LOSE_SCREEN){
+			printf("TU PERDEU RAPA!\n");
 		}
 
 	}
