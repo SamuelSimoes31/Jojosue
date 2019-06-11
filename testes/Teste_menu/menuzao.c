@@ -9,8 +9,6 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_primitives.h>
-#include <Player.h>
-#include <client.h>
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
 #define FPS 60.0
@@ -20,8 +18,12 @@
     ALLEGRO_BITMAP *botao_jogar = NULL;
     ALLEGRO_BITMAP *botao_tutorial = NULL;
     ALLEGRO_BITMAP *botao_leaderboard = NULL;
-    ALLEGRO_BITMAP *botao_opcoes = NULL;
     ALLEGRO_BITMAP *botao_sair = NULL;
+    ALLEGRO_BITMAP *name_button = NULL;
+    ALLEGRO_BITMAP *matias_button = NULL;
+    ALLEGRO_BITMAP *josue_button = NULL;
+    ALLEGRO_BITMAP *josias_button = NULL;
+    ALLEGRO_BITMAP *ip_button = NULL;
     ALLEGRO_DISPLAY *janela = NULL;
     ALLEGRO_BITMAP *imagem = NULL;
     ALLEGRO_BITMAP *fundo = NULL;
@@ -32,16 +34,30 @@
     ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos_timer = NULL;
     ALLEGRO_FONT *fonte = NULL;
-    ALLEGRO_FONT *fonte_opcoes = NULL;
+    ALLEGRO_FONT *fonte_pregame = NULL;
     typedef enum {
-        em_jogar,
-        em_tutorial,
-        em_leaderboard,
-        em_opcoes,
-        em_sair,
-        em_nenhum 
-    } estados;
+        EM_JOGAR,
+        EM_TUTORIAL,
+        EM_LEADERBOARD,
+        EM_SAIR,
+        EM_NENHUM 
+    } estados_botao_menu;
 
+    typedef enum {
+        MAIN_MENU,
+        GAME_MENU,
+        TUTORIAL_MENU,
+        LEADERBOARD_MENU,
+        ENDGAME   
+    } estados_tela;
+
+    typedef enum {
+        EM_NAME,
+        EM_MATIAS,
+        EM_JOSUE,
+        EM_JOSIAS,
+        EM_IP
+    } estados_game_menu;
 int inicializar() {
     if (!al_init()) {
         fprintf(stderr, "Falha ao inicializar Allegro.\n");
@@ -119,12 +135,6 @@ int inicializar() {
         return -1;
     }
 
-    fonte_opcoes = al_load_font("pressStart.ttf", 10, 0);
-    if (!fonte){
-        al_destroy_display(janela);
-        printf("Falha ao carregar fonte\n");
-        return -1;
-    }
 
     al_set_window_title(janela, "Beta Menu");
  
@@ -195,12 +205,6 @@ void inicializa_botoes_menu() {
         al_destroy_display(janela);
         exit(0);
     }
-    botao_opcoes = al_create_bitmap(110, 25);
-    if(!botao_opcoes) {
-        printf("Falha ao criar bitmap");
-        al_destroy_display(janela);
-        exit(0);
-    }
     botao_leaderboard = al_create_bitmap(170, 25);
     if(!botao_leaderboard) {
         printf("Falha ao criar bitmap");
@@ -213,104 +217,42 @@ void inicializa_botoes_menu() {
         al_destroy_display(janela);
         exit(0);
     }
-}
-typedef enum{
-    nome, skin, ip
-}status_opcoes;
-void opcoes(){
-    //digitar IP, id e escolher o personagem para jogo
-    bool sair = false;
-    double x = LARGURA_TELA/2, y = 200;
-    status_opcoes status;
-    Player_Data player;
-    enum skin boneco;
-    ALLEGRO_EVENT_QUEUE *fila_eventos_opcoes = NULL;
-    fila_eventos_opcoes = al_create_event_queue();
-    if (!fila_eventos_opcoes) {
-        fprintf(stderr, "Falha ao criar fila de eventos de opções.\n");
-        return;
+    name_button = al_create_bitmap(LARGURA_TELA, 100);
+    if(!name_button) {
+        printf("falha ao criar bitmap\n");
+        al_destroy_display(janela);
+        exit(0);
     }
-    al_register_event_source(fila_eventos_opcoes, al_get_display_event_source(janela));
-    al_register_event_source(fila_eventos_opcoes, al_get_keyboard_event_source());
-    status = nome;
-    int tamanho=0; //tamanho = tamanho do nome do player
-    while(!sair){
-        al_draw_scaled_bitmap(fundo,
-        0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
-        0, 0, LARGURA_TELA, ALTURA_TELA, 0);
-        al_flip_display();
-        while(!al_is_event_queue_empty(fila_eventos_opcoes)){
-            ALLEGRO_EVENT evento;
-            al_wait_for_event(fila_eventos_opcoes, &evento);
-            if (evento.type == ALLEGRO_EVENT_KEY_DOWN){
-                switch(evento.keyboard.keycode){
-                    case ALLEGRO_KEY_ESCAPE: sair=true; break;
-                    case ALLEGRO_KEY_DOWN:
-                    {
-                        y+=300;
-                        if(status == ip) status = nome;
-                        else status++;
-                        break;
-                    }
-            }
-            if(status == nome) {
-                char ch = getch();
-                al_draw_text(fonte_opcoes, al_map_rgb(255, 255, 0), LARGURA_TELA/2, 100, ALLEGRO_ALIGN_CENTRE, "DIGITE SEU NOME: ");
-                while(1){
-                    if(ch=='\n') {
-                        status++;
-                        if(tamanho<20) player.nome[tamanho++] = '\0';
-                        break;
-                    }
-                    else if(ch == 127 || ch == 8){ //apagar o nome
-                        if(tamanho>0){
-                            --tamanho;
-                            player.nome[tamanho] = '\0';
-                        }
-                    }
-                    else {
-                        if(tamanho<20 && ch!=NO_KEY_PRESSED) {
-                            player.nome[tamanho] = ch;
-                            tamanho++;
-                            player.nome[tamanho] = '\0';
-                        }
-                    }
-                }
-            }
-            else if(status == skin){
+    matias_button = al_create_bitmap(170, 170);
+    if(!matias_button) {
+        printf("falha ao criar bitmap\n");
+        al_destroy_display(janela);
+        exit(0);
+    }
+    josue_button = al_create_bitmap(170, 170);
+    if(!josue_button) {
+        printf("falha ao criar bitmap\n");
+        al_destroy_display(janela);
+        exit(0);
+    }
+    josias_button = al_create_bitmap(170, 170);
+    if(!josias_button) {
+        printf("falha ao criar bitmap\n");
+        al_destroy_display(janela);
+        exit(0);
+    }
+    ip_button = al_create_bitmap(LARGURA_TELA, 100);
+    if(!ip_button) {
+        printf("falha ao criar bitmap\n");
+        al_destroy_display(janela);
+        exit(0);
+    }
+}
 
-            }
-            else if(status == ip){
-                //ip = 127.20.4.X
-                char ch = getch();
-                al_draw_text(fonte_opcoes, al_map_rgb(255, 255, 0), LARGURA_TELA/2, 400, ALLEGRO_ALIGN_CENTRE, "DIGITE O IP: ");
-                al_draw_text(fonte_opcoes, al_map_rgb(255, 255, 0), LARGURA_TELA/2, 450, ALLEGRO_ALIGN_CENTRE, "172.20.4.");
-                while(1){
-                    if(ch=='\n') {
-                        status = nome;
-                        
-                        break;
-                    }
-                    else if(ch == 127 || ch == 8){ //apagar o nome
-                        
-                    }
-                    else {
-                        if( && ch!=NO_KEY_PRESSED){
-                            
-                        }
-                    }
-                }
-            }
-        }
-    }
-    }
-    al_destroy_event_queue(fila_eventos_opcoes);
-}
 int main()
 {
 
     int desenha = 1;
-    int acesso_ao_jogo = 0; //so eh possivel jogar se antes o player acessar a parte de opcoes e botar seus dados.
     //largura e altura de cada sprite dentro da folha
     int altura_sprite = 64, largura_sprite = 64, altura_2_sprite = 74;
     //quantos sprites tem em cada linha da folha, e a atualmente mostrada
@@ -324,100 +266,82 @@ int main()
     //posicao X Y da janela em que sera mostrado o sprite
     int pos_x_sprite = LARGURA_TELA / 2 - 550, pos_y_sprite= ALTURA_TELA / 2 - 100;
     int pos_x_2_sprite = LARGURA_TELA / 2 + 200, pos_y_2_sprite = ALTURA_TELA / 2 - 100;
-    int sair = 0;
     if(!inicializar()) {
         exit(-1);
     }
 
     inicializa_botoes_menu();
 
-    estados estado;
+    estados_botao_menu estado_botao;
+    estados_tela estado_tela = MAIN_MENU;
 
-    while(!sair) {
+    while(estado_tela == MAIN_MENU) {
         while(!al_is_event_queue_empty(fila_eventos)) {
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos, &evento);
             //al_wait_for_event(fila_eventos, &evento_timer);
-            sair = 0;
             if(evento.type == ALLEGRO_EVENT_MOUSE_AXES) {
                 if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 - 57 &&
                 evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_jogar) / 2 + 53 &&
                 evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 - 40 &&
                 evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_jogar) / 2 - 28) {
                     al_play_sample(coin, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-                    estado = em_jogar;
+                    estado_botao = EM_JOGAR;
                 }
                 else if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_tutorial) / 2 - 70 &&
                 evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_tutorial) / 2 + 78 &&
-                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_tutorial) / 2 + 10 &&
-                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_tutorial) / 2 + 20) {
+                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_tutorial) / 2 + 25 &&
+                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_tutorial) / 2 + 35) {
                     al_play_sample(coin, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-                    estado = em_tutorial;
+                    estado_botao = EM_TUTORIAL;
                 }
                 else if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_leaderboard) / 2 - 125 &&
                 evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_leaderboard) / 2 + 135 &&
-                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_leaderboard) / 2  + 110 &&
-                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_leaderboard) / 2 + 122) {
+                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_leaderboard) / 2  + 95 &&
+                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_leaderboard) / 2 + 107) {
                     al_play_sample(coin, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-                    estado = em_leaderboard;
+                    estado_botao = EM_LEADERBOARD;
                 }
-                else if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_opcoes) / 2 - 65 &&
-                evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_opcoes) / 2 + 60 &&
-                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_opcoes) / 2 + 60 &&
-                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_opcoes) / 2 + 90) {
-                    al_play_sample(coin, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-                    estado = em_opcoes;
-                }
+                
                 else if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_sair) / 2 - 25 &&
                 evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_sair) / 2 + 30 &&
                 evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_sair) / 2 + 160 &&
                 evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_sair) / 2 + 173) {
                     al_play_sample(coin, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-                    estado = em_sair;
+                    estado_botao = EM_SAIR;
                 }
                 else {
-                    estado = em_nenhum;
+                    estado_botao = EM_NENHUM;
                 }
-                sair = 0;
             }
-            else if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) sair = 1;
             else if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
                 if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_sair) / 2 - 25 &&
                 evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_sair) / 2 + 30 &&
                 evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_sair) / 2 + 160 &&
                 evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_sair) / 2 + 173) {
-                    sair = 1;
+                    estado_tela = ENDGAME;
                     //fecha o client
                 }
-                if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 &&
-                evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_jogar) / 2 &&
-                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 &&
-                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_jogar) / 2) {
-                    sair = 0;
+                if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 - 57 &&
+                evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_jogar) / 2 + 53 &&
+                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 - 40 &&
+                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_jogar) / 2 - 28) {
+                    estado_tela = GAME_MENU;
                     //atualiza a tela como o inicio do jogo
                 }
-                if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_tutorial) / 2 &&
-                evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_tutorial) / 2 &&
-                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_tutorial) / 2 + 30 &&
-                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_tutorial) / 2 + 30){
-                    sair = 0;
+                if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_tutorial) / 2 - 70 &&
+                evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_tutorial) / 2 + 78 &&
+                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_tutorial) / 2 + 25 &&
+                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_tutorial) / 2 + 35){
+                    estado_tela = TUTORIAL_MENU;
                     //atualiza a tela com a tela de tutorial
                 }
-                if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_leaderboard) / 2 &&
-                evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_leaderboard) / 2 &&
-                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_leaderboard) / 2 + 90 &&
-                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_leaderboard) / 2 + 90) {
-                    sair = 0;
+                if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_leaderboard) / 2 - 125 &&
+                evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_leaderboard) / 2 + 135 &&
+                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_leaderboard) / 2  + 95 &&
+                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_leaderboard) / 2 + 107) {
+                    estado_tela = LEADERBOARD_MENU;
                     //atualiza a tela com os ranking de melhores jogadores
-                }
-                if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_opcoes) / 2 - 60 &&
-                evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_opcoes) / 2 + 60 &&
-                evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_opcoes) / 2 + 60&&
-                evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_opcoes) / 2 + 90){
-                    sair = 0;
-                    opcoes();
-                    acesso_ao_jogo = 1;
-                    //atualiza a tela com os opcoes
                 }
             }
         }
@@ -472,49 +396,86 @@ int main()
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 + 45,
         ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 - 40, ALLEGRO_ALIGN_CENTER, "JOGAR");
-        if (estado == em_jogar) {
+        if (estado_botao == EM_JOGAR) {
             al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 + 45,
         ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 - 40, ALLEGRO_ALIGN_CENTER, "JOGAR");
         }
         
         al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_tutorial) / 2 + 80,
-        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 10, ALLEGRO_ALIGN_CENTER, "TUTORIAL");
-        if(estado == em_tutorial) {
+        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 25, ALLEGRO_ALIGN_CENTER, "TUTORIAL");
+        if(estado_botao == EM_TUTORIAL) {
             al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_tutorial) / 2 + 80,
-        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 10, ALLEGRO_ALIGN_CENTER, "TUTORIAL");
+        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 25, ALLEGRO_ALIGN_CENTER, "TUTORIAL");
         }
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_leaderboard) / 2 + 90,
-        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 110, ALLEGRO_ALIGN_CENTER, "LEADERBOARD");
-        if(estado == em_leaderboard) {
+        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 95, ALLEGRO_ALIGN_CENTER, "LEADERBOARD");
+        if(estado_botao == EM_LEADERBOARD) {
             al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_leaderboard) / 2 + 90,
-        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 110, ALLEGRO_ALIGN_CENTER, "LEADERBOARD");
-        }
-
-        al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_opcoes) / 2 + 55,
-        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 60, ALLEGRO_ALIGN_CENTER, "OPÇÕES");
-        if(estado == em_opcoes) {
-            al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_opcoes) / 2 + 55,
-        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 60, ALLEGRO_ALIGN_CENTER, "OPÇÕES");
+        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 95, ALLEGRO_ALIGN_CENTER, "LEADERBOARD");
         }
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_sair) / 2 + 55,
         ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 160, ALLEGRO_ALIGN_CENTER, "SAIR");
-        if(estado == em_sair) {
+        if(estado_botao == EM_SAIR) {
             al_draw_text(fonte, al_map_rgb(0, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_sair) / 2 + 55,
         ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 + 160, ALLEGRO_ALIGN_CENTER, "SAIR");
         }
 
         //al_flip_display();
-        al_rest(0.005);
+        //al_rest(0.005);
+    }
+
+    while(estado_tela == GAME_MENU) {
+        estados_game_menu estado;
+        while(!al_is_event_queue_empty(fila_eventos)) {
+            ALLEGRO_EVENT evento;
+            al_wait_for_event(fila_eventos, &evento);
+
+            if(evento.type == ALLEGRO_EVENT_MOUSE_AXES) {
+                if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
+                evento.mouse.y >= 100 && evento.mouse.y <= 100 + al_get_bitmap_height(name_button)) {
+                    estado = EM_NAME;
+                }
+                if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
+                evento.mouse.y >= 700 && evento.mouse.y <= 700 + al_get_bitmap_height(ip_button)) {
+                    estado = EM_IP;
+                }
+                if(evento.mouse.x >= 50 && evento.mouse.x <= 50 + al_get_bitmap_width(matias_button) &&
+                evento.mouse.y >= 450 && evento.mouse.y <= 450 + al_get_bitmap_height(matias_button)) {
+                    estado = EM_MATIAS;
+                }
+                if(evento.mouse.x >= 250 && evento.mouse.x <= 250 + al_get_bitmap_width(josue_button) &&
+                evento.mouse.y >= 450 && evento.mouse.y <= 450 + al_get_bitmap_height(josue_button)) {
+                    estado = EM_JOSUE;
+                }
+                if(evento.mouse.x >= 450 && evento.mouse.x <= 450 + al_get_bitmap_width(josue_button) &&
+                evento.mouse.y >= 450 && evento.mouse.y <= 450 + al_get_bitmap_height(josue_button)) {
+                    estado = EM_JOSIAS;
+                }
+            }
+        }
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        
+        al_draw_scaled_bitmap(fundo,
+        0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
+        0, 0, LARGURA_TELA, ALTURA_TELA, 0);
+
+        al_draw_text(fonte, al_map_rgb(255, 255, 0), 700, 100, ALLEGRO_ALIGN_RIGHT, "TYPE YOUR NAME: ");
+        if(estado == EM_NAME) {
+            al_draw_text(fonte, al_map_rgb(0, 255, 0), 700, 100, ALLEGRO_ALIGN_RIGHT, "TYPE YOUR NAME: ");
+        }
+
+        al_flip_display();
+
     }
     al_destroy_bitmap(botao_sair);
     al_destroy_bitmap(botao_jogar);
     al_destroy_bitmap(botao_tutorial);
-    al_destroy_bitmap(botao_opcoes);
     al_destroy_bitmap(botao_leaderboard);
     al_destroy_display(janela);
     al_destroy_font(fonte);
+    al_destroy_font(fonte_pregame);
     al_destroy_sample(coin);
     al_destroy_event_queue(fila_eventos);
     return 0;
