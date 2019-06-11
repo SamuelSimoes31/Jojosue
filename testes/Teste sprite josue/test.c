@@ -5,7 +5,9 @@
     #define FPS 60.0
     #define LARGURA_TELA 800
     #define ALTURA_TELA 380
-     
+    #define velX 4
+    #define velY 4
+
     ALLEGRO_DISPLAY *janela = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
     ALLEGRO_TIMER *timer = NULL;
@@ -20,6 +22,11 @@
      
         if (!al_init_image_addon()){
             printf("Falha ao inicializar o addon de imagens");
+            return 0;
+        }
+
+        if(!al_install_keyboard()){
+            printf("Não foi possível inicializar o teclado!");
             return 0;
         }
      
@@ -71,15 +78,16 @@
      
         al_register_event_source(fila_eventos, al_get_display_event_source(janela));
         al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
+        al_register_event_source(fila_eventos, al_get_keyboard_event_source());
         al_start_timer(timer);
-     
+
         return 1;
     }
      
     int main(void){
         int desenha = 1;
         int sair = 0;
-     
+        char tecla = 0;
         //largura e altura de cada sprite dentro da folha
         int altura_sprite=74, largura_sprite=64;
         //quantos sprites tem em cada linha da folha, e a atualmente mostrada
@@ -93,7 +101,7 @@
         //posicao X Y da janela em que sera mostrado o sprite
         int pos_x_sprite=50, pos_y_sprite=200;
         //velocidade X Y que o sprite ira se mover pela janela
-        double vel_x_sprite=4, vel_y_sprite=0;
+        double vel_x_sprite=0, vel_y_sprite=0;
      
         if (!inicializar()){
             return -1;
@@ -105,38 +113,86 @@
 
      
             /* -- EVENTOS -- */
-            if(evento.type == ALLEGRO_EVENT_TIMER){
-                //a cada disparo do timer, incrementa cont_frames
-                cont_frames++;
-                if (pos_x_sprite + largura_sprite > LARGURA_TELA - 70 || pos_x_sprite < 20){
-                    //inverte o sentido da velocidade X, para andar no outro sentido
-                    vel_x_sprite = -vel_x_sprite;
-                    if(vel_x_sprite<0) linha_atual = 2;
-                        else linha_atual = 3;
+            if(evento.type == ALLEGRO_EVENT_KEY_DOWN){
+                switch(evento.keyboard.keycode){
+                    case ALLEGRO_KEY_UP:
+                    {
+                        tecla = 'w';
+                        vel_y_sprite = -velY;
+                        vel_x_sprite = 0;
+                        linha_atual = 1;
+                        break;
+                    }
+                    case ALLEGRO_KEY_DOWN:
+                    {
+                        tecla = 's';
+                        vel_y_sprite = velY;
+                        vel_x_sprite = 0;
+                        linha_atual = 0;
+                        break;
+                    }
+                    case ALLEGRO_KEY_LEFT:
+                    {
+                        tecla = 'a';
+                        vel_x_sprite = -velX;
+                        vel_y_sprite = 0;
+                        linha_atual = 2;
+                        break;
+                    }
+                    case ALLEGRO_KEY_RIGHT:
+                    {
+                        tecla = 'd';
+                        vel_x_sprite = velX;
+                        vel_y_sprite = 0;
+                        linha_atual = 3;
+                        break;
+                    }
+                }
+                regiao_y_folha = linha_atual * altura_sprite;
+            }
+            else if(evento.type == ALLEGRO_EVENT_KEY_UP){
+                regiao_x_folha = 0;
+                vel_x_sprite = 0;
+                vel_y_sprite = 0;
+                tecla = 0;
+            }
+            if(tecla){
+                if(evento.type == ALLEGRO_EVENT_TIMER){
+                    //a cada disparo do timer, incrementa cont_frames
+                    cont_frames++;
+                    /*if (pos_x_sprite + largura_sprite > LARGURA_TELA - 70 || pos_x_sprite < 20){
+                        //inverte o sentido da velocidade X, para andar no outro sentido
+                        vel_x_sprite = -vel_x_sprite;
                         //calcula a posicao Y da folha que sera mostrada
                         regiao_y_folha = linha_atual * altura_sprite;
-                }
-                //se alcancou a quantidade de frames que precisa passar para mudar para o proximo sprite
-                if (cont_frames >= frames_sprite){
-                    //reseta cont_frames
-                    cont_frames=0;
-                    //incrementa a coluna atual, para mostrar o proximo sprite
-                    coluna_atual++;
-                    //se coluna atual passou da ultima coluna
-                    if (coluna_atual >= colunas_folha){
-                        //volta pra coluna inicial
-                        coluna_atual = 0;
-                        
+                    }*/
+                    //se alcancou a quantidade de frames que precisa passar para mudar para o proximo sprite
+                    if (cont_frames >= frames_sprite){
+                        //reseta cont_frames
+                        cont_frames=0;
+                        //incrementa a coluna atual, para mostrar o proximo sprite
+                        coluna_atual++;
+                        //se coluna atual passou da ultima coluna
+                        if (coluna_atual >= colunas_folha){
+                            //volta pra coluna inicial
+                            coluna_atual = 0;
+                            
+                        }
+                        //calcula a regiao X da folha que sera mostrada
+                        regiao_x_folha = coluna_atual * largura_sprite;
                     }
-                    //calcula a regiao X da folha que sera mostrada
-                    regiao_x_folha = coluna_atual * largura_sprite;
+                    //se o sprite estiver perto da borda direita ou esquerda da tela
+                    //atualiza as posicoes X Y do sprite de acordo com a velocidade, positiva ou negativa
+                    if (!(pos_x_sprite + largura_sprite > LARGURA_TELA - 70) && tecla == 'd' || !(pos_x_sprite < 20) && tecla == 'a'){
+                        pos_x_sprite += vel_x_sprite;
+                    }
+                    pos_y_sprite += vel_y_sprite;
+        
+                    desenha=1;
                 }
-                //se o sprite estiver perto da borda direita ou esquerda da tela
-                //atualiza as posicoes X Y do sprite de acordo com a velocidade, positiva ou negativa
-                pos_x_sprite += vel_x_sprite;
-                pos_y_sprite += vel_y_sprite;
-     
-                desenha=1;
+                else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+                    sair = 1;
+                }
             }
             else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
                 sair = 1;
@@ -149,19 +205,33 @@
                 al_draw_bitmap_region(fundo,0,0,LARGURA_TELA,ALTURA_TELA,0,0,0);
      
                 //velocidade positiva (movendo para direita)
-                if (vel_x_sprite > 0)
+                if (tecla == 'd')
                     //desenha sprite na posicao X Y da janela, a partir da regiao X Y da folha
                     al_draw_bitmap_region(folha_sprite,
                         regiao_x_folha,regiao_y_folha,
                         largura_sprite,altura_sprite,
                         pos_x_sprite,pos_y_sprite,0);
-                else
+                else if (tecla == 'a'){
                     //desenha sprite, igual acima, com a excecao que desenha a largura negativa, ou seja, espelhado horizontalmente
                     al_draw_scaled_bitmap(folha_sprite,
                         regiao_x_folha,regiao_y_folha,
                         largura_sprite,altura_sprite,
                         pos_x_sprite+largura_sprite,pos_y_sprite,
                         largura_sprite,altura_sprite,0);
+                }
+                else if(tecla == 'w'){
+                    al_draw_scaled_bitmap(folha_sprite,
+                        regiao_x_folha,regiao_y_folha,
+                        largura_sprite,altura_sprite,
+                        pos_x_sprite+largura_sprite,pos_y_sprite,
+                        largura_sprite,altura_sprite,0);
+                }
+                else if(tecla == 's'){
+                    al_draw_bitmap_region(folha_sprite,
+                        regiao_x_folha,regiao_y_folha,
+                        largura_sprite,altura_sprite,
+                        pos_x_sprite,pos_y_sprite,0);
+                }
      
                 al_flip_display();
      
