@@ -46,7 +46,7 @@ int main() {
                     players[id].HP = 3;
                     players[id].reputation = 100;
                     players[id].face = (id==0 ? DOWN:UP);
-                    players[id].money = 0;
+                    players[id].money = 1000;
                     players[id].posX = (id==0 ? 1:42);
                     players[id].posY = (id==0 ? 1:27);
                     int i;
@@ -90,12 +90,16 @@ int main() {
             struct msg_ret_t ret = recvMsg(&typeOfChange);
 
             if(ret.status==MESSAGE_OK){
+                mapMatrix[players[0].posY][players[0].posX] = '+';
+                mapMatrix[players[1].posY][players[1].posX] = '*';
                 //printf("%d\n",typeOfChange);
                 if(typeOfChange == UP_ARROW){
                     if(players[ret.client_id].posY-1>=0 && mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY--;
                         players[ret.client_id].face = UP;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
+                        else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
+                        else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
                 }
@@ -105,6 +109,8 @@ int main() {
                         players[ret.client_id].posY++;
                         players[ret.client_id].face = DOWN;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
+                        else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
+                        else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
                 }
@@ -114,6 +120,8 @@ int main() {
                         players[ret.client_id].posX--;
                         players[ret.client_id].face = LEFT;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
+                        else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
+                        else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
                 }
@@ -123,6 +131,8 @@ int main() {
                         players[ret.client_id].posX++;
                         players[ret.client_id].face = RIGHT;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
+                        else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
+                        else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
                 }
@@ -173,6 +183,9 @@ int main() {
                                 }
                             }
                         }
+
+                        players[ret.client_id].itemArray[0] = NO_ITEM;
+                        sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
                     }
 
                 }
@@ -196,7 +209,7 @@ int main() {
 
                         }
 
-                        if(players[ret.client_id].itemArray[0]!=SHURICARD){
+                        if(players[ret.client_id].itemArray[1]!=SHURICARD){
                             if(players[ret.client_id].face == UP){
                                 if((mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY>0)){
                                 mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem; 
@@ -221,6 +234,9 @@ int main() {
                                 }
                             }
                         }
+
+                        players[ret.client_id].itemArray[1] = NO_ITEM;
+                        sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
                     }
 
                 }
@@ -244,7 +260,7 @@ int main() {
 
                         }
 
-                        if(players[ret.client_id].itemArray[0]!=SHURICARD){
+                        if(players[ret.client_id].itemArray[2]!=SHURICARD){
                             if(players[ret.client_id].face == UP){
                                 if((mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY>0)){
                                 mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem; 
@@ -269,14 +285,79 @@ int main() {
                                 }
                             }
                         }
+
+                        players[ret.client_id].itemArray[2] = NO_ITEM;
+                        sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
                     }
 
                 }
 
+                else if(typeOfChange == BUY1){
+                    if(players[ret.client_id].money >= 50){
+                       // printf("%d\n",players[ret.client_id].money);
+                        for(int i=0;i<3;i++){
+                            printf("%d\n",players[ret.client_id].itemArray[i]);
+                            if(players[ret.client_id].itemArray[i] == NO_ITEM){
+                                players[ret.client_id].itemArray[i] = SHURICARD;
+                                players[ret.client_id].money -= 50;
+                                break;
+                            }
+                        }
+                    }
+                    sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                }
+
+                else if(typeOfChange == BUY2){
+                    if(players[ret.client_id].money >= 75){
+                       // printf("%d\n",players[ret.client_id].money);
+                        for(int i=0;i<3;i++){
+                            printf("%d\n",players[ret.client_id].itemArray[i]);
+                            if(players[ret.client_id].itemArray[i] == NO_ITEM){
+                                players[ret.client_id].itemArray[i] = SHURICARD;
+                                players[ret.client_id].money -= 75;
+                                break;
+                            }
+                        }
+                    }
+                    sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                }
+
+                else if(typeOfChange == BUY3){
+                    if(players[ret.client_id].money >= 100){
+                       // printf("%d\n",players[ret.client_id].money);
+                        for(int i=0;i<3;i++){
+                            printf("%d\n",players[ret.client_id].itemArray[i]);
+                            if(players[ret.client_id].itemArray[i] == NO_ITEM){
+                                players[ret.client_id].itemArray[i] = SHURICARD;
+                                players[ret.client_id].money -= 100;
+                                break;
+                            }
+                        }
+                    }
+                    sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                }
+
+                else if(typeOfChange == BUY4){
+                    if(players[ret.client_id].money >= 150){
+                       // printf("%d\n",players[ret.client_id].money);
+                        for(int i=0;i<3;i++){
+                            printf("%d\n",players[ret.client_id].itemArray[i]);
+                            if(players[ret.client_id].itemArray[i] == NO_ITEM){
+                                players[ret.client_id].itemArray[i] = SHURICARD;
+                                players[ret.client_id].money -= 150;
+                                break;
+                            }
+                        }
+                    }
+                    sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                }
 
                 else {
                     printf("Invalid message!\nret.status=%d\n%d\n",ret.status,typeOfChange);
                 }
+                mapMatrix[players[0].posY][players[0].posX] = '+';
+                mapMatrix[players[1].posY][players[1].posX] = '*';
+                printMap(mapMatrix);
             }
             else if(ret.status==DISCONNECT_MSG){
                 printf("PLAYER(%d) DESCONECTOU\n",ret.client_id);

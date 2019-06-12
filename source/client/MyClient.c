@@ -26,16 +26,16 @@ enum Game_state{
 enum conn_ret_t tryConnect() {
 	char server_ip[30];
 	char server_ID[5];
-	/*
+	
 	strcpy(server_ip,"172.20.4.");
 	printf("Please enter the server ID: ");
 	scanf(" %s", server_ID);
 	getchar();
 	strcat(server_ip,server_ID);
-	*/
-	printf("Please enter the server IP: ");
-	scanf(" %s", server_ip);
-	getchar();
+	
+	// printf("Please enter the server IP: ");
+	// scanf(" %s", server_ip);
+	// getchar();
 	return connectToServer(server_ip);
 	//return connectToServer("172.20.4.24");
 }
@@ -185,9 +185,27 @@ int main() {
 		while(state == IN_GAME){
 			choice = getch();
 			if(choice!=0){
-				sendMsgToServer((char *)&choice,1);
-				printf("%d\n",choice);
-				lastChoice = choice;
+				if(choice=='w'||choice=='a'||choice=='s'||choice=='d'||choice==ITEM1_BUTTON||choice==ITEM2_BUTTON||choice==ITEM3_BUTTON){
+					sendMsgToServer((char *)&choice,1);
+					//printf("%d\n",choice);
+					lastChoice = choice;
+				}
+				else if(choice==BUY1||choice==BUY2||choice==BUY3){
+					if(player.ID==0){
+						if(player.posX==1&&player.posY==1){
+							sendMsgToServer((char *)&choice,1);
+							//printf("%d\n",choice);
+							lastChoice = choice;
+						}
+					}
+					else{
+						if(player.posX==42&&player.posY==27){
+							sendMsgToServer((char *)&choice,1);
+							//printf("%d\n",choice);
+							lastChoice = choice;
+						}
+					}
+				}
 			}
 			int ret = recvMsgFromServer(&auxPlayer,DONT_WAIT);
 			if(ret == SERVER_DISCONNECTED){
@@ -200,7 +218,7 @@ int main() {
 					//printf("%c - %d - %d\n",mapMatrix[auxPlayer.posY][auxPlayer.posX],auxPlayer.posY,auxPlayer.posX);
 					player = auxPlayer;	
 					//printf("Nova posicao do jogador: %d(x) %d(y)\n",player.posX,player.posY);
-					if(player.HP == 0){
+					if(player.HP <= 0){
 						state = LOSE_SCREEN;
 					}
 				}
@@ -212,11 +230,12 @@ int main() {
 					enemy.HP = auxPlayer.HP;
 					//printf("-----------------%d\n",enemy.HP);
 					//printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
-					if(enemy.HP == 0){
+					if(enemy.HP <= 0){
 						state = WIN_SCREEN;
 					}
 				}
 			printMap(mapMatrix);
+			printf("[%d][%d][%d] - HP: %d - TAOK's: %d\n",player.itemArray[0],player.itemArray[1],player.itemArray[2],player.HP,player.money);
 			}
 			
 
