@@ -43,7 +43,7 @@ int main() {
                     recvMsgFromClient(&players[id].skin, id, WAIT_FOR_IT);
                     printf("%s connected id = %d players_connected=%d\n", players[id].nome, id,players_connected);
                     players[id].ID = id;
-                    players[id].HP = 3;
+                    players[id].HP = 10;
                     players[id].reputation = 100;
                     players[id].face = (id==0 ? DOWN:UP);
                     players[id].money = 1000;
@@ -75,7 +75,7 @@ int main() {
                     enemy.posY = players[i].posY;
                     enemy.face = players[i].face;
                     enemy.skin = players[i].skin;
-                    enemy.HP = 3;
+                    enemy.HP = 10;
                     strcpy(enemy.nome,players[i].nome);
                     sendMsgToClient((Enemy_Data *)&enemy,sizeof(Enemy_Data),(i==0?1:0));
                 }
@@ -90,8 +90,8 @@ int main() {
             struct msg_ret_t ret = recvMsg(&typeOfChange);
 
             if(ret.status==MESSAGE_OK){
-                mapMatrix[players[0].posY][players[0].posX] = '+';
-                mapMatrix[players[1].posY][players[1].posX] = '*';
+                mapMatrix[players[0].posY][players[0].posX] = '0';
+                mapMatrix[players[1].posY][players[1].posX] = '0';
                 //printf("%d\n",typeOfChange);
                 if(typeOfChange == UP_ARROW){
                     if(players[ret.client_id].posY-1>=0 && mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1){
@@ -137,7 +137,21 @@ int main() {
                     }
                 }
 
-                else if(typeOfChange == PACKAGE_BUTTON){}
+                else if(typeOfChange == ACTION_MESSAGE){
+                    //printf("ENTROU!!!\n");
+                    //printf("x = %d ---- y = %d\n");
+                    if((players[ret.client_id].posX==21&&players[ret.client_id].posY==11)||(players[ret.client_id].posX==21&&players[ret.client_id].posY==16)){
+
+                        if(players[ret.client_id].HP<10 && players[ret.client_id].money >= 100){
+                            players[ret.client_id].HP += 3;
+                            players[ret.client_id].money -= 100;
+                            if(players[ret.client_id].HP>10) players[ret.client_id].HP = 10;
+                        }
+
+                    }
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+
+                }
 
                 else if(typeOfChange == ITEM1_BUTTON){
 
@@ -185,7 +199,7 @@ int main() {
                         }
 
                         players[ret.client_id].itemArray[0] = NO_ITEM;
-                        sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
 
                 }
@@ -236,7 +250,7 @@ int main() {
                         }
 
                         players[ret.client_id].itemArray[1] = NO_ITEM;
-                        sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
 
                 }
@@ -287,7 +301,7 @@ int main() {
                         }
 
                         players[ret.client_id].itemArray[2] = NO_ITEM;
-                        sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
 
                 }
@@ -304,7 +318,7 @@ int main() {
                             }
                         }
                     }
-                    sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == BUY2){
@@ -313,13 +327,13 @@ int main() {
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
                             if(players[ret.client_id].itemArray[i] == NO_ITEM){
-                                players[ret.client_id].itemArray[i] = SHURICARD;
+                                players[ret.client_id].itemArray[i] = TRAP1;
                                 players[ret.client_id].money -= 75;
                                 break;
                             }
                         }
                     }
-                    sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == BUY3){
@@ -328,13 +342,13 @@ int main() {
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
                             if(players[ret.client_id].itemArray[i] == NO_ITEM){
-                                players[ret.client_id].itemArray[i] = SHURICARD;
+                                players[ret.client_id].itemArray[i] = TRAP2;
                                 players[ret.client_id].money -= 100;
                                 break;
                             }
                         }
                     }
-                    sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == BUY4){
@@ -343,13 +357,13 @@ int main() {
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
                             if(players[ret.client_id].itemArray[i] == NO_ITEM){
-                                players[ret.client_id].itemArray[i] = SHURICARD;
+                                players[ret.client_id].itemArray[i] = CATIORO;
                                 players[ret.client_id].money -= 150;
                                 break;
                             }
                         }
                     }
-                    sendMsgToClient(&players[ret.client_id],sizeof(Player_Data),ret.client_id);
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else {
@@ -362,7 +376,7 @@ int main() {
             else if(ret.status==DISCONNECT_MSG){
                 printf("PLAYER(%d) DESCONECTOU\n",ret.client_id);
             }
-            
+            //11 e 21
             //serverState = ENDGAME;
         }
 
