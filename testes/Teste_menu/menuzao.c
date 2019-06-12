@@ -3,6 +3,7 @@
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "client.h"
 #include <stdlib.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -12,6 +13,10 @@
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
 #define FPS 60.0
+#define MSG_MAX_SIZE 350
+#define BUFFER_SIZE (MSG_MAX_SIZE + 100)
+#define LOGIN_MAX_SIZE 13
+#define HIST_MAX_SIZE 200
 //dale dbv
 //-lallegro_ttf -lallegro_font -lallegro
 //-lallegro -lallegro_audio -lallegro_acodec
@@ -452,7 +457,7 @@ int main()
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos, &evento);
 
-            if(evento.type == ALLEGRO_EVENT_MOUSE_AXES) {
+            if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
                 if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
                 evento.mouse.y >= 50 && evento.mouse.y <= 50 + al_get_bitmap_height(name_button)) {
                     estado = EM_NAME;
@@ -530,12 +535,69 @@ int main()
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), 700, 100, ALLEGRO_ALIGN_RIGHT, "DIGITE SEU NOME: ");
         if(estado == EM_NAME) {
+            char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
+            char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
+            int type_pointer = 0;
 
+            while (1) {
+                // LER UMA TECLA DIGITADA
+                char ch = getch();
+                if (ch == '\n') {
+                    type_buffer[type_pointer++] = '\0';
+                //int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+                /*if (ret == SERVER_DISCONNECTED) {
+                    return;
+                }*/
+                    type_pointer = 0;
+                    type_buffer[type_pointer] = '\0';
+                    break;
+                } 
+                else if (ch == 127 || ch == 8) {
+                    if (type_pointer > 0) {
+                        --type_pointer;
+                        type_buffer[type_pointer] = '\0';
+                    }
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                } 
+                else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+                    type_buffer[type_pointer++] = ch;
+                    type_buffer[type_pointer] = '\0';
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                }
+            }
         }
-
         al_draw_text(fonte, al_map_rgb(255, 255, 0), 1100, 600, ALLEGRO_ALIGN_RIGHT, "DIGITE OS DIGITOS FINAIS DO SEU IP: ");
         if(estado == EM_IP) {
-            
+            char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
+            char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
+            int type_pointer = 0;
+
+            while (1) {
+                // LER UMA TECLA DIGITADA
+                char ch = getch();
+                if (ch == '\n') {
+                    type_buffer[type_pointer++] = '\0';
+                //int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+                /*if (ret == SERVER_DISCONNECTED) {
+                    return;
+                }*/
+                    type_pointer = 0;
+                    type_buffer[type_pointer] = '\0';
+                    break;
+                } 
+                else if (ch == 127 || ch == 8) {
+                    if (type_pointer > 0) {
+                        --type_pointer;
+                        type_buffer[type_pointer] = '\0';
+                    }
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                } 
+                else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+                    type_buffer[type_pointer++] = ch;
+                    type_buffer[type_pointer] = '\0';
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                }
+            }
         }
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), 750, 300, ALLEGRO_ALIGN_RIGHT, "ESCOLHA SUA SKIN: ");
