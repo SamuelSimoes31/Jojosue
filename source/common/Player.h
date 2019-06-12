@@ -12,6 +12,10 @@
 #define ITEM1_BUTTON 53
 #define ITEM2_BUTTON 54
 #define ITEM3_BUTTON 55
+#define BUY1 'i'
+#define BUY2 'o'
+#define BUY3 'p'
+#define BUY4 'l'
 
 enum flagAccept{
     YES,
@@ -65,7 +69,7 @@ enum playerFace{
 typedef struct{
     unsigned char ID;
     unsigned char HP;
-    unsigned char money;
+    unsigned int money;
     unsigned char reputation;
     unsigned short posX, posY;
     Box boxArray[5];
