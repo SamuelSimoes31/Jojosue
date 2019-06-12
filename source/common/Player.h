@@ -33,10 +33,9 @@ typedef struct{
 enum Items{
    NO_ITEM,
    SHURICARD,
-   MADDOG,
-   TRAP,
-   SPEED,
-   SHIELD    
+   CATIORO,
+   TRAP1,
+   TRAP2   
 };
 
 enum skin{
