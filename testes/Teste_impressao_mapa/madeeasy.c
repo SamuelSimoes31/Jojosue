@@ -3,7 +3,7 @@
  
 // Inclui o cabeçalho do add-on para uso de imagens
 #include <allegro5/allegro_image.h>
-
+#include<stdio.h>
 
 #define LARGURA_TELA 800
 #define ALTURA_TELA 600
@@ -12,10 +12,10 @@ int main()
 {
     ALLEGRO_DISPLAY *display;
 
-    enum direction {DOWN, LEFT,RIGHT,UP};
+    enum direction {DOWN, UP, LEFT, RIGHT};
 
     const float FPS = 60.0;
-    const float frameFPS = 15.0;
+    const float frameFPS = 7.5;
 
     if(!al_init())
         puts("Fala ao iniciar allegro\n");
@@ -27,15 +27,15 @@ int main()
 
     al_set_window_position(display,200,200);
 
-    bool done = false, draw = true, active = false;
-    float x = 10, y =10, moveSpeed = 5;
+    int done = false, draw = true, active = false;
+    float x = 10, y = 10, moveSpeed = 2.5;
     int dir = DOWN, sourceX = 32, sourceY = 0;
 
     al_install_keyboard();
     al_init_image_addon();
 
-    ALLEGRO_BITMAP *player = al_load_bitmap("Josias.png");
-    ALLEGRO_BITMAP *background = al_load_bitmap("mapaDef.png");
+    ALLEGRO_BITMAP *player = al_load_bitmap("Josue.png");
+    ALLEGRO_BITMAP *background = al_load_bitmap("mapadef.png");
 
     ALLEGRO_KEYBOARD_STATE keyState;
 
@@ -66,7 +66,7 @@ int main()
             if(events.timer.source == timer)
             {
                 active = true;
-                if(al_key_down(&keyState, ALLEGRO_KEY_UP))
+                if(al_key_down(&keyState, ALLEGRO_KEY_DOWN))
                 {
                     y += moveSpeed;
                     dir = DOWN;
@@ -79,29 +79,44 @@ int main()
                 else if(al_key_down(&keyState, ALLEGRO_KEY_RIGHT))
                 {
                     x += moveSpeed;
-                    dir = UP;
+                    dir = RIGHT;
                 }
                 else if(al_key_down(&keyState, ALLEGRO_KEY_LEFT))
                 {
                     x -= moveSpeed;
                     dir = LEFT;
                 }
-                else
+                else if(al_key_down(&keyState, ALLEGRO_KEY_ESCAPE))
+                {
+                done = true;
+                }
+                else{
                     active = false;
+                    }
+                //printf("active:%d",active);
+                
 
             }
 
             else if(events.timer.source == frameTimer)
             {
-                if(active)
-                    sourceX += al_get_bitmap_width(player)/3;
-                else
-                    sourceX = 32;
+                if(active){
+                    //printf("if sourceX antes = %d \n",sourceX);
+                    int opa = sourceX; 
+                    //sourceX += al_get_bitmap_width(player) / 4;
+                    sourceX = opa + 32;
+                    //printf("if sourceX depois= %d \n",sourceX);
+                }
+                else{
+                    sourceX = 0;
+                    //printf("else sourceX = %d\n",sourceX);
+                }
 
                 if(sourceX >= al_get_bitmap_width(player))
                     sourceX = 0;
 
                 sourceY = dir;
+                //printf("sourceX = %d  sourceY = %d\n",sourceX,sourceY);
             }
 
             draw = true;
@@ -110,7 +125,8 @@ int main()
 
         if(draw)
         {
-            ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player, sourceX, sourceY*32,32,32);
+            
+            ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player, sourceX, sourceY*32, 32, 32);
             al_draw_bitmap(background,0,0,NULL);
             al_draw_bitmap(subBitmap,x,y,NULL);
 
