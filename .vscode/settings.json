@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "server.h": "c"
+        "server.h": "c",
+        "allegro_native_dialog.h": "c"
     }
 }

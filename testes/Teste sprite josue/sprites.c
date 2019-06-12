@@ -57,7 +57,7 @@
 
      
         //carrega a folha de sprites na variavel
-        folha_sprite = al_load_bitmap("Josias.png");
+        folha_sprite = al_load_bitmap("Josue.png");
         if (!folha_sprite){
             printf("Falha ao carregar sprites");
             al_destroy_timer(timer);
@@ -91,7 +91,7 @@
         int sair = 0;
         int tecla = 3, tecla_anterior = tecla;
         //largura e altura de cada sprite dentro da folha
-        int altura_sprite=74, largura_sprite=64;
+        int altura_sprite=64, largura_sprite=64;
         //quantos sprites tem em cada linha da folha, e a atualmente mostrada
         int colunas_folha=4, coluna_atual=0;
         //quantos sprites tem em cada coluna da folha, e a atualmente mostrada
