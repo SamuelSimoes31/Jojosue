@@ -3,6 +3,7 @@
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include "client.h"
 #include <stdlib.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -12,6 +13,10 @@
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
 #define FPS 60.0
+#define MSG_MAX_SIZE 350
+#define BUFFER_SIZE (MSG_MAX_SIZE + 100)
+#define LOGIN_MAX_SIZE 13
+#define HIST_MAX_SIZE 200
 //dale dbv
 //-lallegro_ttf -lallegro_font -lallegro
 //-lallegro -lallegro_audio -lallegro_acodec
@@ -31,6 +36,7 @@
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_BITMAP *folha_1_sprite = NULL;
     ALLEGRO_BITMAP *folha_2_sprite = NULL;
+    ALLEGRO_BITMAP *folha_3_sprite = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos_timer = NULL;
     ALLEGRO_FONT *fonte = NULL;
@@ -164,6 +170,15 @@ int inicializar() {
     folha_2_sprite = al_load_bitmap("Josias.png");
     if(!folha_2_sprite) {
         printf("Falha ao carregar folha 2 de sprite\n");
+        al_destroy_display(janela);
+        al_destroy_event_queue(fila_eventos);
+        al_destroy_timer(timer);
+        return 0;
+    }
+
+    folha_3_sprite = al_load_bitmap("Mathias.png");
+    if(!folha_3_sprite) {
+        printf("Falha ao carregar folha 3 de sprite\n");
         al_destroy_display(janela);
         al_destroy_event_queue(fila_eventos);
         al_destroy_timer(timer);
@@ -426,19 +441,29 @@ int main()
         //al_rest(0.005);
     }
 
+    cont_frames = 0;
+    coluna_atual = 0;
+    desenha = 0;
+    pos_x_sprite = 250;
+    pos_y_sprite = 400;
+    pos_x_2_sprite = 750;
+    pos_y_2_sprite = 400;
+    int pos_x_3_sprite = 1250;
+    int pos_y_3_sprite = 400;
+
     while(estado_tela == GAME_MENU) {
         estados_game_menu estado;
         while(!al_is_event_queue_empty(fila_eventos)) {
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos, &evento);
 
-            if(evento.type == ALLEGRO_EVENT_MOUSE_AXES) {
+            if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
                 if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
-                evento.mouse.y >= 100 && evento.mouse.y <= 100 + al_get_bitmap_height(name_button)) {
+                evento.mouse.y >= 50 && evento.mouse.y <= 50 + al_get_bitmap_height(name_button)) {
                     estado = EM_NAME;
                 }
                 if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
-                evento.mouse.y >= 700 && evento.mouse.y <= 700 + al_get_bitmap_height(ip_button)) {
+                evento.mouse.y >= 500 && evento.mouse.y <= 500 + al_get_bitmap_height(ip_button)) {
                     estado = EM_IP;
                 }
                 if(evento.mouse.x >= 50 && evento.mouse.x <= 50 + al_get_bitmap_width(matias_button) &&
@@ -455,18 +480,132 @@ int main()
                 }
             }
         }
+
+        ALLEGRO_EVENT evento_timer;
+        al_wait_for_event(fila_eventos_timer, &evento_timer);
+
+        if(evento_timer.type == ALLEGRO_EVENT_TIMER) {
+            cont_frames += 1;
+
+            if(cont_frames >= frames_sprite) {
+                cont_frames = 0;
+                coluna_atual += 1;
+                if(coluna_atual >= colunas_folha) {
+                    coluna_atual = 0;
+
+                }
+                regiao_x_folha = coluna_atual * largura_sprite;
+            }
+            pos_x_sprite += 0;
+            pos_y_sprite += 0;
+            pos_x_2_sprite += 0;
+            pos_y_2_sprite += 0;
+            pos_x_3_sprite += 0;
+            pos_y_3_sprite += 0;
+
+            desenha = 1;
+        }
+
+        if(desenha && al_is_event_queue_empty(fila_eventos_timer)) {
+                al_draw_scaled_bitmap(folha_1_sprite,
+                regiao_x_folha, regiao_y_folha,
+                largura_sprite, altura_sprite,
+                pos_x_sprite, pos_y_sprite, 150, 150, 0);
+
+                al_draw_scaled_bitmap(folha_2_sprite,
+                regiao_x_folha, regiao_y_2_folha,
+                largura_sprite, altura_2_sprite,
+                pos_x_2_sprite, pos_y_2_sprite, 150, 150, 0);
+
+                al_draw_scaled_bitmap(folha_3_sprite,
+                regiao_x_folha/2, regiao_y_folha/2,
+                largura_sprite/2, altura_sprite/2,
+                pos_x_3_sprite, pos_y_3_sprite, 150, 150, 0);
+
+                desenha = 0;
+
+                al_flip_display();
+        }
+        
         al_clear_to_color(al_map_rgb(0, 0, 0));
         
         al_draw_scaled_bitmap(fundo,
         0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
         0, 0, LARGURA_TELA, ALTURA_TELA, 0);
 
-        al_draw_text(fonte, al_map_rgb(255, 255, 0), 700, 100, ALLEGRO_ALIGN_RIGHT, "TYPE YOUR NAME: ");
+        al_draw_text(fonte, al_map_rgb(255, 255, 0), 700, 100, ALLEGRO_ALIGN_RIGHT, "DIGITE SEU NOME: ");
         if(estado == EM_NAME) {
-            al_draw_text(fonte, al_map_rgb(0, 255, 0), 700, 100, ALLEGRO_ALIGN_RIGHT, "TYPE YOUR NAME: ");
+            char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
+            char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
+            int type_pointer = 0;
+
+            while (1) {
+                // LER UMA TECLA DIGITADA
+                char ch = getch();
+                if (ch == '\n') {
+                    type_buffer[type_pointer++] = '\0';
+                //int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+                /*if (ret == SERVER_DISCONNECTED) {
+                    return;
+                }*/
+                    type_pointer = 0;
+                    type_buffer[type_pointer] = '\0';
+                    break;
+                } 
+                else if (ch == 127 || ch == 8) {
+                    if (type_pointer > 0) {
+                        --type_pointer;
+                        type_buffer[type_pointer] = '\0';
+                    }
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                } 
+                else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+                    type_buffer[type_pointer++] = ch;
+                    type_buffer[type_pointer] = '\0';
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                }
+            }
+        }
+        al_draw_text(fonte, al_map_rgb(255, 255, 0), 1100, 600, ALLEGRO_ALIGN_RIGHT, "DIGITE OS DIGITOS FINAIS DO SEU IP: ");
+        if(estado == EM_IP) {
+            char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
+            char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
+            int type_pointer = 0;
+
+            while (1) {
+                // LER UMA TECLA DIGITADA
+                char ch = getch();
+                if (ch == '\n') {
+                    type_buffer[type_pointer++] = '\0';
+                //int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+                /*if (ret == SERVER_DISCONNECTED) {
+                    return;
+                }*/
+                    type_pointer = 0;
+                    type_buffer[type_pointer] = '\0';
+                    break;
+                } 
+                else if (ch == 127 || ch == 8) {
+                    if (type_pointer > 0) {
+                        --type_pointer;
+                        type_buffer[type_pointer] = '\0';
+                    }
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                } 
+                else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
+                    type_buffer[type_pointer++] = ch;
+                    type_buffer[type_pointer] = '\0';
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                }
+            }
         }
 
-        al_flip_display();
+        al_draw_text(fonte, al_map_rgb(255, 255, 0), 750, 300, ALLEGRO_ALIGN_RIGHT, "ESCOLHA SUA SKIN: ");
+        
+
+
+
+        //al_flip_display();
 
     }
     al_destroy_bitmap(botao_sair);

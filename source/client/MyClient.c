@@ -185,12 +185,12 @@ int main() {
 		while(state == IN_GAME){
 			choice = getch();
 			if(choice!=0){
-				if(choice=='w'||choice=='a'||choice=='s'||choice=='d'||choice==ITEM1_BUTTON||choice==ITEM2_BUTTON||choice==ITEM3_BUTTON){
+				if(choice=='w'||choice=='a'||choice=='s'||choice=='d'||choice==ITEM1_BUTTON||choice==ITEM2_BUTTON||choice==ITEM3_BUTTON||choice==ACTION_MESSAGE){
 					sendMsgToServer((char *)&choice,1);
 					//printf("%d\n",choice);
 					lastChoice = choice;
 				}
-				else if(choice==BUY1||choice==BUY2||choice==BUY3){
+				else if(choice==BUY1||choice==BUY2||choice==BUY3||choice==BUY4){
 					if(player.ID==0){
 						if(player.posX==1&&player.posY==1){
 							sendMsgToServer((char *)&choice,1);

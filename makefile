@@ -9,7 +9,8 @@
 #COMMONDIR := examples/graphicChat/common
 
 #UNCOMMENT THESE TO COMPILE JOJOSUE GAME
-CLIENTDIR := source/client
+CLIENTDIR := testes/Teste_menu
+#CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
 
@@ -20,7 +21,7 @@ RM := rm -f
 MK := mkdir -p
 #Uncomment above for intense debugging
 #CFLAGS := -Wall -Werror -Wconversion -Wextra
-LDLIB := -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf
+LDLIB := -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
 
 OUTPUTDIR := bin
 LIBDIR := lib

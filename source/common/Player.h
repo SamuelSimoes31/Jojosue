@@ -8,14 +8,14 @@
 #define UP_ARROW 'w'
 #define LEFT_ARROW 'a'
 #define RIGHT_ARROW 'd'
-#define PACKAGE_BUTTON 52
-#define ITEM1_BUTTON 53
-#define ITEM2_BUTTON 54
-#define ITEM3_BUTTON 55
+#define ACTION_MESSAGE ' '
+#define ITEM1_BUTTON '1'
+#define ITEM2_BUTTON '2'
+#define ITEM3_BUTTON '3'
 #define BUY1 'i'
 #define BUY2 'o'
 #define BUY3 'p'
-#define BUY4 'l'
+#define BUY4 '0'
 
 enum flagAccept{
     YES,
@@ -37,9 +37,9 @@ typedef struct{
 enum Items{
    NO_ITEM,
    SHURICARD,
-   CATIORO,
    TRAP1,
-   TRAP2   
+   TRAP2,
+   CATIORO  
 };
 
 enum skin{
@@ -68,7 +68,7 @@ enum playerFace{
 
 typedef struct{
     unsigned char ID;
-    unsigned char HP;
+    char HP;
     unsigned int money;
     unsigned char reputation;
     unsigned short posX, posY;
@@ -85,7 +85,7 @@ typedef struct{
     unsigned char face;
     unsigned char skin;
     char nome[20];
-    unsigned char HP;
+    char HP;
     
 }Enemy_Data;
 
