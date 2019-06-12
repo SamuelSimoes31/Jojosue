@@ -17,6 +17,18 @@
     // Variável representando a imagem
     ALLEGRO_BITMAP *imagem = NULL;
 
+    ALLEGRO_TRANSFORM camera;
+
+float cameraPosition[2] = {0,0};
+
+void cameraUpdate(float* cameraPosition, float x, float y, int width, int height ){
+    printf("x=%g y=%g\n",x,y);
+    cameraPosition[0] = -(LARGURA_TELA/2) + (x + width/2);
+    cameraPosition[1] = -(ALTURA_TELA/2) + (y + height/2);
+    //if(cameraPosition[0] < 0) cameraPosition[0] = 0;
+    //if(cameraPosition[1] < 0) cameraPosition[1] = 0;
+}
+
 void imprimirSessaoDoMapa(int x,int y){
     al_draw_scaled_bitmap(imagem,
                         (x*32) + PIXEL_BASE_X - (LARGURA_AREA_DE_IMPRESSAO/2), (y*32) + PIXEL_BASE_Y - (ALTURA_AREA_DE_IMPRESSAO/2),
@@ -41,16 +53,30 @@ int main(void)
     imagem = al_load_bitmap("mapadef.png");
  
     // Desenha a imagem na tela
+    
+    //al_draw_bitmap(imagem,0,0,NULL);
     int i;
     for(i=0;i<=10;i++){
-        imprimirSessaoDoMapa(i,0);
+        //imprimirSessaoDoMapa(i,0);
+        cameraUpdate(cameraPosition,PIXEL_BASE_X + i*32,PIXEL_BASE_Y,32,32);
+        al_identity_transform(&camera);
+        al_translate_transform(&camera,-cameraPosition[0],cameraPosition[1]);
+        al_scale_transform(&camera,5.0,5.0);
+        al_use_transform(&camera);
+        al_draw_bitmap(imagem,0,0,NULL);
         al_flip_display();
-        al_rest(0.2);
+        al_rest(0.5);
     }
     for(i=0;i<=10;i++){
-        imprimirSessaoDoMapa(10,i);
+        //imprimirSessaoDoMapa(10,i);
+        cameraUpdate(cameraPosition,PIXEL_BASE_X + 320,PIXEL_BASE_Y + i*32,32,32);
+        al_identity_transform(&camera);
+        al_translate_transform(&camera,-cameraPosition[0],cameraPosition[1]);
+        al_scale_transform(&camera,5.0,5.0);
+        al_use_transform(&camera);
+        al_draw_bitmap(imagem,0,0,NULL);
         al_flip_display();
-        al_rest(0.2);
+        al_rest(0.5);
     }
 
     al_destroy_display(janela);
