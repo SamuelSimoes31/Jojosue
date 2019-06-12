@@ -3,6 +3,8 @@
  
 // Inclui o cabeçalho do add-on para uso de imagens
 #include <allegro5/allegro_image.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
@@ -50,23 +52,41 @@ int main(void)
     janela = al_create_display(LARGURA_TELA, ALTURA_TELA);
  
     // Carrega a imagem
-    imagem = al_load_bitmap("mapadef.png");
+    imagem = al_load_bitmap("nicolas.jpg");
+    if(imagem == NULL) printf("NIC FOI DEMAIS PRA MIM\n");
  
     // Desenha a imagem na tela
     
-    //al_draw_bitmap(imagem,0,0,NULL);
+    //al_draw_bitmap(imagem,100,0,0);
+    //al_flip_display();
+
     int i;
-    for(i=0;i<=10;i++){
+    //for(i=0;i<=10;i++){
         //imprimirSessaoDoMapa(i,0);
-        cameraUpdate(cameraPosition,PIXEL_BASE_X + i*32,PIXEL_BASE_Y,32,32);
+        //cameraUpdate(cameraPosition,PIXEL_BASE_X + i*32,PIXEL_BASE_Y,32,32);
         al_identity_transform(&camera);
-        al_translate_transform(&camera,-cameraPosition[0],cameraPosition[1]);
-        al_scale_transform(&camera,5.0,5.0);
+        al_translate_transform(&camera,0,0);
         al_use_transform(&camera);
         al_draw_bitmap(imagem,0,0,NULL);
         al_flip_display();
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_rest(1);
+
+        al_identity_transform(&camera);
+        //al_translate_transform(&camera,400,0);
+        al_scale_transform(&camera,1.5,1.5);
+        al_use_transform(&camera);
+        al_draw_bitmap(imagem,0,0,NULL);
+        al_flip_display();
+        al_clear_to_color(al_map_rgb(0, 0, 0));
         al_rest(0.5);
-    }
+        
+        
+        
+       
+    //}
+
+    /*
     for(i=0;i<=10;i++){
         //imprimirSessaoDoMapa(10,i);
         cameraUpdate(cameraPosition,PIXEL_BASE_X + 320,PIXEL_BASE_Y + i*32,32,32);
@@ -78,6 +98,8 @@ int main(void)
         al_flip_display();
         al_rest(0.5);
     }
+    */
+        al_rest(3);
 
     al_destroy_display(janela);
  
