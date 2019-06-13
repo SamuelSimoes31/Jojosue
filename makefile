@@ -9,10 +9,17 @@
 #COMMONDIR := examples/graphicChat/common
 
 #UNCOMMENT THESE TO COMPILE JOJOSUE GAME
-CLIENTDIR := testes/Teste_menu
-#CLIENTDIR := source/client
+#CLIENTDIR := 
+CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
+
+MUSICDIR := source/resources/audio/musics
+SAMPLEDIR := source/resources/audio/samples
+FONTSDIR := source/resources/fonts
+IMAGESDIR := source/resources/images
+BACKGROUNDDIR := source/resources/images/backgrounds
+CHARACTERDIR := source/resources/images/characters
 
 CC := gcc -std=c99
 RM := rm -f
@@ -28,7 +35,8 @@ CLIENTNAME := client
 SERVERNAME := server
 
 EXT := c
-INC := -I lib -I $(COMMONDIR)
+INC := -I lib -I $(COMMONDIR) 
+#-I $(MUSICDIR) -I $(SAMPLEDIR) -I $(FONTSDIR) -I $(IMAGESDIR) -I $(BACKGROUNDDIR) -I $(CHARACTERDIR)
 
 CLIENTSOURCES := $(shell find $(CLIENTDIR) -type f -name *.$(EXT))
 SERVERSOURCES := $(shell find $(SERVERDIR) -type f -name *.$(EXT))
