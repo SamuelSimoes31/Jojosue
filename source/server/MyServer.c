@@ -20,6 +20,12 @@ enum Game_state{
 };
 
 int main() {
+    char houses[] = {1,2,4,5,6,7,8,17,19,20,21,22,23,24,40,42,43,44,45,46,48,50,60,61,62,64,66,68,69,71,72,73,74,75,76,77,88};
+    ALLEGRO_EVENT_QUEUE *eventQueue = NULL;
+    ALLEGRO_TIMER *timer = NULL, *decrementTimer = NULL;
+    timer = al_create_timer(6);
+    decrementTimer = al_create_timer(1);
+
     puts("JOJOSUE SERVER IS UP, MAAAN\n");
     char serverState = WAITING_CON;
     Player_Data players[2];
@@ -85,6 +91,10 @@ int main() {
         }
         char typeOfChange;
         printf("Estado IN_GAME!\n");
+
+        al_start_timer(timer);
+        al_start_timer(decrementTimer);
+
         while(serverState == IN_GAME){
 
             struct msg_ret_t ret = recvMsg(&typeOfChange);
@@ -161,7 +171,38 @@ int main() {
 
                         switch(players[ret.client_id].itemArray[0]){
 
-                            case SHURICARD: 
+                            case SHURICARD: if(players[ret.client_id].face == UP){
+                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else if(players[ret.client_id].face == DOWN){
+                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else if(players[ret.client_id].face == RIGHT){
+                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else{
+                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
 
                                             break;
 
@@ -212,7 +253,38 @@ int main() {
 
                         switch(players[ret.client_id].itemArray[1]){
 
-                            case SHURICARD: printf("EL ninja\n");
+                            case SHURICARD: if(players[ret.client_id].face == UP){
+                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else if(players[ret.client_id].face == DOWN){
+                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else if(players[ret.client_id].face == RIGHT){
+                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else{
+                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
 
                                             break;
 
@@ -263,7 +335,38 @@ int main() {
 
                         switch(players[ret.client_id].itemArray[2]){
 
-                            case SHURICARD: printf("EL ninja\n");
+                            case SHURICARD: if(players[ret.client_id].face == UP){
+                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else if(players[ret.client_id].face == DOWN){
+                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else if(players[ret.client_id].face == RIGHT){
+                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
+                                            else{
+                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                                         players[!(ret.client_id)].HP -= 1;
+                                                         break;
+                                                         }
+                                                }
+                                            }
 
                                             break;
 
@@ -376,6 +479,75 @@ int main() {
             else if(ret.status==DISCONNECT_MSG){
                 printf("PLAYER(%d) DESCONECTOU\n",ret.client_id);
             }
+
+            while(!al_is_event_queue_empty(eventQueue)){
+
+                ALLEGRO_EVENT event;
+                al_wait_for_event(eventQueue, &event);
+
+                if(event.type == ALLEGRO_EVENT_TIMER){
+                    
+                    if(event.timer.source == decrementTimer){
+                        for(int j = 0;j<2;j++){
+                            for(int i = 0;i<5;i++){
+                                if(players[j].boxArray[i].type != NO_BOX && players[j].boxArray[i].timeLast >0) players[j].boxArray[i].timeLast -= 1;
+                                
+                                if(players[j].boxArray[i].type != NO_BOX && players[j].boxArray[i].timeLast == 0){
+                                    players[j].boxArray[i].type = NO_BOX;
+                                    players[j].reputation -= 10;
+                                }
+                            }
+                        }
+                    }
+
+                    else if(event.timer.source == timer){
+                        int randomizer = rand()%4;
+                        if(randomizer == 0) randomizer = 1;
+                        switch(randomizer){
+
+                            case 1: for(int i = 0; i<2; i++){
+                                        for(int j = 0; j< 5; j++){
+                                            if(players[i].boxArray[j].type == NO_BOX){
+                                                players[i].boxArray[j].type = PAC;
+                                                players[i].boxArray[j].timeLast = 80;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break; 
+
+                            case 2: for(int i = 0; i<2; i++){
+                                        for(int j = 0; j< 5; j++){
+                                            if(players[i].boxArray[j].type == NO_BOX){
+                                                players[i].boxArray[j].type = SEDEX;
+                                                players[i].boxArray[j].timeLast = 60;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break; 
+                            case 3: for(int i = 0; i<2; i++){
+                                        for(int j = 0; j< 5; j++){
+                                            if(players[i].boxArray[j].type == NO_BOX){
+                                                players[i].boxArray[j].type = EXPRESS;
+                                                players[i].boxArray[j].timeLast = 40;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break; 
+
+                        }
+                    }
+
+                }
+
+                for(int i = 0; i<2; i++){
+                    broadcast((Player_Data *)&players[i],sizeof(Player_Data));
+                }
+
+            }
+
             //11 e 21
             //serverState = ENDGAME;
         }
