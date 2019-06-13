@@ -1,19 +1,3 @@
-#UNCOMMENT THESE TO COMPILE SIMPLE CHAT
-#CLIENTDIR := examples/simpleChat/client
-#SERVERDIR := examples/simpleChat/server
-#COMMONDIR := examples/simpleChat/common
-
-#UNCOMMENT THESE TO COMPILE GRAPHIC CHAT
-#CLIENTDIR := examples/graphicChat/client
-#SERVERDIR := examples/graphicChat/server
-#COMMONDIR := examples/graphicChat/common
-
-#UNCOMMENT THESE TO COMPILE JOJOSUE GAME
-<<<<<<< HEAD
-#CLIENTDIR := 
-=======
-#CLIENTDIR := testes/Teste_menu
->>>>>>> 4e9919fff087964d3251c7b3c4934118f03036f9
 CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
