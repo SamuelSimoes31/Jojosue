@@ -9,7 +9,11 @@
 #COMMONDIR := examples/graphicChat/common
 
 #UNCOMMENT THESE TO COMPILE JOJOSUE GAME
+<<<<<<< HEAD
 #CLIENTDIR := 
+=======
+#CLIENTDIR := testes/Teste_menu
+>>>>>>> 4e9919fff087964d3251c7b3c4934118f03036f9
 CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
