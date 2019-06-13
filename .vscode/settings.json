@@ -3,6 +3,8 @@
         "stdio.h": "c",
         "server.h": "c",
         "allegro_native_dialog.h": "c",
-        "allegro_font.h": "c"
+        "allegro_font.h": "c",
+        "allegro.h": "c",
+        "allegro_image.h": "c"
     }
 }

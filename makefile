@@ -14,14 +14,12 @@ CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
 
-#CLIENTDIR := testes/Teste_menu
-
 CC := gcc -std=c99
 RM := rm -f
 MK := mkdir -p
 #Uncomment above for intense debugging
 #CFLAGS := -Wall -Werror -Wconversion -Wextra
-LDLIB := -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
+LDLIB := -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
 
 OUTPUTDIR := bin
 LIBDIR := lib
