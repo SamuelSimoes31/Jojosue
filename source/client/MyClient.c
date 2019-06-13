@@ -132,10 +132,6 @@ void runChat() {
 }
 
 
-void attMatrix(char matrix[][44],int x, int y, char id){
-
-}
-
 int main() {
 
 	int state = PLAY_SCREEN;
