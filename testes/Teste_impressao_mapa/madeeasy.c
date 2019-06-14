@@ -47,9 +47,9 @@ int main()
     al_set_window_position(display,200,200);
 
     bool done = false, draw = true, active = false;
-    float x = 10, y = 10, moveSpeed = 32/frameFPS;
+    float x = 382, y = 164, moveSpeed = 4, moveCounter = 0;
     int dir = DOWN, sourceX = 32, sourceY = 0;
-    
+    // / moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
     al_init_image_addon();
@@ -73,6 +73,12 @@ int main()
     al_start_timer(timer);
     al_start_timer(frameTimer);
 
+    cameraUpdate(cameraPosition,x,y,32,32);
+    al_identity_transform(&camera);
+    al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
+    al_scale_transform(&camera,scale,scale);
+    al_use_transform(&camera);
+
     while(!done)
     {
         ALLEGRO_EVENT events;
@@ -85,69 +91,73 @@ int main()
         }
         else if(events.type == ALLEGRO_EVENT_TIMER)
         {
-            if(events.timer.source == timer)
+            if(active == false && events.timer.source == timer)
             {
                 active = true;
-                if(al_key_down(&keyState, ALLEGRO_KEY_DOWN))
-                {
-                    y += moveSpeed;
+                if(al_key_down(&keyState, ALLEGRO_KEY_DOWN)){
+                    //y += moveSpeed;
                     dir = DOWN;
                 }
-                else if(al_key_down(&keyState, ALLEGRO_KEY_UP))
-                {
-                    y -= moveSpeed;
+                else if(al_key_down(&keyState, ALLEGRO_KEY_UP)){
+                    //y -= moveSpeed;
                     dir = UP;
                 }
-                else if(al_key_down(&keyState, ALLEGRO_KEY_RIGHT))
-                {
-                    x += moveSpeed;
+                else if(al_key_down(&keyState, ALLEGRO_KEY_RIGHT)){
+                    //x += moveSpeed;
                     dir = RIGHT;
                 }
-                else if(al_key_down(&keyState, ALLEGRO_KEY_LEFT))
-                {
-                    x -= moveSpeed;
+                else if(al_key_down(&keyState, ALLEGRO_KEY_LEFT)){
+                    //x -= moveSpeed;
                     dir = LEFT;
                 }
                 else{
                     active = false;
                 }
 
-                if(al_key_down(&keyState, ALLEGRO_KEY_ESCAPE))
-                {
+                if(al_key_down(&keyState, ALLEGRO_KEY_ESCAPE)){
                     done = true;
                 }
-                else if(al_key_down(&keyState, ALLEGRO_KEY_Z))
-                {
+                else if(al_key_down(&keyState, ALLEGRO_KEY_Z)){
                     scale += 0.1;
                 }
-                else if(al_key_down(&keyState, ALLEGRO_KEY_X))
-                {
+                else if(al_key_down(&keyState, ALLEGRO_KEY_X)){
                     scale -= 0.1;
                 }
                 
-                cameraUpdate(cameraPosition,x,y,32,32);
-
-                al_identity_transform(&camera);
-                al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
-                al_scale_transform(&camera,scale,scale);
-                al_use_transform(&camera);
-
             }
 
             else if(events.timer.source == frameTimer)
             {
                 if(active){
                     sourceX += al_get_bitmap_width(player) / 4;
-                    //printf("if sourceX depois= %d \n",sourceX);
+
+                    if(dir == DOWN) y += moveSpeed;
+                    else if(dir == UP) y -= moveSpeed;
+                    else if(dir == RIGHT) x += moveSpeed;
+                    else if(dir == LEFT) x -= moveSpeed;
+
+                    cameraUpdate(cameraPosition,x,y,32,32);
+                    al_identity_transform(&camera);
+                    al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
+                    al_scale_transform(&camera,scale,scale);
+                    al_use_transform(&camera);
+
+                    moveCounter += moveSpeed;
+                    if(moveCounter >= 32) {
+                        moveCounter = 0;
+                        active = false;
+                    }
                 }
                 else{
                     sourceX = 0;
-                    //printf("else sourceX = %d\n",sourceX);
                 }
 
                 if(sourceX >= al_get_bitmap_width(player)) sourceX = 0;
                 sourceY = dir;
-                //printf("sourceX = %d  sourceY = %d\n",sourceX,sourceY);
+
+                
+                
+                
             }
 
             draw = true;
