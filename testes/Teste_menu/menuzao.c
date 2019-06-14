@@ -1,22 +1,23 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_native_dialog.h>
 #include <allegro5/allegro_image.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include "client.h"
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_primitives.h>
+#include <Player.h>
+
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
 #define FPS 60.0
-#define MSG_MAX_SIZE 350
-#define BUFFER_SIZE (MSG_MAX_SIZE + 100)
-#define LOGIN_MAX_SIZE 13
-#define HIST_MAX_SIZE 200
+#define NOME_MAX_SIZE 13
 //dale dbv
 //-lallegro_ttf -lallegro_font -lallegro
 //-lallegro -lallegro_audio -lallegro_acodec
@@ -41,6 +42,11 @@
     ALLEGRO_EVENT_QUEUE *fila_eventos_timer = NULL;
     ALLEGRO_FONT *fonte = NULL;
     ALLEGRO_FONT *fonte_pregame = NULL;
+    typedef struct {
+        char nome[14];
+        char skin;
+    } initial_data;
+
     typedef enum {
         EM_JOGAR,
         EM_TUTORIAL,
@@ -52,6 +58,7 @@
     typedef enum {
         MAIN_MENU,
         GAME_MENU,
+        IN_GAME,
         TUTORIAL_MENU,
         LEADERBOARD_MENU,
         ENDGAME   
@@ -450,9 +457,17 @@ int main()
     pos_y_2_sprite = 400;
     int pos_x_3_sprite = 1250;
     int pos_y_3_sprite = 400;
+    int limite = 0;
+    char skin;
+    char type_buffer_name[NOME_MAX_SIZE] = {0};
+    char type_buffer_ip[NOME_MAX_SIZE] = {0};
+    int type_pointer = 0;
+    int meajuda = 0;
+
+    estados_game_menu estado = 99;
 
     while(estado_tela == GAME_MENU) {
-        estados_game_menu estado;
+        
         while(!al_is_event_queue_empty(fila_eventos)) {
             ALLEGRO_EVENT evento;
             al_wait_for_event(fila_eventos, &evento);
@@ -506,7 +521,7 @@ int main()
             desenha = 1;
         }
 
-        if(desenha && al_is_event_queue_empty(fila_eventos_timer)) {
+        if((desenha && al_is_event_queue_empty(fila_eventos_timer)) || meajuda) {
                 al_draw_scaled_bitmap(folha_1_sprite,
                 regiao_x_folha, regiao_y_folha,
                 largura_sprite, altura_sprite,
@@ -522,8 +537,10 @@ int main()
                 largura_sprite/2, altura_sprite/2,
                 pos_x_3_sprite, pos_y_3_sprite, 150, 150, 0);
 
-                desenha = 0;
+                al_draw_text(fonte, al_map_rgb(255, 0, 0), 1150, 100, ALLEGRO_ALIGN_RIGHT, type_buffer_name);
 
+                desenha = 0;
+                meajuda = 0;
                 al_flip_display();
         }
         
@@ -535,74 +552,99 @@ int main()
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), 700, 100, ALLEGRO_ALIGN_RIGHT, "DIGITE SEU NOME: ");
         if(estado == EM_NAME) {
-            char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
-            char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
-            int type_pointer = 0;
+            puts("estado == EM_NAME");
+            //char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
+            
 
-            while (1) {
+            //while (1) {
                 // LER UMA TECLA DIGITADA
                 char ch = getch();
+                printf("ch=%c\n",ch);
                 if (ch == '\n') {
-                    type_buffer[type_pointer++] = '\0';
-                //int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+                    type_buffer_name[type_pointer++] = '\0';
+                    //int ret = sendMsgToServer((void *)type_buffer_name, type_pointer);
+                    limite++;
                 /*if (ret == SERVER_DISCONNECTED) {
                     return;
                 }*/
                     type_pointer = 0;
-                    type_buffer[type_pointer] = '\0';
-                    break;
-                } 
+                    type_buffer_name[type_pointer] = '\0';
+                    //break;
+                    estado = 99;
+                }
                 else if (ch == 127 || ch == 8) {
                     if (type_pointer > 0) {
                         --type_pointer;
-                        type_buffer[type_pointer] = '\0';
+                        type_buffer_name[type_pointer] = '\0';
                     }
-                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                    printf("BACKSPACE %d.%s", type_pointer,type_buffer_name);
+                    //al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 100, ALLEGRO_ALIGN_RIGHT, type_buffer_name);
                 } 
-                else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
-                    type_buffer[type_pointer++] = ch;
-                    type_buffer[type_pointer] = '\0';
-                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                else if (ch != NO_KEY_PRESSED && type_pointer + 1 < NOME_MAX_SIZE) {
+                    type_buffer_name[type_pointer++] = ch;
+                    type_buffer_name[type_pointer] = '\0';
+                    printf("!NO_KEY %d.%s", type_pointer,type_buffer_name);
+                    //al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 100, ALLEGRO_ALIGN_RIGHT, type_buffer_name);
                 }
-            }
+            //}
+            meajuda = 1;
         }
-        al_draw_text(fonte, al_map_rgb(255, 255, 0), 1100, 600, ALLEGRO_ALIGN_RIGHT, "DIGITE OS DIGITOS FINAIS DO SEU IP: ");
-        if(estado == EM_IP) {
-            char str_buffer[BUFFER_SIZE], type_buffer[MSG_MAX_SIZE] = {0};
-            char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
-            int type_pointer = 0;
 
-            while (1) {
+        
+
+        al_draw_text(fonte, al_map_rgb(255, 255, 0), 780, 600, ALLEGRO_ALIGN_RIGHT, "DIGITE O ID DO PC: ");
+        if(estado == EM_IP) {
+            puts("estado == EM_IP");
+            //while (1) {
                 // LER UMA TECLA DIGITADA
                 char ch = getch();
                 if (ch == '\n') {
-                    type_buffer[type_pointer++] = '\0';
-                //int ret = sendMsgToServer((void *)type_buffer, type_pointer);
+                    type_buffer_ip[type_pointer++] = '\0';
+                    //int ret = sendMsgToServer((char *)type_buffer, type_pointer);
                 /*if (ret == SERVER_DISCONNECTED) {
                     return;
                 }*/
                     type_pointer = 0;
-                    type_buffer[type_pointer] = '\0';
+                    type_buffer_ip[type_pointer] = '\0';
+                    limite++;
                     break;
                 } 
                 else if (ch == 127 || ch == 8) {
                     if (type_pointer > 0) {
                         --type_pointer;
-                        type_buffer[type_pointer] = '\0';
+                        type_buffer_ip[type_pointer] = '\0';
                     }
-                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
+                    
                 } 
-                else if (ch != NO_KEY_PRESSED && type_pointer + 1 < MSG_MAX_SIZE) {
-                    type_buffer[type_pointer++] = ch;
-                    type_buffer[type_pointer] = '\0';
-                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer);
+                else if (ch != NO_KEY_PRESSED && type_pointer + 1 < NOME_MAX_SIZE) {
+                    type_buffer_ip[type_pointer++] = ch;
+                    type_buffer_ip[type_pointer] = '\0';
+                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
+                    
                 }
-            }
+            //}
+            meajuda = 1;
         }
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), 750, 300, ALLEGRO_ALIGN_RIGHT, "ESCOLHA SUA SKIN: ");
+        if(estado == EM_MATIAS) {
+            skin = '2';
+            limite++; 
+        }
+        if(estado == EM_JOSIAS) {
+            skin = '1';
+            limite++;
+        }
+        if(estado == EM_JOSUE) {
+            skin = '0';
+            limite++;
+        }
         
-
+        if(limite == 3) {
+            int ret = sendMsgToServer(&skin, 1);
+            estado_tela = IN_GAME;
+        }
 
 
         //al_flip_display();

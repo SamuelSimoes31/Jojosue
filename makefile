@@ -9,19 +9,24 @@
 #COMMONDIR := examples/graphicChat/common
 
 #UNCOMMENT THESE TO COMPILE JOJOSUE GAME
-CLIENTDIR := testes/Teste_menu
-#CLIENTDIR := source/client
+#CLIENTDIR := 
+CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
 
-#CLIENTDIR := testes/Teste_menu
+MUSICDIR := source/resources/audio/musics
+SAMPLEDIR := source/resources/audio/samples
+FONTSDIR := source/resources/fonts
+IMAGESDIR := source/resources/images
+BACKGROUNDDIR := source/resources/images/backgrounds
+CHARACTERDIR := source/resources/images/characters
 
 CC := gcc -std=c99
 RM := rm -f
 MK := mkdir -p
 #Uncomment above for intense debugging
 #CFLAGS := -Wall -Werror -Wconversion -Wextra
-LDLIB := -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
+LDLIB := -lm -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
 
 OUTPUTDIR := bin
 LIBDIR := lib
@@ -30,7 +35,8 @@ CLIENTNAME := client
 SERVERNAME := server
 
 EXT := c
-INC := -I lib -I $(COMMONDIR)
+INC := -I lib -I $(COMMONDIR) 
+#-I $(MUSICDIR) -I $(SAMPLEDIR) -I $(FONTSDIR) -I $(IMAGESDIR) -I $(BACKGROUNDDIR) -I $(CHARACTERDIR)
 
 CLIENTSOURCES := $(shell find $(CLIENTDIR) -type f -name *.$(EXT))
 SERVERSOURCES := $(shell find $(SERVERDIR) -type f -name *.$(EXT))
