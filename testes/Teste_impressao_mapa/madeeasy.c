@@ -11,6 +11,8 @@
 ALLEGRO_BITMAP *player;
 ALLEGRO_BITMAP *background;
 
+int posX=1, posY=1;
+
 float cameraPosition[2] = {0,0}, scale = 3.0;
 void cameraUpdate(float* cameraPosition, float x, float y, int width, int height ){
     int bordaX = al_get_bitmap_width(background) - LARGURA_TELA/scale;
@@ -47,7 +49,7 @@ int main()
     al_set_window_position(display,200,200);
 
     bool done = false, draw = true, active = false;
-    float x = 382, y = 164, moveSpeed = 32/frameFPS, moveCounter = 0;
+    float x = 128, y = 192, moveSpeed = 32/frameFPS, moveCounter = 0;
     int dir = DOWN, sourceX = 32, sourceY = 0;
     // / moveSpeed = 32/frameFPS,
 
@@ -55,7 +57,7 @@ int main()
     al_init_image_addon();
 
     player = al_load_bitmap("Josue.png");
-    background = al_load_bitmap("mapadef.png");
+    background = al_load_bitmap("Mapa.png");
 
     ALLEGRO_KEYBOARD_STATE keyState;
 
@@ -115,7 +117,8 @@ int main()
                         active = false;
                     }
                 }
-                if(active){
+                else{
+                //if(active){
                     if(dir == DOWN) y += moveSpeed;
                     else if(dir == UP) y -= moveSpeed;
                     else if(dir == RIGHT) x += moveSpeed;
@@ -125,6 +128,14 @@ int main()
                     if(moveCounter >= 32) {
                         moveCounter = 0;
                         active = false;
+                        // posX = (int)(x/32 - 3);
+                        // posY = (int)(y/32 - 5);
+                        if(dir == DOWN) posY++;
+                        else if(dir == UP) posY--;
+                        else if(dir == RIGHT) posX++;
+                        else if(dir == LEFT) posX--;
+                        printf("x=%g y=%g\n",x,y);
+                        printf("posX=%d posY=%d\n",posX,posY);
                     }
 
                     cameraUpdate(cameraPosition,x,y,32,32);
