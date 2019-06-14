@@ -8,17 +8,23 @@
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
 
+ALLEGRO_BITMAP *player;
+ALLEGRO_BITMAP *background;
 
-float cameraPosition[2] = {0,0}, scale = 1.0;
+float cameraPosition[2] = {0,0}, scale = 3.0;
 void cameraUpdate(float* cameraPosition, float x, float y, int width, int height ){
-    
+    int bordaX = al_get_bitmap_width(background) - LARGURA_TELA/scale;
+    int bordaY = al_get_bitmap_height(background) - ALTURA_TELA/scale;
     cameraPosition[0] = -(LARGURA_TELA/2/scale) + (x + width/2);
     cameraPosition[1] = -(ALTURA_TELA/2/scale) + (y + height/2);
     if(cameraPosition[0] < 0) cameraPosition[0] = 0;
+    else if(cameraPosition[0] > bordaX) cameraPosition[0] = bordaX;
     if(cameraPosition[1] < 0) cameraPosition[1] = 0;
-    //if(cameraPosition[0] > ALTURA_TELA); cameraPosition[0] = ALTURA_TELA;
-    //if(cameraPosition[1] > LARGURA_TELA); cameraPosition[1] = ALTURA_TELA;
-    printf("x=%g y=%g cameraPosition[0]=%g cameraPosition[1]=%g scale=%g \n",x,y,cameraPosition[0],cameraPosition[1],scale);
+    else if(cameraPosition[1] > bordaY) cameraPosition[1] = bordaY;
+    
+    //if(cameraPosition[0] > ALTURA_TELA/); cameraPosition[0] = ALTURA_TELA;
+    //printf("al_get_bitmap_width(background)=%d - %d\n",al_get_bitmap_width(background),LARGURA_TELA/scale);
+    //printf("x=%g y=%g cameraPosition[0]=%g cameraPosition[1]=%g scale=%g \n",x,y,cameraPosition[0],cameraPosition[1],scale);
 }
 
 int main()
@@ -28,7 +34,7 @@ int main()
     enum direction {DOWN, UP, LEFT, RIGHT};
 
     const float FPS = 60.0;
-    const float frameFPS = 15;
+    const float frameFPS = 15.0;
 
     if(!al_init())
         puts("Fala ao iniciar allegro\n");
@@ -41,15 +47,15 @@ int main()
     al_set_window_position(display,200,200);
 
     bool done = false, draw = true, active = false;
-    float x = 10, y = 10, moveSpeed = 4;
+    float x = 10, y = 10, moveSpeed = 32/frameFPS;
     int dir = DOWN, sourceX = 32, sourceY = 0;
     
 
     al_install_keyboard();
     al_init_image_addon();
 
-    ALLEGRO_BITMAP *player = al_load_bitmap("Josue.png");
-    ALLEGRO_BITMAP *background = al_load_bitmap("mapadef.png");
+    player = al_load_bitmap("Josue.png");
+    background = al_load_bitmap("mapadef.png");
 
     ALLEGRO_KEYBOARD_STATE keyState;
 
