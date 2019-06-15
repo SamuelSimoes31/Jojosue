@@ -35,8 +35,8 @@ int main()
 
     enum direction {DOWN, UP, LEFT, RIGHT};
 
-    const float FPS = 60.0;
-    const float frameFPS = 15.0;
+    const float FPS = 80.0;
+    const float frameFPS = 10.0;
 
     if(!al_init())
         puts("Fala ao iniciar allegro\n");
@@ -178,8 +178,8 @@ int main()
         if(draw)
         {
             ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player, sourceX, sourceY*32, 32, 32);
-            al_draw_bitmap(background,0,0,NULL);
-            al_draw_bitmap(subBitmap,x,y,NULL);
+            al_draw_bitmap(background,0,0,0);
+            al_draw_bitmap(subBitmap,x,y,0);
 
             al_flip_display();
             al_clear_to_color(al_map_rgb(0,0,0));

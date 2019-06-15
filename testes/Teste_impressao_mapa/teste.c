@@ -52,8 +52,8 @@ int main(void)
     janela = al_create_display(LARGURA_TELA, ALTURA_TELA);
  
     // Carrega a imagem
-    imagem = al_load_bitmap("nicolas.jpg");
-    if(imagem == NULL) printf("NIC FOI DEMAIS PRA MIM\n");
+    imagem = al_load_bitmap("Josias.jpg");
+    if(!imagem) printf("NIC FOI DEMAIS PRA MIM\n");
  
     // Desenha a imagem na tela
     
