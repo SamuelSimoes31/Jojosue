@@ -41,8 +41,8 @@ int main() {
     Player_Data players[2];
     char serverState = WAITING_CON;
 
-    char localdeentrega1[][] = {{9, 2}, {14, 2}, {20, 2}, {24, 2}, {29, 0}, {35, 0}, {40, 3}, {4, 6}, {7, 6}, {11, 7}, {18, 8}, {24,6}, {30,7}, {35,6}, {40,7}, {4,14}, {10,14}, {13,14}, {29,11}, {35,12}, {41,11}, {7,17}, {1,21}, {8,21}, {12,21}, {24,21}, {29,18}, {35,19}, {41,20}, {1,27}, {5,27}, {10,27}, {16,26}, {21,26}, {28,25}, {34,24}, {33,28}};
-    char localdeentrega2[][] = {{9, 2}, {14, 2}, {20, 2}, {24, 2}, {29, 0}, {35, 0}, {41, 3}, {4, 6}, {7, 6}, {12, 7}, {19, 8}, {24,6}, {30,7}, {35,6}, {40,7}, {4,14}, {10,14}, {13,14}, {29,11}, {36,12}, {41,11}, {7,17}, {2,21}, {8,21}, {13,21}, {24,21}, {29,18}, {35,19}, {41,20}, {1,27}, {5,27}, {10,27}, {16,26}, {21,26}, {28,25}, {35,24}, {33,28}};
+    char localdeentrega1[][2] = {{9, 2}, {14, 2}, {20, 2}, {24, 2}, {29, 0}, {35, 0}, {40, 3}, {4, 6}, {7, 6}, {11, 7}, {18, 8}, {24,6}, {30,7}, {35,6}, {40,7}, {4,14}, {10,14}, {13,14}, {29,11}, {35,12}, {41,11}, {7,17}, {1,21}, {8,21}, {12,21}, {24,21}, {29,18}, {35,19}, {41,20}, {1,27}, {5,27}, {10,27}, {16,26}, {21,26}, {28,25}, {34,24}, {33,28}};
+    char localdeentrega2[][2] = {{9, 2}, {14, 2}, {20, 2}, {24, 2}, {29, 0}, {35, 0}, {41, 3}, {4, 6}, {7, 6}, {12, 7}, {19, 8}, {24,6}, {30,7}, {35,6}, {40,7}, {4,14}, {10,14}, {13,14}, {29,11}, {36,12}, {41,11}, {7,17}, {2,21}, {8,21}, {13,21}, {24,21}, {29,18}, {35,19}, {41,20}, {1,27}, {5,27}, {10,27}, {16,26}, {21,26}, {28,25}, {35,24}, {33,28}};
 
     puts("JOJOSUE SERVER IS UP, MAAAN\n");
     
@@ -86,6 +86,7 @@ int main() {
                     for(i=0;i<5;i++) {
                         players[id].boxArray[i].type = NO_BOX;
                         players[id].boxArray[i].timeLast = 0;
+                        players[id].boxArray[i].addIndex = 38;
                     }
                     players[id].holdingBoxes[0] = players[id].holdingBoxes[1] = -1;
 
@@ -118,8 +119,13 @@ int main() {
         char typeOfChange;
         printf("Estado IN_GAME!\n");
 
+        al_register_event_source(eventQueue, al_get_timer_event_source(timer));
+        al_register_event_source(eventQueue, al_get_timer_event_source(decrementTimer));
+
         al_start_timer(timer);
         al_start_timer(decrementTimer);
+
+        
 
         while(serverState == IN_GAME){
 
@@ -193,16 +199,19 @@ int main() {
                                     players[ret.client_id].money += 80;
                                     players[ret.client_id].boxArray[i].type = NO_BOX;
                                     players[ret.client_id].boxArray[i].timeLast = 0;
+                                    players[ret.client_id].boxArray[i].addIndex = 38;
                                 }
                                 else if(players[ret.client_id].boxArray[i].type == SEDEX){
                                     players[ret.client_id].money += 130;
                                     players[ret.client_id].boxArray[i].type = NO_BOX;
                                     players[ret.client_id].boxArray[i].timeLast = 0;
+                                    players[ret.client_id].boxArray[i].addIndex = 38;
                                 }
                                 else if(players[ret.client_id].boxArray[i].type == EXPRESS){
                                     players[ret.client_id].money += 200;
                                     players[ret.client_id].boxArray[i].type = NO_BOX;
                                     players[ret.client_id].boxArray[i].timeLast = 0;
+                                    players[ret.client_id].boxArray[i].addIndex = 38;
                                 }
                             }
                         }
@@ -524,14 +533,14 @@ int main() {
                 }
                 mapMatrix[players[0].posY][players[0].posX] = '+';
                 mapMatrix[players[1].posY][players[1].posX] = '*';
-                printMap(mapMatrix);
+                //printMap(mapMatrix);
             }
             else if(ret.status==DISCONNECT_MSG){
                 printf("PLAYER(%d) DESCONECTOU\n",ret.client_id);
             }
             
             if(!al_is_event_queue_empty(eventQueue)){
-
+                printf("ENTROU NA ALLEGRO!\n");
                 ALLEGRO_EVENT event;
                 al_wait_for_event(eventQueue, &event);
 
@@ -551,6 +560,7 @@ int main() {
                     }
 
                     else if(event.timer.source == timer){
+                        printf("ERA PRA ATT CAIXA!\n");
                         int randomizer = rand()%4;
                         if(randomizer == 0) randomizer = 1;
                         switch(randomizer){

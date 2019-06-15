@@ -44,6 +44,60 @@ void cameraUpdate(float* cameraPosition, float x, float y, int width, int height
     //printf("x=%g y=%g cameraPosition[0]=%g cameraPosition[1]=%g scale=%g \n",x,y,cameraPosition[0],cameraPosition[1],scale);
 }
 
+char assertConnection() {
+	enum conn_ret_t ans = tryConnect();
+	while (ans != SERVER_UP) {
+		if (ans == SERVER_DOWN) {
+			puts("Server is down!");
+		} else if (ans == SERVER_FULL) {
+			puts("Server is full!");
+		} else if (ans == SERVER_CLOSED) {
+			puts("Server is closed for new connections!");
+		} else {
+			puts("Server didn't respond to connection!");
+		}
+		printf("Want to try again? [Y/n] ");
+		int res;
+		while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
+			puts("anh???");
+		}
+		if (res == 'n') {
+			exit(EXIT_SUCCESS);
+		}
+		ans = tryConnect();
+  	}
+	char login[LOGIN_MAX_SIZE + 4];
+	printf("Please enter your login (limit = %d): ", LOGIN_MAX_SIZE);
+	scanf(" %[^\n]", login);
+	getchar();
+	int len = (int)strlen(login);
+	sendMsgToServer(login, len + 1);
+	printf("Please enter your skin 0 1 2:");
+	char skin;
+	scanf(" %d",&skin);
+	getchar();
+	sendMsgToServer(&skin,1);
+
+  	return skin;
+}
+
+enum conn_ret_t tryConnect() {
+	char server_ip[30];
+	
+	//char server_ID[5];
+	//strcpy(server_ip,"172.20.4.");
+	//printf("Please enter the server ID: ");
+	//scanf(" %s", server_ID);
+	//getchar();
+	//strcat(server_ip,server_ID);
+	
+	printf("Please enter the server IP: ");
+	scanf(" %s", server_ip);
+	getchar();
+	return connectToServer(server_ip);
+	//return connectToServer("172.20.4.24");
+}
+
 int main()
 {
     int state = WAITING_ENEMY;
