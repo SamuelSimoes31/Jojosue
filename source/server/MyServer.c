@@ -43,7 +43,66 @@ int main() {
     char serverState = WAITING_CON;
 
     char houses[] = {1,2,4,5,6,7,8,17,19,20,21,22,23,24,40,42,43,44,45,46,48,50,60,61,62,64,66,68,69,71,72,73,74,75,76,77,88};
-    
+    /*parei na casa 69 
+        9 2
+        14 2
+        20 2
+        24 2
+        29 0
+        35 0
+        40 3
+        4 6
+        7 6
+        11 7
+        18 8	19 8
+        24 6
+        30 7
+        35 6
+        40 7
+        4 149,2
+        14,2
+        20,2
+        24,2
+        29 0
+        35 0
+        40 3
+        4 6
+        7 6
+        11 7
+        18 8	19 8
+        24 6
+        30 7
+        35 6
+        40 7
+        4 14
+        10 14
+        13 14
+        29 11
+        35 12	36 12
+        41 11
+        7 17
+        1 21	2 21
+        8 21
+        12 21	13 21
+        24 21
+        29 18
+        35 19
+        41 20
+        10 14
+        13 14
+        29 11
+        35 12	36 12
+        41 11
+        7 17
+        1 21	2 21
+        8 21
+        12 21	13 21
+        24 21
+        29 18
+        35 19
+        41 20 */
+    char localdeentrega1[][] = {{9, 2}, {14, 2}, {20, 2}, {24, 2}, {29, 0}, {35, 0}, {40, 3}, {4, 6}, {7, 6}, {11, 7}, {0, 0}};
+    char localdeentrega2[][] = {{}};
 
     puts("JOJOSUE SERVER IS UP, MAAAN\n");
     
@@ -188,6 +247,30 @@ int main() {
                         }
 
                     }
+
+                    else{
+                        for(int i = 0;i<5;i++){
+                            if((players[ret.client_id].posX==localdeentrega1[players[ret.client_id].boxArray[i].addIndex][1]&&players[ret.client_id].posY==localdeentrega1[players[ret.client_id].boxArray[i].addIndex][0])||(players[ret.client_id].posX==localdeentrega2[players[ret.client_id].boxArray[i].addIndex][1]&&players[ret.client_id].posY==localdeentrega2[players[ret.client_id].boxArray[i].addIndex][0])){
+                                if(players[ret.client_id].boxArray[i].type == PAC){
+                                    players[ret.client_id].money += 80;
+                                    players[ret.client_id].boxArray[i].type = NO_BOX;
+                                    players[ret.client_id].boxArray[i].timeLast = 0;
+                                }
+                                else if(players[ret.client_id].boxArray[i].type == SEDEX){
+                                    players[ret.client_id].money += 130;
+                                    players[ret.client_id].boxArray[i].type = NO_BOX;
+                                    players[ret.client_id].boxArray[i].timeLast = 0;
+                                }
+                                else if(players[ret.client_id].boxArray[i].type == EXPRESS){
+                                    players[ret.client_id].money += 200;
+                                    players[ret.client_id].boxArray[i].type = NO_BOX;
+                                    players[ret.client_id].boxArray[i].timeLast = 0;
+                                }
+                            }
+                        }
+
+                    }
+
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
 
                 }
@@ -539,6 +622,7 @@ int main() {
                                             if(players[i].boxArray[j].type == NO_BOX){
                                                 players[i].boxArray[j].type = PAC;
                                                 players[i].boxArray[j].timeLast = 80;
+                                                players[i].boxArray[j].addIndex = rand()%37;
                                                 break;
                                             }
                                         }
@@ -550,6 +634,7 @@ int main() {
                                             if(players[i].boxArray[j].type == NO_BOX){
                                                 players[i].boxArray[j].type = SEDEX;
                                                 players[i].boxArray[j].timeLast = 60;
+                                                players[i].boxArray[j].addIndex = rand()%37;
                                                 break;
                                             }
                                         }
@@ -560,6 +645,7 @@ int main() {
                                             if(players[i].boxArray[j].type == NO_BOX){
                                                 players[i].boxArray[j].type = EXPRESS;
                                                 players[i].boxArray[j].timeLast = 40;
+                                                players[i].boxArray[j].addIndex = rand()%37;
                                                 break;
                                             }
                                         }
