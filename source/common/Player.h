@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DOWN_ARROW  's'
+#define DOWN_ARROW 's'
 #define UP_ARROW 'w'
 #define LEFT_ARROW 'a'
 #define RIGHT_ARROW 'd'

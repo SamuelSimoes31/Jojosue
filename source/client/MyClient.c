@@ -27,15 +27,15 @@ enum conn_ret_t tryConnect() {
 	char server_ip[30];
 	char server_ID[5];
 	
-	strcpy(server_ip,"172.20.4.");
-	printf("Please enter the server ID: ");
-	scanf(" %s", server_ID);
-	getchar();
-	strcat(server_ip,server_ID);
+	//strcpy(server_ip,"172.20.4.");
+	//printf("Please enter the server ID: ");
+	//scanf(" %s", server_ID);
+	//getchar();
+	//strcat(server_ip,server_ID);
 	
-	// printf("Please enter the server IP: ");
-	// scanf(" %s", server_ip);
-	// getchar();
+	printf("Please enter the server IP: ");
+	scanf(" %s", server_ip);
+	getchar();
 	return connectToServer(server_ip);
 	//return connectToServer("172.20.4.24");
 }

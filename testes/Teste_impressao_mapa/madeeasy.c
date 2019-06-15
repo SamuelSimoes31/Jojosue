@@ -46,7 +46,7 @@ int main()
     if(!display)
         puts("Fala ao iniciar display.\n");
 
-    al_set_window_position(display,200,200);
+    //al_set_window_position(display,200,200);
 
     bool done = false, draw = true, active = false;
     float x = 128, y = 192, moveSpeed = 32/frameFPS, moveCounter = 0;
