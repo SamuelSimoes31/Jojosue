@@ -1,25 +1,7 @@
-#UNCOMMENT THESE TO COMPILE SIMPLE CHAT
-#CLIENTDIR := examples/simpleChat/client
-#SERVERDIR := examples/simpleChat/server
-#COMMONDIR := examples/simpleChat/common
-
-#UNCOMMENT THESE TO COMPILE GRAPHIC CHAT
-#CLIENTDIR := examples/graphicChat/client
-#SERVERDIR := examples/graphicChat/server
-#COMMONDIR := examples/graphicChat/common
-
-#UNCOMMENT THESE TO COMPILE JOJOSUE GAME
-#CLIENTDIR := 
 CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
-
-MUSICDIR := source/resources/audio/musics
-SAMPLEDIR := source/resources/audio/samples
-FONTSDIR := source/resources/fonts
-IMAGESDIR := source/resources/images
-BACKGROUNDDIR := source/resources/images/backgrounds
-CHARACTERDIR := source/resources/images/characters
+MENUDIR := testes/Teste_menu
 
 CC := gcc -std=c99
 RM := rm -f
@@ -33,6 +15,7 @@ LIBDIR := lib
 
 CLIENTNAME := client
 SERVERNAME := server
+MENUNAME := menu
 
 EXT := c
 INC := -I lib -I $(COMMONDIR) 
@@ -42,18 +25,22 @@ CLIENTSOURCES := $(shell find $(CLIENTDIR) -type f -name *.$(EXT))
 SERVERSOURCES := $(shell find $(SERVERDIR) -type f -name *.$(EXT))
 LIBSOURCES := $(shell find $(LIBDIR) -type f -name *.$(EXT))
 COMMONSOURCES := $(shell find $(COMMONDIR) -type f -name *.$(EXT))
+MENUSOURCES := $(shell find $(MENUDIR) -type f -name *.$(EXT))
 
 
 CLIENTOBJS := $(subst .$(EXT),.o,$(CLIENTSOURCES))
 SERVEROBJS := $(subst .$(EXT),.o,$(SERVERSOURCES))
 LIBOBJS := $(subst .$(EXT),.o,$(LIBSOURCES))
 COMMONOBJS := $(subst .$(EXT),.o,$(COMMONSOURCES))
+MENUOBJS := $(subst .$(EXT),.o,$(MENUSOURCES))
 
 all: mkdirs buildServer buildClient clean
 
 server: mkdirs buildServer clean runServer
 
 client: mkdirs buildClient clean runClient
+
+menu: mkdirs buildMenu clean runMenu
 
 buildClient: $(LIBOBJS) $(CLIENTOBJS) $(COMMONOBJS)
 	@echo "\n  Linking $(CLIENTNAME)..."
@@ -63,6 +50,11 @@ buildClient: $(LIBOBJS) $(CLIENTOBJS) $(COMMONOBJS)
 buildServer: $(LIBOBJS) $(SERVEROBJS) $(COMMONOBJS)
 	@echo "\n  Linking $(SERVERNAME)..."
 	$(CC) -o $(OUTPUTDIR)/$(SERVERNAME) $(LIBOBJS) $(COMMONOBJS) $(SERVEROBJS) $(LDLIB) $(CFLAGS)
+	@echo "\n"
+
+buildMenu: $(LIBOBJS) $(MENUOBJS) $(COMMONOBJS)
+	@echo "\n  Linking $(MENUNAME)..."
+	$(CC) -o $(OUTPUTDIR)/$(MENUNAME) $(LIBOBJS) $(COMMONOBJS) $(MENUOBJS) $(LDLIB) $(CFLAGS)
 	@echo "\n"
 
 %.o : %.$(EXT)	
@@ -79,4 +71,8 @@ runClient:
 	@echo "\n  Starting to run $(CLIENTNAME)...\n"; ./$(OUTPUTDIR)/$(CLIENTNAME)
 
 runServer:
-	@echo "\n  Starting to run $(SERVERNAME)...\n"; ./$(OUTPUTDIR)/$(SERVERNAME) 
+	@echo "\n  Starting to run $(SERVERNAME)...\n"; ./$(OUTPUTDIR)/$(SERVERNAME)
+
+runMenu:
+	@echo "\n  Starting to run $MENUNAME)...\n"; ./$(OUTPUTDIR)/$(MENUNAME) 
+
