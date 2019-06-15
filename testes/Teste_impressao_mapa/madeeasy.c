@@ -3,7 +3,9 @@
  
 // Inclui o cabeçalho do add-on para uso de imagens
 #include <allegro5/allegro_image.h>
-#include<stdio.h>
+#include <stdio.h>
+#include "client.h"
+#include "Player.h"
 
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
@@ -12,6 +14,19 @@ ALLEGRO_BITMAP *player;
 ALLEGRO_BITMAP *background;
 
 int posX=1, posY=1;
+
+enum Game_state{
+    MAIN_MENU,
+	PLAY_SCREEN,
+	OPTION_SCREEN,
+	WAITING_ENEMY,
+	PRE_GAME,
+	IN_GAME,
+	RANKING_SCREEN,
+	WIN_SCREEN,
+	LOSE_SCREEN,
+    ENDGAME
+};
 
 float cameraPosition[2] = {0,0}, scale = 3.0;
 void cameraUpdate(float* cameraPosition, float x, float y, int width, int height ){
@@ -31,11 +46,12 @@ void cameraUpdate(float* cameraPosition, float x, float y, int width, int height
 
 int main()
 {
+    int state = WAITING_ENEMY;
     ALLEGRO_DISPLAY *display;
 
     enum direction {DOWN, UP, LEFT, RIGHT};
 
-    const float FPS = 80.0;
+    const float FPS = 60.0;
     const float frameFPS = 10.0;
 
     if(!al_init())

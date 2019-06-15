@@ -32,6 +32,7 @@ enum BoxType{
 typedef struct{
     unsigned short int timeLast;
     char type;
+    unsigned char addIndex;
 }Box;
 
 enum Items{
