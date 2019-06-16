@@ -7,8 +7,8 @@
 #include "Player.h"
 #include <ctype.h>
 
-#define LARGURA_TELA 1600
-#define ALTURA_TELA 900
+#define LARGURA_TELA 800
+#define ALTURA_TELA 450
 
 ALLEGRO_BITMAP *player_sprite;
 ALLEGRO_BITMAP *background;
@@ -140,7 +140,7 @@ int main()
     //enum direction {DOWN, UP, LEFT, RIGHT};
 
     const float FPS = 60.0;
-    const float frameFPS = 10.0;
+    const float frameFPS = 12.0;
 
     if(!al_init())
         puts("Fala ao iniciar allegro\n");
@@ -152,8 +152,9 @@ int main()
 
     //al_set_window_position(display,200,200);
 
-    bool done = false, draw = true, active = false;
-    float x = 128, y = 192, moveSpeed = 32/frameFPS, moveCounter = 0;
+    bool done = false, draw = true, animate = false ,active = false;
+    float x = 128, y = 192, moveSpeed = 32/15.0, moveCounter = 0;
+    int oldPosX, oldPosY;
     int dir = DOWN, sourceX = 32, sourceY = 0;
     // / moveSpeed = 32/frameFPS,
 
@@ -236,8 +237,11 @@ int main()
 					if(player.HP <= 0){
 						state = LOSE_SCREEN;
 					}
-                    x = (player.posX + 3)*32;
-                    y = (player.posY + 5)*32;
+                    if(active) animate = true;
+                    // oldPosX = player.posX;
+                    // oldPosY = player.posY;
+                    //player.posX + 3)*32;
+                    //player.posY + 5)*32;
                     
 				}
 				else{ //se for a estrututura do inimigo
@@ -264,6 +268,8 @@ int main()
                 {
                     if(active == false){
                         active = true;
+                        oldPosX = player.posX;
+                        oldPosY = player.posY;
                         if(al_key_down(&keyState, ALLEGRO_KEY_DOWN)){
                             char key = DOWN_ARROW;
                             sendMsgToServer((char *)&key,1);
@@ -292,19 +298,22 @@ int main()
                             active = false;
                         }
                     }
-                    else{
-                    //if(active){
+                    //else{
+                    if(animate){
                         dir = player.face;
 
-                        if(dir == DOWN) y += moveSpeed;
-                        else if(dir == UP) y -= moveSpeed;
-                        else if(dir == RIGHT) x += moveSpeed;
-                        else if(dir == LEFT) x -= moveSpeed;
+                        if(oldPosX != player.posX || oldPosY != player.posY){
+                            if(dir == DOWN) y += moveSpeed;
+                            else if(dir == UP) y -= moveSpeed;
+                            else if(dir == RIGHT) x += moveSpeed;
+                            else if(dir == LEFT) x -= moveSpeed;
+                        }
 
                         moveCounter += moveSpeed;
                         if(moveCounter >= 32) {
                             moveCounter = 0;
                             active = false;
+                            animate = false;
                             // posX = (int)(x/32 - 3);
                             // posY = (int)(y/32 - 5);
                             
@@ -333,7 +342,7 @@ int main()
 
                 else if(events.timer.source == frameTimer)
                 {
-                    if(active){
+                    if(animate){
                         sourceX += al_get_bitmap_width(player_sprite) / 4;
                     }
                     else{
