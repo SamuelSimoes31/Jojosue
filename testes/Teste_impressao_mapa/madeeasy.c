@@ -126,8 +126,16 @@ int main()
     al_install_keyboard();
     al_init_image_addon();
 
-    player = al_load_bitmap("Josue.png");
-    background = al_load_bitmap("Mapa.png");
+    player = al_load_bitmap("source/resources/images/characters/Josue.png");
+    if(!player){
+        puts("Errou ao carregar Josue, muito pesado ele.");
+        exit(0);
+    }
+    background = al_load_bitmap("source/resources/images/backgrounds/Mapa.png");
+    if(!background){
+        puts("Errou ao carregar Mapa, prefiro o de 26.0 GB.");
+        exit(0);
+    }
 
     ALLEGRO_KEYBOARD_STATE keyState;
 

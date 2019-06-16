@@ -136,9 +136,11 @@ int main() {
                 mapMatrix[players[1].posY][players[1].posX] = '0';
                 //printf("%d\n",typeOfChange);
                 if(typeOfChange == UP_ARROW){
+
+                    players[ret.client_id].face = UP;
+
                     if(players[ret.client_id].posY-1>=0 && mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY--;
-                        players[ret.client_id].face = UP;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
@@ -147,9 +149,11 @@ int main() {
                 }
 
                 else if(typeOfChange == DOWN_ARROW){
+
+                    players[ret.client_id].face = DOWN;
+
                     if(players[ret.client_id].posY+1<30 && mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY++;
-                        players[ret.client_id].face = DOWN;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
@@ -158,9 +162,11 @@ int main() {
                 }
 
                 else if(typeOfChange == LEFT_ARROW){
+
+                    players[ret.client_id].face = LEFT;
+
                     if(players[ret.client_id].posX-1>=0 && mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1]!=1){
                         players[ret.client_id].posX--;
-                        players[ret.client_id].face = LEFT;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
@@ -169,9 +175,11 @@ int main() {
                 }
 
                 else if(typeOfChange == RIGHT_ARROW){
+
+                    players[ret.client_id].face = RIGHT;
+
                     if(players[ret.client_id].posY+1<44 && mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1]!=1){
                         players[ret.client_id].posX++;
-                        players[ret.client_id].face = RIGHT;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
@@ -194,7 +202,7 @@ int main() {
 
                     else{
                         for(int i = 0;i<5;i++){
-                            if((players[ret.client_id].posX==localdeentrega1[players[ret.client_id].boxArray[i].addIndex][1]&&players[ret.client_id].posY==localdeentrega1[players[ret.client_id].boxArray[i].addIndex][0])||(players[ret.client_id].posX==localdeentrega2[players[ret.client_id].boxArray[i].addIndex][1]&&players[ret.client_id].posY==localdeentrega2[players[ret.client_id].boxArray[i].addIndex][0])){
+                            if((players[ret.client_id].posX==localdeentrega1[players[ret.client_id].boxArray[i].addIndex][0]&&players[ret.client_id].posY==localdeentrega1[players[ret.client_id].boxArray[i].addIndex][1])||(players[ret.client_id].posX==localdeentrega2[players[ret.client_id].boxArray[i].addIndex][0]&&players[ret.client_id].posY==localdeentrega2[players[ret.client_id].boxArray[i].addIndex][1])){
                                 if(players[ret.client_id].boxArray[i].type == PAC){
                                     players[ret.client_id].money += 80;
                                     players[ret.client_id].boxArray[i].type = NO_BOX;
@@ -227,78 +235,86 @@ int main() {
                     if(players[ret.client_id].itemArray[0] != NO_ITEM){    
 
                         char typeOfItem;
+                        char flagsucesso=0;
 
-                        switch(players[ret.client_id].itemArray[0]){
+                        if(players[ret.client_id].itemArray[0]==SHURICARD){
 
-                            case SHURICARD: if(players[ret.client_id].face == UP){
-                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
-                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else if(players[ret.client_id].face == DOWN){
-                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
-                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else if(players[ret.client_id].face == RIGHT){
-                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
-                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else{
-                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
-                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-
+                            if(players[ret.client_id].face == UP){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                            players[!(ret.client_id)].HP -= 1;
                                             break;
+                                            }
+                                }
+                            }
+                            else if(players[ret.client_id].face == DOWN){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                            players[!(ret.client_id)].HP -= 1;
+                                            break;
+                                            }
+                                }
+                            }
+                            else if(players[ret.client_id].face == RIGHT){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                            players[!(ret.client_id)].HP -= 1;
+                                            break;
+                                            }
+                                }
+                            }
+                            else{
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                            players[!(ret.client_id)].HP -= 1;
+                                            break;
+                                            }
+                                }
+                            }
 
-                            default: if(players[ret.client_id].itemArray[0]==TRAP1) typeOfItem = 'X';
-                                     else if(players[ret.client_id].itemArray[0]==TRAP2) typeOfItem = 'Y';
-                                     else typeOfItem = 'Z';
-                                     break;
+                            flagsucesso = 1;
 
                         }
 
-                        if(players[ret.client_id].itemArray[0]!=SHURICARD){
+                        else{ 
+                            if(players[ret.client_id].itemArray[0]==TRAP1) typeOfItem = 'X';
+                            else if(players[ret.client_id].itemArray[0]==TRAP2) typeOfItem = 'Y';
+                            else typeOfItem = 'Z';
+
                             if(players[ret.client_id].face == UP){
                                 if((mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY>0)){
-                                mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else if(players[ret.client_id].face == DOWN){
                                 if((mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY<30)){
                                     mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else if(players[ret.client_id].face == LEFT){
                                 if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] != 1) && (players[ret.client_id].posX>0)){
-                                mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else{
                                 if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44)){
-                                mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
                         }
 
-                        players[ret.client_id].itemArray[0] = NO_ITEM;
+                        if(flagsucesso) players[ret.client_id].itemArray[0] = NO_ITEM;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
 
@@ -309,78 +325,85 @@ int main() {
                     if(players[ret.client_id].itemArray[1] != NO_ITEM){    
 
                         char typeOfItem;
+                        char flagsucesso=0;
 
-                        switch(players[ret.client_id].itemArray[1]){
+                        if(players[ret.client_id].itemArray[1]==SHURICARD){
 
-                            case SHURICARD: if(players[ret.client_id].face == UP){
-                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
-                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else if(players[ret.client_id].face == DOWN){
-                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
-                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else if(players[ret.client_id].face == RIGHT){
-                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
-                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else{
-                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
-                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
+                            if(players[ret.client_id].face == UP){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                        players[!(ret.client_id)].HP -= 1;
+                                        break;
+                                        }
+                                }
+                            }
+                            else if(players[ret.client_id].face == DOWN){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                        players[!(ret.client_id)].HP -= 1;
+                                        break;
+                                        }
+                                }
+                            }
+                            else if(players[ret.client_id].face == RIGHT){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                        players[!(ret.client_id)].HP -= 1;
+                                        break;
+                                        }
+                                }
+                            }
+                            else{
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                        players[!(ret.client_id)].HP -= 1;
+                                        break;
+                                        }
+                                }
+                            }  
 
-                                            break;
-
-                            default: if(players[ret.client_id].itemArray[1]==TRAP1) typeOfItem = 'X';
-                                     else if(players[ret.client_id].itemArray[1]==TRAP2) typeOfItem = 'Y';
-                                     else typeOfItem = 'Z';
-                                     break;
-
+                            flagsucesso = 1;
                         }
+                        
+                        else {
+                            if(players[ret.client_id].itemArray[1]==TRAP1) typeOfItem = 'X';
+                            else if(players[ret.client_id].itemArray[1]==TRAP2) typeOfItem = 'Y';
+                            else typeOfItem = 'Z';
 
-                        if(players[ret.client_id].itemArray[1]!=SHURICARD){
                             if(players[ret.client_id].face == UP){
                                 if((mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY>0)){
-                                mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else if(players[ret.client_id].face == DOWN){
                                 if((mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY<30)){
                                     mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else if(players[ret.client_id].face == LEFT){
                                 if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] != 1) && (players[ret.client_id].posX>0)){
-                                mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else{
                                 if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44)){
-                                mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem;
+                                    
+                                    flagsucesso=1;
                                 }
                             }
                         }
 
-                        players[ret.client_id].itemArray[1] = NO_ITEM;
+                        if (flagsucesso) players[ret.client_id].itemArray[1] = NO_ITEM;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
 
@@ -391,78 +414,85 @@ int main() {
                     if(players[ret.client_id].itemArray[2] != NO_ITEM){    
 
                         char typeOfItem;
+                        char flagsucesso = 0;
 
-                        switch(players[ret.client_id].itemArray[2]){
+                        if(players[ret.client_id].itemArray[2]==SHURICARD){
 
-                            case SHURICARD: if(players[ret.client_id].face == UP){
-                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
-                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else if(players[ret.client_id].face == DOWN){
-                                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
-                                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else if(players[ret.client_id].face == RIGHT){
-                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
-                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-                                            else{
-                                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
-                                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
-                                                         players[!(ret.client_id)].HP -= 1;
-                                                         break;
-                                                         }
-                                                }
-                                            }
-
+                            if(players[ret.client_id].face == UP){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                            players[!(ret.client_id)].HP -= 1;
                                             break;
+                                            }
+                                }
+                            }
+                            else if(players[ret.client_id].face == DOWN){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                    if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
+                                            players[!(ret.client_id)].HP -= 1;
+                                            break;
+                                            }
+                                }
+                            }
+                            else if(players[ret.client_id].face == RIGHT){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                            players[!(ret.client_id)].HP -= 1;
+                                            break;
+                                            }
+                                }
+                            }
+                            else{
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                    if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
+                                            players[!(ret.client_id)].HP -= 1;
+                                            break;
+                                            }
+                                }
+                            }
 
-                            default: if(players[ret.client_id].itemArray[2]==TRAP1) typeOfItem = 'X';
-                                     else if(players[ret.client_id].itemArray[2]==TRAP2) typeOfItem = 'Y';
-                                     else typeOfItem = 'Z';
-                                     break;
-
+                            flagsucesso = 1;
                         }
 
-                        if(players[ret.client_id].itemArray[2]!=SHURICARD){
+                        else{
+                            if(players[ret.client_id].itemArray[2]==TRAP1) typeOfItem = 'X';
+                            else if(players[ret.client_id].itemArray[2]==TRAP2) typeOfItem = 'Y';
+                            else typeOfItem = 'Z';
+
                             if(players[ret.client_id].face == UP){
                                 if((mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY>0)){
-                                mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else if(players[ret.client_id].face == DOWN){
                                 if((mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY<30)){
                                     mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else if(players[ret.client_id].face == LEFT){
                                 if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] != 1) && (players[ret.client_id].posX>0)){
-                                mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] = typeOfItem;
+
+                                    flagsucesso=1;
                                 }
                             }
 
                             else{
                                 if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44)){
-                                mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem; 
+                                    mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem;
+                                    
+                                    flagsucesso=1;
                                 }
                             }
                         }
 
-                        players[ret.client_id].itemArray[2] = NO_ITEM;
+                        if(flagsucesso) players[ret.client_id].itemArray[2] = NO_ITEM;
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
 
