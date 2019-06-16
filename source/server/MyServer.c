@@ -144,8 +144,9 @@ int main() {
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
-                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                        
                     }
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == DOWN_ARROW){
@@ -157,8 +158,9 @@ int main() {
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
-                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                        
                     }
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == LEFT_ARROW){
@@ -170,8 +172,9 @@ int main() {
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
-                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                        
                     }
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == RIGHT_ARROW){
@@ -183,8 +186,9 @@ int main() {
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
-                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                        
                     }
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == ACTION_MESSAGE){

@@ -17,6 +17,8 @@
 #define BUY3 'p'
 #define BUY4 '0'
 
+#define NICKNAME_MAX_SIZE 13
+
 enum flagAccept{
     YES,
     NO
@@ -61,8 +63,8 @@ enum MsgIdentifier{
 };
 */
 enum playerFace{
-    UP,
     DOWN,
+    UP,
     LEFT,
     RIGHT
 };
