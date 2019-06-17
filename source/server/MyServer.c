@@ -37,8 +37,9 @@ enum Game_state{
     ALLEGRO_EVENT_QUEUE *eventQueue = NULL;
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_TIMER *decrementTimer = NULL;
-    
-int main() {
+
+void rodarServer(){
+
     char mapMatrix[][44] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,
                             0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,
                             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,1,1,
@@ -561,6 +562,7 @@ int main() {
                             }
                         }
                     }
+                    players[ret.client_id].identifier= BUY;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
@@ -576,6 +578,7 @@ int main() {
                             }
                         }
                     }
+                    players[ret.client_id].identifier= BUY;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
@@ -591,6 +594,7 @@ int main() {
                             }
                         }
                     }
+                    players[ret.client_id].identifier= BUY;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
@@ -606,6 +610,7 @@ int main() {
                             }
                         }
                     }
+                    players[ret.client_id].identifier= BUY;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
@@ -622,7 +627,7 @@ int main() {
             }
             
             while(!al_is_event_queue_empty(eventQueue)){
-                printf("ENTROU NA ALLEGRO!\n");
+                //printf("ENTROU NA ALLEGRO!\n");
                 ALLEGRO_EVENT event;
                 al_wait_for_event(eventQueue, &event);
 
@@ -697,22 +702,26 @@ int main() {
             //11 e 21
             //serverState = ENDGAME;
         }
-
-        struct msg_ret_t msg_ret = recvMsg(aux_buffer);
-        if (msg_ret.status == MESSAGE_OK) {
-            sprintf(str_buffer, "%s-%d: %s", nicknames[msg_ret.client_id],
-                msg_ret.client_id, aux_buffer);
-            //broadcast(str_buffer, (int)strlen(str_buffer) + 1);
-        } else if (msg_ret.status == DISCONNECT_MSG) {
-            sprintf(str_buffer, "%s disconnected", nicknames[msg_ret.client_id]);
-            printf("%s disconnected, id = %d is free\n",
-                nicknames[msg_ret.client_id], msg_ret.client_id);
-            //broadcast(str_buffer, (int)strlen(str_buffer) + 1);
-            serverState = ENDGAME;
-        }
     }
+}
+
+int main() {
+    int res = 'y';
+    while(1){
+        rodarServer();
+        printf("Deseja reiniciar o server?[Y/n]\n");
+		while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
+			puts("anh???");
+		}
+        if(res == 'n') break;
+        else if(res == 'y') serverReset();
+    }
+    
+    puts("MORRI");
     al_destroy_timer(timer);
     al_destroy_timer(decrementTimer);
+    al_destroy_event_queue(eventQueue);
+    return EXIT_SUCCESS;
 }
 
 

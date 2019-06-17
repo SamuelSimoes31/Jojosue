@@ -1,4 +1,5 @@
-CLIENTDIR := source/client
+#CLIENTDIR := source/client
+CLIENTDIR := testes/Teste_impressao_mapa
 SERVERDIR := source/server
 COMMONDIR := source/common
 MENUDIR := testes/Teste_menu
