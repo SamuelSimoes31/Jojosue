@@ -18,6 +18,7 @@
 #define ALTURA_TELA 900
 
 ALLEGRO_BITMAP *player_sprite;
+ALLEGRO_BITMAP *enemy_sprite;
 ALLEGRO_BITMAP *background;
 
 //int posX=1, posY=1;
@@ -159,11 +160,11 @@ int main()
         puts("Fala ao iniciar display.\n");
 
     //al_set_window_position(display,200,200);
-    int passos=16, passosCounter=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
-    bool done = false, draw = true, animate = false ,active = false;
-    float x=0, y=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
-    unsigned short oldPosX, oldPosY;
-    int dir = DOWN, sourceX = 32, sourceY = 0;
+    int passos=16, passosCounter=0, passosCounterEnemy=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
+    bool done = false, draw = true, animate = false, animateEnemy=false ,active = false;
+    float x=0, y=0, ENx=0, ENy=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
+    unsigned short oldPosX, oldPosY, oldPosEnemyX, oldPosEnemyY;
+    int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0;
     // / moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
@@ -220,6 +221,27 @@ int main()
 			int ret = recvMsgFromServer(&enemy, WAIT_FOR_IT);
 			printf("Jogador: %s\nPosx = %d\nPosy = %d\n",enemy.nome,enemy.posX,enemy.posY);
 
+            ENx = (enemy.posX + 3)*32;
+            ENy = (enemy.posY + 5)*32;
+            
+            switch(enemy.skin){
+                case JOSIAS:
+                case JOSUE:
+                    enemy_sprite = al_load_bitmap("source/resources/images/characters/Josue(com limite).png");
+                    if(!enemy_sprite){
+                        puts("Errou ao carregar Josue no inimigo, muito pesado ele.");
+                        state = ENDGAME;
+                    }
+                    break;
+                case MATIAS:
+                    enemy_sprite = al_load_bitmap("source/resources/images/characters/Matias(com limite).png");
+                    if(!enemy_sprite){
+                        puts("Errou ao carregar Matias no inimigo, muito rápido ele.");
+                        state = ENDGAME;
+                    }
+                    break;
+            }
+
 			char serverResponse;
 			ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
             printf("------>%d\n",serverResponse);
@@ -264,6 +286,11 @@ int main()
 					enemy.posX = auxPlayer.posX;
 					enemy.posY = auxPlayer.posY;
 					enemy.HP = auxPlayer.HP;
+                    enemy.identifier = auxPlayer.identifier;
+                    enemy.face = auxPlayer.face;
+                    if(enemy.identifier == POSITION){
+                        animateEnemy = true;
+                    }
 					if(enemy.HP <= 0){
 						state = WIN_SCREEN;
 					}
@@ -289,8 +316,6 @@ int main()
                             oldPosX = player.posX;
                             oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
-                            //y += moveSpeed;
-                            //dir = DOWN;
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_UP)){
                             puts("Entrou no KEY_UP");
@@ -298,8 +323,6 @@ int main()
                             oldPosX = player.posX;
                             oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
-                            //y -= moveSpeed;
-                            //dir = UP;
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_RIGHT)){
                             puts("Entrou no KEY_RIGHT");
@@ -307,8 +330,6 @@ int main()
                             oldPosX = player.posX;
                             oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
-                            //x += moveSpeed;
-                            //dir = RIGHT;
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_LEFT)){
                             puts("Entrou no KEY_LEFT");
@@ -316,8 +337,6 @@ int main()
                             oldPosX = player.posX;
                             oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
-                            //x -= moveSpeed;
-                            //dir = LEFT;
                         }
                         else{
                             active = false;
@@ -325,15 +344,15 @@ int main()
                     }
                     //else{
                     if(animate){
-                        dir = player.face;
+                        //dir = player.face;
                         //moveCounter += moveSpeed;
                         passosCounter++;
 
                         if(oldPosX != player.posX || oldPosY != player.posY){
-                            if(dir == DOWN) y += moveSpeed;
-                            else if(dir == UP) y -= moveSpeed;
-                            else if(dir == RIGHT) x += moveSpeed;
-                            else if(dir == LEFT) x -= moveSpeed;
+                            if(player.face == DOWN) y += moveSpeed;
+                            else if(player.face == UP) y -= moveSpeed;
+                            else if(player.face == RIGHT) x += moveSpeed;
+                            else if(player.face == LEFT) x -= moveSpeed;
                             //printf("x=%g y=%g moveCounter=%g\n",x,y,moveCounter);
                         }
 
@@ -356,6 +375,21 @@ int main()
                         }
                         
                     }
+                    if(animateEnemy){
+                        passosCounterEnemy++;
+                        if(oldPosEnemyX != enemy.posX || oldPosEnemyY != enemy.posY){
+                            if(enemy.face == DOWN) ENy += moveSpeed;
+                            else if(enemy.face == UP) ENy -= moveSpeed;
+                            else if(enemy.face == RIGHT) ENx += moveSpeed;
+                            else if(enemy.face == LEFT) ENx -= moveSpeed;
+                        }
+
+                        if(passosCounterEnemy == passos) {
+                            passosCounterEnemy = 0;
+                            animateEnemy = false;
+                        }
+
+                    }
 
                     if(al_key_down(&keyState, ALLEGRO_KEY_ESCAPE)){
                         state = ENDGAME;
@@ -370,18 +404,22 @@ int main()
                     if(draw)
                     {
                         ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*32, 32, 32);
+                        ALLEGRO_BITMAP *subBitmapEnemy = al_create_sub_bitmap(enemy_sprite, sourceEnemyX, sourceEnemyY*32, 32, 32);
                         al_draw_bitmap(background,0,0,0);
                         al_draw_bitmap(subBitmap,x,y,0);
+                        al_draw_bitmap(subBitmapEnemy,ENx,ENy,0);
 
                         al_flip_display();
                         al_clear_to_color(al_map_rgb(0,0,0));
                         al_destroy_bitmap(subBitmap);
+                        al_destroy_bitmap(subBitmapEnemy);
                     }
 
                 }
 
                 else if(events.timer.source == frameTimer) //i/
                 {
+                    //ESSE PLAYER
                     if(animate){
                         sourceX += al_get_bitmap_width(player_sprite) / 4;
                     }
@@ -390,7 +428,18 @@ int main()
                     }
 
                     if(sourceX >= al_get_bitmap_width(player_sprite)) sourceX = 0;
-                    sourceY = dir;
+                    sourceY = player.face;
+
+                    //INIMIGO
+                    if(animateEnemy){
+                        sourceEnemyX += al_get_bitmap_width(enemy_sprite) / 4;
+                    }
+                    else{
+                        sourceEnemyX = 0;
+                    }
+
+                    if(sourceEnemyX >= al_get_bitmap_width(enemy_sprite)) sourceEnemyX = 0;
+                    sourceEnemyY = enemy.face;
 
                 }
 

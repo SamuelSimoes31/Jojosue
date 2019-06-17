@@ -89,7 +89,7 @@ typedef struct{
     unsigned char skin;
     char nome[NICKNAME_MAX_SIZE];
     char HP;
-    
+    char identifier;
 }Enemy_Data;
 
 void readMap(char matrix[][44]);
