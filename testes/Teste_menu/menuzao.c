@@ -39,7 +39,6 @@ source/resources/images/characters
     ALLEGRO_BITMAP *josias_button = NULL;
     ALLEGRO_BITMAP *ip_button = NULL;
     ALLEGRO_DISPLAY *janela = NULL;
-    ALLEGRO_BITMAP *imagem = NULL;
     ALLEGRO_BITMAP *fundo = NULL;
     ALLEGRO_SAMPLE *coin = NULL;
     ALLEGRO_TIMER *timer = NULL;
@@ -49,11 +48,11 @@ source/resources/images/characters
     ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos_timer = NULL;
     ALLEGRO_FONT *fonte = NULL;
-    ALLEGRO_FONT *fonte_pregame = NULL;
+    ALLEGRO_FONT *fonte_voltar = NULL;
     typedef struct {
         char nome[14];
-        char skin;
-    } initial_data;
+        int pontuacao;
+    } player_score;
 
     typedef enum {
         EM_JOGAR,
@@ -77,7 +76,8 @@ source/resources/images/characters
         EM_MATIAS,
         EM_JOSUE,
         EM_JOSIAS,
-        EM_IP
+        EM_IP,
+        EM_VOLTAR
     } estados_game_menu;
 int inicializar() {
     if (!al_init()) {
@@ -119,7 +119,7 @@ int inicializar() {
         return 0;
     }
 
-    coin = al_load_sample("coin.wav");
+    coin = al_load_sample("source/resources/audio/samples/coin.wav");
     if (!coin) {
         printf( "Audio nao carregado");
         return 0;
@@ -132,7 +132,7 @@ int inicializar() {
         return 0;
     }
     
-    fundo = al_load_bitmap("background.png");
+    fundo = al_load_bitmap("source/resources/images/backgrounds/Mapa.png");
     if(!fundo) {
         fprintf(stderr, "Falha ao criar fundo.\n");
         return 0;
@@ -149,13 +149,12 @@ int inicializar() {
         return 0;
     }
 
-    fonte = al_load_font("pressStart.ttf", 40, 0);
+    fonte = al_load_font("source/resources/fonts/pressStart.ttf", 40, 0);
     if (!fonte){
         al_destroy_display(janela);
         printf("Falha ao carregar fonte\n");
         return -1;
     }
-
 
     al_set_window_title(janela, "Beta Menu");
  
@@ -173,7 +172,7 @@ int inicializar() {
         return 0;
     }
 
-    folha_1_sprite = al_load_bitmap("Josue.png");
+    folha_1_sprite = al_load_bitmap("source/resources/images/characters/Josue.png");
     if(!folha_1_sprite) {
         printf("Falha ao carregar folha de sprite\n");
         al_destroy_display(janela);
@@ -182,7 +181,7 @@ int inicializar() {
         return 0;
     }
 
-    folha_2_sprite = al_load_bitmap("Josias.png");
+    folha_2_sprite = al_load_bitmap("source/resources/images/characters/Josias.png");
     if(!folha_2_sprite) {
         printf("Falha ao carregar folha 2 de sprite\n");
         al_destroy_display(janela);
@@ -191,7 +190,7 @@ int inicializar() {
         return 0;
     }
 
-    folha_3_sprite = al_load_bitmap("Mathias.png");
+    folha_3_sprite = al_load_bitmap("source/resources/images/characters/Matias.png");
     if(!folha_3_sprite) {
         printf("Falha ao carregar folha 3 de sprite\n");
         al_destroy_display(janela);
@@ -284,7 +283,7 @@ int main()
 
     int desenha = 1;
     //largura e altura de cada sprite dentro da folha
-    int altura_sprite = 64, largura_sprite = 64, altura_2_sprite = 74;
+    int altura_sprite = 32, largura_sprite = 32, altura_2_sprite = 37;
     //quantos sprites tem em cada linha da folha, e a atualmente mostrada
     int colunas_folha=4, coluna_atual=0;
     //quantos sprites tem em cada coluna da folha, e a atualmente mostrada
@@ -414,12 +413,7 @@ int main()
                 al_flip_display();
         }
         al_clear_to_color(al_map_rgb(0, 0, 0));
-        //al_draw_bitmap(fundo, LARGURA_TELA/2, ALTURA_TELA/2, 0);
-        /*al_draw_bitmap(fundo, 0, 0, 0);
-        al_draw_bitmap(imagem, LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 - 100,
-        ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 - 200, 0);*/
-        //al_draw_bitmap(fundo, 0, 0, 0);
-
+       
         al_draw_scaled_bitmap(fundo,
         0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
         0, 0, LARGURA_TELA, ALTURA_TELA, 0);
@@ -466,9 +460,11 @@ int main()
     int pos_x_3_sprite = 1250;
     int pos_y_3_sprite = 400;
     int limite = 0;
-    char skin;
+    char skin = '-1';
     char type_buffer_name[NOME_MAX_SIZE] = {0};
     char type_buffer_ip[NOME_MAX_SIZE] = {0};
+    char inicial_name[12] = "mercadinho";
+    char inicial_ip[5] = "321";
     int type_pointer_name = 0;
     int type_pointer_ip = 0;
     int meajuda = 0, meajuda2 = 0;
@@ -487,21 +483,25 @@ int main()
                     estado = EM_NAME;
                 }
                 if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
-                evento.mouse.y >= 500 && evento.mouse.y <= 500 + al_get_bitmap_height(ip_button)) {
+                evento.mouse.y >= 600 && evento.mouse.y <= 600 + al_get_bitmap_height(ip_button)) {
                     estado = EM_IP;
                 }
-                if(evento.mouse.x >= 50 && evento.mouse.x <= 50 + al_get_bitmap_width(matias_button) &&
-                evento.mouse.y >= 450 && evento.mouse.y <= 450 + al_get_bitmap_height(matias_button)) {
+                
+                if(evento.mouse.x >= 1250 && evento.mouse.x <= 1250 + al_get_bitmap_width(matias_button) &&
+                evento.mouse.y >= 400 && evento.mouse.y <= 400 + al_get_bitmap_height(matias_button)) {
                     estado = EM_MATIAS;
                 }
                 if(evento.mouse.x >= 250 && evento.mouse.x <= 250 + al_get_bitmap_width(josue_button) &&
-                evento.mouse.y >= 450 && evento.mouse.y <= 450 + al_get_bitmap_height(josue_button)) {
+                evento.mouse.y >= 400 && evento.mouse.y <= 400 + al_get_bitmap_height(josue_button)) {
                     estado = EM_JOSUE;
                 }
-                if(evento.mouse.x >= 450 && evento.mouse.x <= 450 + al_get_bitmap_width(josue_button) &&
-                evento.mouse.y >= 450 && evento.mouse.y <= 450 + al_get_bitmap_height(josue_button)) {
+                if(evento.mouse.x >= 750 && evento.mouse.x <= 750 + al_get_bitmap_width(josias_button) &&
+                evento.mouse.y >= 400 && evento.mouse.y <= 400 + al_get_bitmap_height(josias_button)) {
                     estado = EM_JOSIAS;
                 }
+            }
+            else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+                estado_tela = MAIN_MENU;
             }
         }
 
@@ -530,7 +530,7 @@ int main()
             desenha = 1;
         }
 
-        if((desenha && al_is_event_queue_empty(fila_eventos_timer)) || meajuda || meajuda2) {
+        if((desenha && al_is_event_queue_empty(fila_eventos_timer))  || meajuda || meajuda2) {
                 al_draw_scaled_bitmap(folha_1_sprite,
                 regiao_x_folha, regiao_y_folha,
                 largura_sprite, altura_sprite,
@@ -542,16 +542,16 @@ int main()
                 pos_x_2_sprite, pos_y_2_sprite, 150, 150, 0);
 
                 al_draw_scaled_bitmap(folha_3_sprite,
-                regiao_x_folha/2, regiao_y_folha/2,
-                largura_sprite/2, altura_sprite/2,
+                regiao_x_folha, regiao_y_folha,
+                largura_sprite, altura_sprite,
                 pos_x_3_sprite, pos_y_3_sprite, 150, 150, 0);
 
                 al_draw_text(fonte, al_map_rgb(255, 0, 0), 1150, 100, ALLEGRO_ALIGN_RIGHT, type_buffer_name);
-                al_draw_text(fonte, al_map_rgb(255, 0, 0), 1000, 600, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
+                al_draw_text(fonte, al_map_rgb(255, 0, 0), 1250, 600, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
 
                 desenha = 0;
-                meajuda = 0;
-                meajuda2 = 0;
+                //meajuda = 0;
+                //meajuda2 = 0;
                 al_flip_display();
         }
         
@@ -574,7 +574,7 @@ int main()
                 if (ch == '\n') {
                     type_buffer_name[type_pointer_name++] = '\0';
                     //int ret = sendMsgToServer((void *)type_buffer_name, type_pointer);
-                    limite++;
+    
                 /*if (ret == SERVER_DISCONNECTED) {
                     return;
                 }*/
@@ -618,7 +618,7 @@ int main()
                 }*/
                     type_pointer_ip = 0;
                     type_buffer_ip[type_pointer_ip] = '\0';
-                    limite++;
+    
                     //break;
                     estado = 99;
                 } 
@@ -627,50 +627,130 @@ int main()
                         --type_pointer_ip;
                         type_buffer_ip[type_pointer_ip] = '\0';
                     }
-                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
+                    //al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
                     printf("BACKSPACE %d.%s", type_pointer_ip, type_buffer_name);
                 } 
                 else if (ch != NO_KEY_PRESSED && type_pointer_ip + 1 < NOME_MAX_SIZE) {
                     type_buffer_ip[type_pointer_ip++] = ch;
                     type_buffer_ip[type_pointer_ip] = '\0';
-                    al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
+                    //al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
                     printf("!NO_KEY %d.%s", type_pointer_ip, type_buffer_ip);
                 }
             //}
             meajuda2 = 1;
         }
-
+        //al_draw_text(fonte_voltar, al_map_rgb(255, 255, 0), 100, 10, ALLEGRO_ALIGN_RIGHT, "VOLTAR");
         al_draw_text(fonte, al_map_rgb(255, 255, 0), 750, 300, ALLEGRO_ALIGN_RIGHT, "ESCOLHA SUA SKIN: ");
         if(estado == EM_MATIAS) {
-            skin = '2';
-            limite++; 
+            puts("estado == EM_MATIAS ");
+            skin = '2'; 
+            printf("skin==%c", skin);
         }
         if(estado == EM_JOSIAS) {
+            puts("estado == EM_JOSIAS ");
             skin = '1';
-            limite++;
+            printf("skin==%c", skin);
         }
         if(estado == EM_JOSUE) {
+            puts("estado == EM_JOSUE ");
             skin = '0';
-            limite++;
+            printf("skin==%c", skin);
+        }
+
+        if(skin != '-1' && strcmp(type_buffer_name, inicial_name) != 0 && strcmp(type_buffer_ip, inicial_ip) != 0) {
+            puts("DEU CERTO KRAI");
+            int ret = sendMsgToServer((char) &skin, 1);
+            int ret2 = sendMsgToServer((char *) type_buffer_name, type_pointer_name);
+
         }
         
-        if(limite == 3) {
+        /*if(limite == 3) {
             int ret = sendMsgToServer(&skin, 1);
             estado_tela = IN_GAME;
-        }
+        }*/
 
 
         //al_flip_display();
+
+    }
+
+    while(estado_tela = LEADERBOARD_MENU) {
+        player_score *listaMelhores = NULL;
+        int tam = 0;
+        player_score player;
+        FILE *melhores;
+        melhores = fopen("melhores.bin", "rb");
+        if(melhores == NULL) {
+            printf("arquivo nao aberto\n");
+            exit(1);
+        }
+        while(!feof(melhores)) {
+            fread(&player, 1, sizeof(player_score), melhores);
+            listaMelhores = (player_score *) realloc(listaMelhores, (tam+1)*sizeof(player_score));
+            if(listaMelhores == NULL) {
+                printf("falha ao alocar\n");
+                exit(0);
+            }
+            listaMelhores[tam] = player;
+            tam++;
+        }
+        fclose(melhores);
+
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        
+        al_draw_scaled_bitmap(fundo,
+        0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
+        0, 0, LARGURA_TELA, ALTURA_TELA, 0);
+
+        al_draw_text(fonte, al_map_rgb(255, 255, 0), 750, 300, ALLEGRO_ALIGN_CENTER, listaMelhores);
+
+    }
+
+    while(estado_tela == TUTORIAL_MENU) {
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        
+        al_draw_scaled_bitmap(fundo,
+        0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
+        0, 0, LARGURA_TELA, ALTURA_TELA, 0);
+
+        al_draw_text(fonte, al_map_rgb(255, 255, 0), 0, 0, ALLEGRO_ALIGN_RIGHT, "Vivemos em um mundo onde pessoas encomendam produtos compulsivamente a cada minuto. Neste mundo, apenas Josias, Josue, Matias ou Alfredo podem salvar o planeta de um colapso no espaço-tempo. Porém, esses personagens vivem ameaçados por uma possível demissão sem justa causa. Portanto, sob o seu controle, caro jogador, estes entregadores serão responsáveis por evitar que o espaço seja preenchido por encomendas geradas exponencialmente no centro da cidade de modo que não sejam demitidos. Então, sua função no jogo consiste em entregar mais encomendas do que seu oponente a fim de não ficar desempregado. Para isso, você pode utilizar armadilhas para atrapalhar seu inimigo, podendo até eliminá-lo. Utilize as setas para se mover pelo mapa.");
+        al_flip_display();
+
+        while(!al_is_event_queue_empty(fila_eventos)) {
+            ALLEGRO_EVENT evento;
+            al_wait_for_event(fila_eventos, &evento);
+
+            if(evento.type == ALLEGRO_EVENT_KEY_DOWN) {
+                    if(evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+                        estado_tela == MAIN_MENU;
+                    }
+            }
+            else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+                exit(1);
+            }
+        }
 
     }
     al_destroy_bitmap(botao_sair);
     al_destroy_bitmap(botao_jogar);
     al_destroy_bitmap(botao_tutorial);
     al_destroy_bitmap(botao_leaderboard);
+    al_destroy_bitmap(fundo);
     al_destroy_display(janela);
     al_destroy_font(fonte);
-    al_destroy_font(fonte_pregame);
+    al_destroy_font(fonte_voltar);
     al_destroy_sample(coin);
     al_destroy_event_queue(fila_eventos);
+    al_destroy_event_queue(fila_eventos_timer);
+    al_destroy_timer(timer);
+    al_destroy_bitmap(name_button);
+    al_destroy_bitmap(matias_button);
+    al_destroy_bitmap(josias_button);
+    al_destroy_bitmap(josue_button);
+    al_destroy_bitmap(ip_button);
+    al_destroy_bitmap(folha_1_sprite);
+    al_destroy_bitmap(folha_2_sprite);
+    al_destroy_bitmap(folha_3_sprite);
+
     return 0;
 }

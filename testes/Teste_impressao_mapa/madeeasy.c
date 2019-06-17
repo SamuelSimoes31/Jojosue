@@ -138,7 +138,7 @@ void assertConnection() {
         default:
             player_sprite = al_load_bitmap("source/resources/images/characters/Al Fredo(com limite).png");
             if(!player_sprite){
-                puts("Errou ao carregar Matias, muito secreto ele.");
+                puts("Errou ao carregar Al Fredo, muito secreto ele.");
                 state = ENDGAME;
             }
             break;
