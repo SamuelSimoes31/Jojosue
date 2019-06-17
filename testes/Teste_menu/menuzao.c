@@ -47,8 +47,9 @@ source/resources/images/characters
     ALLEGRO_BITMAP *folha_3_sprite = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos_timer = NULL;
+    ALLEGRO_EVENT_QUEUE *fila_eventos_tut = NULL;
     ALLEGRO_FONT *fonte = NULL;
-    ALLEGRO_FONT *fonte_voltar = NULL;
+    ALLEGRO_FONT *fonte_tut = NULL;
     typedef struct {
         char nome[14];
         int pontuacao;
@@ -156,6 +157,13 @@ int inicializar() {
         return -1;
     }
 
+    fonte_tut = al_load_font("source/resources/fonts/pressStart.ttf", 20, 0);
+    if (!fonte_tut){
+        al_destroy_display(janela);
+        printf("Falha ao carregar fonte\n");
+        return -1;
+    }
+
     al_set_window_title(janela, "Beta Menu");
  
     fila_eventos = al_create_event_queue();
@@ -167,6 +175,13 @@ int inicializar() {
 
     fila_eventos_timer = al_create_event_queue();
     if (!fila_eventos_timer) {
+        fprintf(stderr, "Falha ao criar fila de eventos.\n");
+        al_destroy_display(janela);
+        return 0;
+    }
+
+    fila_eventos_tut = al_create_event_queue();
+    if (!fila_eventos_tut) {
         fprintf(stderr, "Falha ao criar fila de eventos.\n");
         al_destroy_display(janela);
         return 0;
@@ -213,10 +228,60 @@ int inicializar() {
 
     al_register_event_source(fila_eventos, al_get_display_event_source(janela));
     al_register_event_source(fila_eventos, al_get_mouse_event_source());
+    al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     al_register_event_source(fila_eventos_timer, al_get_timer_event_source(timer));
     al_start_timer(timer);
 
     return 1;
+}
+
+void fadeout(int velocidade)
+{
+    ALLEGRO_BITMAP *buffer = NULL;
+    buffer = al_create_bitmap(LARGURA_TELA, ALTURA_TELA);
+    al_set_target_bitmap(buffer);
+    al_draw_bitmap(al_get_backbuffer(janela), 0, 0, 0);
+    al_set_target_bitmap(al_get_backbuffer(janela));
+ 
+    if (velocidade <= 0)
+    {
+        velocidade = 1;
+    }
+    else if (velocidade > 15)
+    {
+        velocidade = 15;
+    }
+ 
+    int alfa;
+    for (alfa = 0; alfa <= 255; alfa += velocidade)
+    {
+        al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+        al_draw_tinted_bitmap(buffer, al_map_rgba(255 - alfa, 255 - alfa, 255 - alfa, alfa), 0, 0, 0);
+        al_flip_display();
+        al_rest(0.005); // Não é necessário caso haja controle de FPS
+    }
+ 
+    al_destroy_bitmap(buffer);
+}
+ 
+void fadein(ALLEGRO_BITMAP *imagem, int velocidade)
+{
+    if (velocidade < 0)
+    {
+        velocidade = 1;
+    }
+    else if (velocidade > 15)
+    {
+        velocidade = 15;
+    }
+ 
+    int alfa;
+    for (alfa = 0; alfa <= 255; alfa += velocidade)
+    {
+        al_clear_to_color(al_map_rgb(0, 0, 0));
+        al_draw_tinted_bitmap(imagem, al_map_rgba(alfa, alfa, alfa, alfa), 0, 0, 0);
+        al_flip_display();
+    }
 }
 
 void inicializa_botoes_menu() {
@@ -674,7 +739,7 @@ int main()
 
     }
 
-    while(estado_tela = LEADERBOARD_MENU) {
+    /*while(estado_tela = LEADERBOARD_MENU) {
         player_score *listaMelhores = NULL;
         int tam = 0;
         player_score player;
@@ -704,16 +769,33 @@ int main()
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), 750, 300, ALLEGRO_ALIGN_CENTER, listaMelhores);
 
+    }*/
+
+    if(estado_tela == TUTORIAL_MENU) {
+        fadein(fundo, 3);
     }
 
     while(estado_tela == TUTORIAL_MENU) {
-        al_clear_to_color(al_map_rgb(0, 0, 0));
-        
-        al_draw_scaled_bitmap(fundo,
-        0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
-        0, 0, LARGURA_TELA, ALTURA_TELA, 0);
 
-        al_draw_text(fonte, al_map_rgb(255, 255, 0), 0, 0, ALLEGRO_ALIGN_RIGHT, "Vivemos em um mundo onde pessoas encomendam produtos compulsivamente a cada minuto. Neste mundo, apenas Josias, Josue, Matias ou Alfredo podem salvar o planeta de um colapso no espaço-tempo. Porém, esses personagens vivem ameaçados por uma possível demissão sem justa causa. Portanto, sob o seu controle, caro jogador, estes entregadores serão responsáveis por evitar que o espaço seja preenchido por encomendas geradas exponencialmente no centro da cidade de modo que não sejam demitidos. Então, sua função no jogo consiste em entregar mais encomendas do que seu oponente a fim de não ficar desempregado. Para isso, você pode utilizar armadilhas para atrapalhar seu inimigo, podendo até eliminá-lo. Utilize as setas para se mover pelo mapa.");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 150, ALLEGRO_ALIGN_LEFT, "  Vivemos em um mundo onde pessoas encomen-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 175, ALLEGRO_ALIGN_LEFT, "dam produtos compulsivamente a cada minuto. ");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 200, ALLEGRO_ALIGN_LEFT, "Neste mundo, apenas Josias, Josue, Matias e ");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 225, ALLEGRO_ALIGN_LEFT, "Al fredo podem salvar o planeta de um cola-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 250, ALLEGRO_ALIGN_LEFT, "pso no espaço-tempo. Porém, esses entregado-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 275, ALLEGRO_ALIGN_LEFT, "res vivem ameaçados por uma possível demis-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 300, ALLEGRO_ALIGN_LEFT, "são sem justa causa. Assim, sob o seu coman-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 325, ALLEGRO_ALIGN_LEFT, "do, caro jogador, estes trabalhadores serão");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 350, ALLEGRO_ALIGN_LEFT, "responsáveis por evitar que o espaço seja o-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 375, ALLEGRO_ALIGN_LEFT, "cupado por encomendas geradas rapidamente na");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 400, ALLEGRO_ALIGN_LEFT, "cidade, de modo que não sejam demitidos. En-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 425, ALLEGRO_ALIGN_LEFT, "tão, sua função no jogo resume-se em entre");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 450, ALLEGRO_ALIGN_LEFT, "Então, sua função no jogo consiste em entre-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 475, ALLEGRO_ALIGN_LEFT, "gar mais encomendas do que seu oponente com ");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 500, ALLEGRO_ALIGN_LEFT, "o objetivo de não ficar desempregado. ");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 525, ALLEGRO_ALIGN_LEFT, "Para isso, você pode utilizar armadilhas pa-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 550, ALLEGRO_ALIGN_LEFT, "ra atrapalhar seu inimigo, podendo até matá-");
+        al_draw_text(fonte_tut, al_map_rgb(255, 255, 0), 350, 575, ALLEGRO_ALIGN_LEFT, "-lo. Use as setas para se mover pelo mapa.");
+
         al_flip_display();
 
         while(!al_is_event_queue_empty(fila_eventos)) {
@@ -726,6 +808,7 @@ int main()
                     }
             }
             else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+                fadeout(3);
                 exit(1);
             }
         }
@@ -738,7 +821,7 @@ int main()
     al_destroy_bitmap(fundo);
     al_destroy_display(janela);
     al_destroy_font(fonte);
-    al_destroy_font(fonte_voltar);
+    al_destroy_font(fonte_tut);
     al_destroy_sample(coin);
     al_destroy_event_queue(fila_eventos);
     al_destroy_event_queue(fila_eventos_timer);

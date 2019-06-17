@@ -1,8 +1,8 @@
 CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
-#MENUDIR := testes/Teste_menu
-MENUDIR := testes/Teste_impressao_mapa
+MENUDIR := testes/Teste_menu
+#MENUDIR := testes/Teste_impressao_mapa
 
 CC := gcc -std=c99
 RM := rm -f
