@@ -1,7 +1,8 @@
 CLIENTDIR := source/client
 SERVERDIR := source/server
 COMMONDIR := source/common
-MENUDIR := testes/Teste_menu
+#MENUDIR := testes/Teste_menu
+MENUDIR := testes/Teste_impressao_mapa
 
 CC := gcc -std=c99
 RM := rm -f
@@ -74,5 +75,5 @@ runServer:
 	@echo "\n  Starting to run $(SERVERNAME)...\n"; ./$(OUTPUTDIR)/$(SERVERNAME)
 
 runMenu:
-	@echo "\n  Starting to run $MENUNAME)...\n"; ./$(OUTPUTDIR)/$(MENUNAME) 
+	@echo "\n  Starting to run $(MENUNAME)...\n"; ./$(OUTPUTDIR)/$(MENUNAME) 
 

@@ -50,18 +50,19 @@ int makeSocket() {
 
 // Set everything nedded to the server
 void serverInit(int max_clients) {
+  printf("passo1\n");
   if (max_clients <= 0) {
     perror("max_clients is invalid!");
     exit(EXIT_FAILURE);
   }
-
+  printf("passo2\n");
   actual_max_clients = max_clients;
   size_t bytes_size = (size_t)max_clients * sizeof(server_view_client);
   connected_clients =
       (server_view_client *)realloc(connected_clients, bytes_size);
 
   server_sock = makeSocket();
-
+  printf("passo3\n");
   // make it available for connections
   // second argument is maximum queue legth
   int listen_ret = listen(server_sock, 100);
@@ -69,24 +70,34 @@ void serverInit(int max_clients) {
     perror("listen");
     exit(EXIT_FAILURE);
   }
-
+  printf("passo4\n");
   serverReset();
+  printf("passo5\n");
 }
 
 // Clean server
 void serverReset() {
+  printf("Lo passito1\n");
   int i;
   for (i = 0; i < actual_max_clients; ++i) {
+    printf("loop %d\n",i+1);
     if (isValidId(i)) {
+      printf("ID: %d\n",i);
       disconnectClient(i);
     }
   }
+  printf("Lo passito2\n");
   memset(connected_clients, 0,
          (size_t)actual_max_clients * sizeof(server_view_client));
+         printf("Lo passito3\n");
   clients_connected = 0;
+  printf("Lo passito4\n");
   FD_ZERO(&active_fd_set);
+  printf("Lo passito5\n");
   FD_ZERO(&server_fd_set);
+  printf("Lo passito6\n");
   FD_SET(server_sock, &server_fd_set);
+  printf("Lo passito7\n");
 }
 
 void rejectConnection() {
@@ -289,11 +300,15 @@ void broadcast(void *msg, int size) {
 Force a client to disconnect from the server
 */
 void disconnectClient(int client_id) {
+  printf("Primeira etapa\n");
   if (!isValidId(client_id)) {
     return;
   }
+  printf("Segunda etapa\n");
   close(connected_clients[client_id].sockid);
+  printf("Terceira etapa\n");
   FD_CLR(connected_clients[client_id].sockid, &active_fd_set);
+  printf("Quarta etapa\n");
   connected_clients[client_id].sockid = 0;
   --clients_connected;
 }
