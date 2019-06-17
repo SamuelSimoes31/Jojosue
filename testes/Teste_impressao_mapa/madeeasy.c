@@ -14,12 +14,13 @@
 #include "Player.h"
 #include <ctype.h>
 
-#define LARGURA_TELA 1600
-#define ALTURA_TELA 900
+#define LARGURA_TELA 800
+#define ALTURA_TELA 450
 
 ALLEGRO_BITMAP *player_sprite;
 ALLEGRO_BITMAP *enemy_sprite;
 ALLEGRO_BITMAP *background;
+ALLEGRO_BITMAP *heart_carta;
 
 //int posX=1, posY=1;
 //PLAY_SCREEN
@@ -65,16 +66,16 @@ void cameraUpdate(float* cameraPosition, float x, float y, int width, int height
 enum conn_ret_t tryConnect() {
 	char server_ip[30];
 	
-	char server_ID[5];
-	strcpy(server_ip,"172.20.4.");
-	printf("Please enter the server ID: ");
-	scanf(" %s", server_ID);
-	getchar();
-	strcat(server_ip,server_ID);
-	
-	// printf("Please enter the server IP: ");
-	// scanf(" %s", server_ip);
+	// char server_ID[5];
+	// strcpy(server_ip,"172.20.4.");
+	// printf("Please enter the server ID: ");
+	// scanf(" %s", server_ID);
 	// getchar();
+	// strcat(server_ip,server_ID);
+	
+	printf("Please enter the server IP: ");
+	scanf(" %s", server_ip);
+	getchar();
 	return connectToServer(server_ip);
 	//return connectToServer("127.0.0.1");
 }
@@ -157,35 +158,45 @@ int main()
     const float FPS = 60.0;
     const float frameFPS = 12.0;
 
-    if(!al_init())
+    if(!al_init()){
         puts("Fala ao iniciar allegro\n");
+        exit(-1);
+    }
 
     display = al_create_display(LARGURA_TELA,ALTURA_TELA);
-
-    if(!display)
+    if(!display){
         puts("Fala ao iniciar display.\n");
+        al_destroy_display(display);
+        exit(-1);
+    }
 
+    
     //al_set_window_position(display,200,200);
     int passos=16, passosCounter=0, passosCounterEnemy=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
     bool done = false, draw = true, animate = false, animateEnemy=false ,active = false;
     float x=0, y=0, ENx=0, ENy=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
     unsigned short oldPosX, oldPosY, oldPosEnemyX, oldPosEnemyY;
     int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0;
-    // / moveSpeed = 32/frameFPS,
+    //moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
     al_init_image_addon();
 
-    // player_sprite = al_load_bitmap("source/resources/images/characters/Josue.png");
-    // if(!player_sprite){
-    //     puts("Errou ao carregar Josue, muito pesado ele.");
-    //     exit(0);
-    // }
     background = al_load_bitmap("source/resources/images/backgrounds/MapaComLimites.png");
     if(!background){
         puts("Errou ao carregar Mapa, prefiro o de 26.0 GB.");
         exit(0);
     }
+
+    heart_carta = al_load_bitmap("source/resources/images/Life.png");
+    if(!heart_carta){
+        puts("Falha ao carregar heart_carta.\n");
+        exit(-1);
+        state = ENDGAME;
+    }
+
+    int larguraCarta = al_get_bitmap_width(heart_carta)/7;
+    int alturaCarta = al_get_bitmap_height(heart_carta);
 
     ALLEGRO_KEYBOARD_STATE keyState;
 
@@ -288,6 +299,7 @@ int main()
 			}
 			else if(ret != NO_MESSAGE){
 				if(auxPlayer.ID == player.ID){ //se for a estrutura deste jogador
+                    puts("Recebeu propria estrutura");
 					player = auxPlayer;	
                     if(player.identifier == POSITION){
                         if(active) animate = true;
@@ -303,6 +315,7 @@ int main()
                     
 				}
 				else{ //se for a estrututura do inimigo
+                    puts("Recebeu estrutura inimigo");
 					enemy.posX = auxPlayer.posX;
 					enemy.posY = auxPlayer.posY;
 					enemy.HP = auxPlayer.HP;
@@ -315,7 +328,7 @@ int main()
 						state = WIN_SCREEN;
 					}
 				}
-			    printf("[%d][%d][%d] - HP: %d - TAOK's: %d\n",player.itemArray[0],player.itemArray[1],player.itemArray[2],player.HP,player.money);
+			    //printf("[%d][%d][%d] - HP: %d - TAOK's: %d\n",player.itemArray[0],player.itemArray[1],player.itemArray[2],player.HP,player.money);
 			//printf("BOX 1 - %s/%d - BOX 2 - %s/%d - BOX 3 - %s/%d - BOX 4 - %s/%d - BOX 5 - %s/%d\n",(player.boxArray[0].type==PAC?"PAC":(player.boxArray[0].type==SEDEX?"SEDEX":(player.boxArray[0].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[0].addIndex],(player.boxArray[1].type==PAC?"PAC":(player.boxArray[1].type==SEDEX?"SEDEX":(player.boxArray[1].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[1].addIndex],(player.boxArray[2].type==PAC?"PAC":(player.boxArray[2].type==SEDEX?"SEDEX":(player.boxArray[2].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[2].addIndex],(player.boxArray[3].type==PAC?"PAC":(player.boxArray[3].type==SEDEX?"SEDEX":(player.boxArray[3].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[3].addIndex],(player.boxArray[4].type==PAC?"PAC":(player.boxArray[4].type==SEDEX?"SEDEX":(player.boxArray[4].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[4].addIndex]);
 			}
 			  
@@ -331,28 +344,28 @@ int main()
                         active = true;
                         
                         if(al_key_down(&keyState, ALLEGRO_KEY_DOWN)){
-                            puts("Entrou no KEY_DOWN");
+                            //puts("Entrou no KEY_DOWN");
                             char key = DOWN_ARROW;
                             oldPosX = player.posX;
                             oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_UP)){
-                            puts("Entrou no KEY_UP");
+                            //puts("Entrou no KEY_UP");
                             char key = UP_ARROW;
                             oldPosX = player.posX;
                             oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_RIGHT)){
-                            puts("Entrou no KEY_RIGHT");
+                            //puts("Entrou no KEY_RIGHT");
                             char key = RIGHT_ARROW;
                             oldPosX = player.posX;
                             oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_LEFT)){
-                            puts("Entrou no KEY_LEFT");
+                            //puts("Entrou no KEY_LEFT");
                             char key = LEFT_ARROW;
                             oldPosX = player.posX;
                             oldPosY = player.posY;
@@ -364,8 +377,6 @@ int main()
                     }
                     //else{
                     if(animate){
-                        //dir = player.face;
-                        //moveCounter += moveSpeed;
                         passosCounter++;
 
                         if(oldPosX != player.posX || oldPosY != player.posY){
@@ -373,14 +384,8 @@ int main()
                             else if(player.face == UP) y -= moveSpeed;
                             else if(player.face == RIGHT) x += moveSpeed;
                             else if(player.face == LEFT) x -= moveSpeed;
-                            //printf("x=%g y=%g moveCounter=%g\n",x,y,moveCounter);
+                            printf("x=%g y=%g\n",x,y);
                         }
-
-                        cameraUpdate(cameraPosition,x,y,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
-                        al_identity_transform(&camera);
-                        al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
-                        al_scale_transform(&camera,scale,scale);
-                        al_use_transform(&camera);
                         
                         if(passosCounter == passos) {
                             //printf("terimnou x=%g y=%g moveCounter=%g\n",x,y,moveCounter);
@@ -391,7 +396,7 @@ int main()
                             // posY = (int)(y/32 - 5);
                             
                             //printf("x=%g y=%g\n",x,y);
-                            printf("posX=%d posY=%d\n",player.posX,player.posY);
+                            printf("posX=%d posY=%d x=%g y=%g\n",player.posX,player.posY,x,y);
                         }
                         
                     }
@@ -402,13 +407,17 @@ int main()
                             else if(enemy.face == UP) ENy -= moveSpeed;
                             else if(enemy.face == RIGHT) ENx += moveSpeed;
                             else if(enemy.face == LEFT) ENx -= moveSpeed;
+                            printf("ENx=%g ENy=%g\n",ENx,ENy);
                         }
 
                         if(passosCounterEnemy == passos) {
                             passosCounterEnemy = 0;
+                            ENx = (enemy.posX + 3)*32;
+                            ENy = (enemy.posY + 5)*32;
                             animateEnemy = false;
                             oldPosEnemyX = enemy.posX;
                             oldPosEnemyY = enemy.posY;
+                            printf("enemy.posY=%d enemy.posY=%d ENx=%g ENy=%g\n",enemy.posX,enemy.posY,ENx,ENy);
                         }
 
                     }
@@ -425,15 +434,28 @@ int main()
 
                     if(draw)
                     {
+                        cameraUpdate(cameraPosition,x,y,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
+                        al_identity_transform(&camera);
+                        al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
+                        al_scale_transform(&camera,scale,scale);
+                        al_use_transform(&camera);
+
                         ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*al_get_bitmap_height(player_sprite)/4,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
                         ALLEGRO_BITMAP *subBitmapEnemy = al_create_sub_bitmap(enemy_sprite, sourceEnemyX, sourceEnemyY*al_get_bitmap_height(enemy_sprite)/4,al_get_bitmap_width(enemy_sprite)/4,al_get_bitmap_height(enemy_sprite)/4);
                         al_draw_bitmap(background,0,0,0);
-                        // if(skin == JOSIAS) y -= 5;// num e q foi \o/
-                        // if(enemy.skin == JOSIAS) ENy-=5;
                         if(skin != JOSIAS) al_draw_bitmap(subBitmap,x,y,0);
                         else al_draw_bitmap(subBitmap,x,y-5,0);
                         if(enemy.skin != JOSIAS) al_draw_bitmap(subBitmapEnemy,ENx,ENy,0);
                         else al_draw_bitmap(subBitmapEnemy,ENx,ENy-5,0);
+
+                        al_identity_transform(&camera);
+                        al_translate_transform(&camera,0,0);
+                        //al_scale_transform(&camera,scale,scale);
+                        al_use_transform(&camera);
+
+                        for(int i=0;i<player.HP;i++){
+                            al_draw_bitmap_region(heart_carta, 0, 0, larguraCarta, alturaCarta, i*larguraCarta + 5, 20, 0);
+                        }
 
                         al_flip_display();
                         al_clear_to_color(al_map_rgb(0,0,0));
@@ -481,7 +503,9 @@ int main()
     al_destroy_timer(timer);
     al_destroy_timer(frameTimer);
     al_destroy_bitmap(player_sprite);
+    al_destroy_bitmap(enemy_sprite);
     al_destroy_bitmap(background);
+    al_destroy_bitmap(heart_carta);
     al_destroy_event_queue(event_queue);
 
     return 0;    
