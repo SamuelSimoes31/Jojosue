@@ -562,6 +562,7 @@ void rodarServer(){
                             }
                         }
                     }
+                    players[ret.client_id].identifier= BUY;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
@@ -577,6 +578,7 @@ void rodarServer(){
                             }
                         }
                     }
+                    players[ret.client_id].identifier= BUY;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
@@ -592,6 +594,7 @@ void rodarServer(){
                             }
                         }
                     }
+                    players[ret.client_id].identifier= BUY;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
@@ -607,6 +610,7 @@ void rodarServer(){
                             }
                         }
                     }
+                    players[ret.client_id].identifier= BUY;
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 

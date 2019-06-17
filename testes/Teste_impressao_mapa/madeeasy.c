@@ -304,6 +304,9 @@ int main()
                     if(player.identifier == POSITION){
                         if(active) animate = true;
                     }
+                    else if(player.identifier == BUY){
+                        
+                    }
 					if(player.HP <= 0){
 						state = LOSE_SCREEN;
 					}
@@ -431,6 +434,22 @@ int main()
                     else if(al_key_down(&keyState, ALLEGRO_KEY_X)){
                         scale -= 0.1;
                     }
+                    else if(al_key_down(&keyState, ALLEGRO_KEY_Q)){
+                        char key = BUY1;
+                        sendMsgToServer((char *)&key,1);
+                    }
+                    else if(al_key_down(&keyState, ALLEGRO_KEY_W)){
+                        char key = BUY2;
+                        sendMsgToServer((char *)&key,1);
+                    }
+                    else if(al_key_down(&keyState, ALLEGRO_KEY_E)){
+                        char key = BUY3;
+                        sendMsgToServer((char *)&key,1);
+                    }
+                    else if(al_key_down(&keyState, ALLEGRO_KEY_R)){
+                        char key = BUY4;
+                        sendMsgToServer((char *)&key,1);
+                    }
 
                     if(draw)
                     {
@@ -455,6 +474,10 @@ int main()
 
                         for(int i=0;i<player.HP;i++){
                             al_draw_bitmap_region(heart_carta, 0, 0, larguraCarta, alturaCarta, i*larguraCarta + 5, 20, 0);
+                        }
+
+                        for(int i=0;i<3;i++){
+                            if(player.itemArray[i] != NO_ITEM) al_draw_bitmap_region(heart_carta, 0, 0, larguraCarta, alturaCarta, i*larguraCarta + 5, 400, 0);
                         }
 
                         al_flip_display();

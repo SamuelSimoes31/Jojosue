@@ -48,13 +48,15 @@ enum Items{
 enum skin{
     JOSUE,
     JOSIAS,
-    MATIAS
+    MATIAS,
+    AL_FREDO
 };
 
 enum MsgIdentifier{
     NO_CHANGE,
     POSITION,
     ITEM_USAGE,
+    BUY,
     ACTION,
     BOX_CHANGE,
     WIN,
