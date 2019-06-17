@@ -50,18 +50,17 @@ enum skin{
     JOSIAS,
     MATIAS
 };
-/*
+
 enum MsgIdentifier{
-    DOWN_ARROW = 48,
-    UP_ARROW,
-    LEFT_ARROW,
-    RIGHT_ARROW,
-    PACKAGE_BUTTON,
-    ITEM1_BUTTON,
-    ITEM2_BUTTON,
-    ITEM3_BUTTON
+    NO_CHANGE,
+    POSITION,
+    ITEM_USAGE,
+    ACTION,
+    BOX_CHANGE,
+    WIN,
+    LOSE
 };
-*/
+
 enum playerFace{
     DOWN,
     UP,
@@ -70,24 +69,25 @@ enum playerFace{
 };
 
 typedef struct{
+    char identifier;
     unsigned char ID;
     char HP;
     unsigned int money;
     unsigned char reputation;
-    unsigned short posX, posY;
+    char posX, posY;
     Box boxArray[5];
     char holdingBoxes[2];//indica qual o index das caixas que o jogador está carregando(baseado no vetor de caixas para entregar);
     unsigned char itemArray[3];
-    unsigned char skin;
+    //unsigned char skin;
     unsigned char face;
-    char nome[20];
+    //char nome[20];
 }Player_Data; 
 
 typedef struct{
     unsigned short posX, posY;
     unsigned char face;
     unsigned char skin;
-    char nome[20];
+    char nome[NICKNAME_MAX_SIZE];
     char HP;
     
 }Enemy_Data;

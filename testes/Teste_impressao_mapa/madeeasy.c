@@ -1,8 +1,15 @@
 // Inclui o cabeçalho da bibilioteca Allegro 5
+//#include "ACore.h"
 #include <allegro5/allegro.h>
- 
-// Inclui o cabeçalho do add-on para uso de imagens
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <string.h>
 #include "client.h"
 #include "Player.h"
 #include <ctype.h>
@@ -20,7 +27,8 @@ Enemy_Data enemy;
 Player_Data player;
 Player_Data auxPlayer;
 
-
+char nickname[NICKNAME_MAX_SIZE + 4];
+char skin;
 
 enum Game_state{
     MAIN_MENU,
@@ -92,18 +100,18 @@ void assertConnection() {
 		}
 		ans = tryConnect();
   	}
-	char nickname[NICKNAME_MAX_SIZE + 4];
+	
 	printf("Please enter your nickname (limit = %d): ", NICKNAME_MAX_SIZE );
 	scanf(" %[^\n]", nickname);
 	getchar();
 	int len = (int)strlen(nickname);
 	sendMsgToServer(nickname, len + 1);
 	printf("Please enter your skin 0 1 2:");
-	char skin;
+	
 	scanf(" %d",&skin);
 	getchar();
 	sendMsgToServer(&skin,1);
-    player.skin = skin;
+    //player.skin = skin;
     switch(skin){
         case JOSIAS:
         case JOSUE:
@@ -151,7 +159,7 @@ int main()
         puts("Fala ao iniciar display.\n");
 
     //al_set_window_position(display,200,200);
-    int passos=15, passosCounter=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
+    int passos=16, passosCounter=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
     bool done = false, draw = true, animate = false ,active = false;
     float x=0, y=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
     unsigned short oldPosX, oldPosY;
@@ -202,7 +210,6 @@ int main()
 			int ret;
 			assertConnection();
 			ret = recvMsgFromServer(&player, WAIT_FOR_IT);
-			printf("Jogador: %s\nPosx = %d\nPosy = %d\n",player.nome,player.posX,player.posY);
 			state=WAITING_ENEMY;
             x = (player.posX + 3)*32;
             y = (player.posY + 5)*32;
@@ -215,8 +222,11 @@ int main()
 
 			char serverResponse;
 			ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
-			if(serverResponse==99) state = PRE_GAME;
-			printf("GAME_START RECEBIDO\n");		
+            printf("------>%d\n",serverResponse);
+			if(serverResponse == 99){ 
+                state = IN_GAME;
+			    printf("%d - GAME_START RECEBIDO\n",state);
+            }		
 		}
 
         while(state == PRE_GAME){
@@ -237,10 +247,13 @@ int main()
 			else if(ret != NO_MESSAGE){
 				if(auxPlayer.ID == player.ID){ //se for a estrutura deste jogador
 					player = auxPlayer;	
+                    if(player.identifier == POSITION){
+                        if(active) animate = true;
+                    }
 					if(player.HP <= 0){
 						state = LOSE_SCREEN;
 					}
-                    if(active) animate = true;
+
                     // oldPosX = player.posX;
                     // oldPosY = player.posY;
                     //player.posX + 3)*32;
@@ -251,8 +264,6 @@ int main()
 					enemy.posX = auxPlayer.posX;
 					enemy.posY = auxPlayer.posY;
 					enemy.HP = auxPlayer.HP;
-					//printf("-----------------%d\n",enemy.HP);
-					//printf("Nova posicao do jogador inimigo: %d(x) %d(y)\n",enemy.posX,enemy.posY);
 					if(enemy.HP <= 0){
 						state = WIN_SCREEN;
 					}
@@ -267,7 +278,7 @@ int main()
             }
             else if(events.type == ALLEGRO_EVENT_TIMER)
             {
-                if(events.timer.source == timer)
+                if(events.timer.source == timer) // 1/60
                 {
                     if(active == false){
                         active = true;
@@ -356,9 +367,20 @@ int main()
                         scale -= 0.1;
                     }
 
+                    if(draw)
+                    {
+                        ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*32, 32, 32);
+                        al_draw_bitmap(background,0,0,0);
+                        al_draw_bitmap(subBitmap,x,y,0);
+
+                        al_flip_display();
+                        al_clear_to_color(al_map_rgb(0,0,0));
+                        al_destroy_bitmap(subBitmap);
+                    }
+
                 }
 
-                else if(events.timer.source == frameTimer)
+                else if(events.timer.source == frameTimer) //i/
                 {
                     if(animate){
                         sourceX += al_get_bitmap_width(player_sprite) / 4;
@@ -376,16 +398,7 @@ int main()
 
             }
 
-            if(draw)
-            {
-                ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*32, 32, 32);
-                al_draw_bitmap(background,0,0,0);
-                al_draw_bitmap(subBitmap,x,y,0);
-
-                al_flip_display();
-                al_clear_to_color(al_map_rgb(0,0,0));
-                al_destroy_bitmap(subBitmap);
-            }
+            
         }
     }
 

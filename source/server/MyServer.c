@@ -4,10 +4,13 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
-#include <stdio.h>
-#include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
+#include <string.h>
+
+
 #include "Player.h"
 #include "ServerRule.h"
 #include "server.h"
@@ -57,18 +60,20 @@ int main() {
                             1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,
                             1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,
                             1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,
-                            1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                            1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,1,
+                            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,1,
                             1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,1,
                             1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,
                             1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,
-                            1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,1,1,
+                            1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,1,1,0,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,1,1,
                             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,
                             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                             1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
                             
     char str_buffer[BUFFER_SIZE], aux_buffer[BUFFER_SIZE];
     Player_Data players[2];
+    char nicknames[2][NICKNAME_MAX_SIZE];
+    char skins[2];
     char serverState = WAITING_CON;
 
     char localdeentrega1[][2] = {{9, 2}, {14, 2}, {20, 2}, {24, 2}, {29, 0}, {35, 0}, {40, 3}, {4, 6}, {7, 6}, {11, 7}, {18, 8}, {24,6}, {30,7}, {35,6}, {40,7}, {4,14}, {10,14}, {13,14}, {29,11}, {35,12}, {41,11}, {7,17}, {1,21}, {8,21}, {12,21}, {24,21}, {29,18}, {35,19}, {41,20}, {1,27}, {5,27}, {10,27}, {16,26}, {21,26}, {28,25}, {34,24}, {33,28}};
@@ -84,7 +89,7 @@ int main() {
     if(!al_init())
        puts("Falha ao iniciar allegro\n");
 
-    timer = al_create_timer(6.0); //bota sempre .0 nos numeros itneiros, pra ele interpretar como double
+    timer = al_create_timer(6.0); //bota sempre .0 nos numeros inteiros, pra ele interpretar como double
     if(!timer) {puts("timer == NULL");  exit(-1); }
     else puts("Timer funfou");
     decrementTimer = al_create_timer(1.0);
@@ -101,14 +106,17 @@ int main() {
             int id = acceptConnection();
             if (id != NO_CONNECTION) {
                 if(players_connected++ < 2){
-                    recvMsgFromClient(players[id].nome, id, WAIT_FOR_IT);
-                    recvMsgFromClient(&players[id].skin, id, WAIT_FOR_IT);
-                    printf("%s connected id = %d players_connected=%d\n", players[id].nome, id,players_connected);
+                    // recvMsgFromClient(players[id].nome, id, WAIT_FOR_IT);
+                    // recvMsgFromClient(&players[id].skin, id, WAIT_FOR_IT);
+                    recvMsgFromClient(nicknames[id],id,WAIT_FOR_IT);
+                    recvMsgFromClient(&skins[id],id,WAIT_FOR_IT);
+                    printf("%s connected id = %d and skin %d players_connected=%d\n", nicknames[id],id,skin[id],players_connected);
+                    players[id].identifier = NO_CHANGE;
                     players[id].ID = id;
                     players[id].HP = 10;
                     players[id].reputation = 100;
                     players[id].face = (id==0 ? DOWN:UP);
-                    players[id].money = 1000;
+                    players[id].money = 500;
                     players[id].posX = (id==0 ? 1:42);
                     players[id].posY = (id==0 ? 1:27);
                     int i;
@@ -126,7 +134,7 @@ int main() {
             struct msg_ret_t msg_ret = recvMsg(aux_buffer);
             if(msg_ret.status == DISCONNECT_MSG){
                 --players_connected;
-                printf("%s disconnected id: %d\n",players[msg_ret.client_id].nome,msg_ret.client_id);
+                printf("%s disconnected id: %d is free\n",nicknames[msg_ret.client_id], msg_ret.client_id);
                 printf("players_connected: %d\n",players_connected);
             }
 
@@ -137,9 +145,9 @@ int main() {
                     enemy.posX = players[i].posX;
                     enemy.posY = players[i].posY;
                     enemy.face = players[i].face;
-                    enemy.skin = players[i].skin;
+                    enemy.skin = skins[i];
                     enemy.HP = 10;
-                    strcpy(enemy.nome,players[i].nome);
+                    strcpy(enemy.nome,nicknames[i]);
                     sendMsgToClient((Enemy_Data *)&enemy,sizeof(Enemy_Data),(i==0?1:0));
                 }
                 serverState = IN_GAME;
@@ -166,7 +174,7 @@ int main() {
                 mapMatrix[players[1].posY][players[1].posX] = '0';
                 //printf("%d\n",typeOfChange);
                 if(typeOfChange == UP_ARROW){
-
+                    players[ret.client_id].identifier = POSITION;
                     players[ret.client_id].face = UP;
 
                     if(players[ret.client_id].posY-1>=0 && mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1){
@@ -180,7 +188,7 @@ int main() {
                 }
 
                 else if(typeOfChange == DOWN_ARROW){
-
+                    players[ret.client_id].identifier = POSITION;
                     players[ret.client_id].face = DOWN;
 
                     if(players[ret.client_id].posY+1<30 && mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX]!=1){
@@ -194,7 +202,7 @@ int main() {
                 }
 
                 else if(typeOfChange == LEFT_ARROW){
-
+                    players[ret.client_id].identifier = POSITION;
                     players[ret.client_id].face = LEFT;
 
                     if(players[ret.client_id].posX-1>=0 && mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1]!=1){
@@ -208,7 +216,7 @@ int main() {
                 }
 
                 else if(typeOfChange == RIGHT_ARROW){
-
+                    players[ret.client_id].identifier = POSITION;
                     players[ret.client_id].face = RIGHT;
                                                     
                     if(players[ret.client_id].posX+1<44 && mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1]!=1){
@@ -604,7 +612,7 @@ int main() {
                 serverState = ENDGAME;
             }
             
-            if(!al_is_event_queue_empty(eventQueue)){
+            while(!al_is_event_queue_empty(eventQueue)){
                 printf("ENTROU NA ALLEGRO!\n");
                 ALLEGRO_EVENT event;
                 al_wait_for_event(eventQueue, &event);
@@ -670,9 +678,10 @@ int main() {
 
                 }
 
-                for(int i = 0; i<2; i++){
-                    broadcast((Player_Data *)&players[i],sizeof(Player_Data));
-                }
+                // for(int i = 0; i<2; i++){
+                //     sendMsgToClient((Player_Data *)&players[i],sizeof(Player_Data),i);
+                //     //broadcast((Player_Data *)&players[i],sizeof(Player_Data));
+                // }
 
             }
             
@@ -682,13 +691,13 @@ int main() {
 
         struct msg_ret_t msg_ret = recvMsg(aux_buffer);
         if (msg_ret.status == MESSAGE_OK) {
-            sprintf(str_buffer, "%s-%d: %s", players[msg_ret.client_id].nome,
+            sprintf(str_buffer, "%s-%d: %s", nicknames[msg_ret.client_id],
                 msg_ret.client_id, aux_buffer);
             //broadcast(str_buffer, (int)strlen(str_buffer) + 1);
         } else if (msg_ret.status == DISCONNECT_MSG) {
-            sprintf(str_buffer, "%s disconnected", players[msg_ret.client_id].nome);
+            sprintf(str_buffer, "%s disconnected", nicknames[msg_ret.client_id]);
             printf("%s disconnected, id = %d is free\n",
-                players[msg_ret.client_id].nome, msg_ret.client_id);
+                nicknames[msg_ret.client_id], msg_ret.client_id);
             //broadcast(str_buffer, (int)strlen(str_buffer) + 1);
             serverState = ENDGAME;
         }
