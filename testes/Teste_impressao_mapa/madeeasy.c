@@ -114,7 +114,6 @@ void assertConnection() {
 	sendMsgToServer(&skin,1);
     //player.skin = skin;
     switch(skin){
-        case JOSIAS:
         case JOSUE:
             player_sprite = al_load_bitmap("source/resources/images/characters/Josue(com limite).png");
             if(!player_sprite){
@@ -122,17 +121,24 @@ void assertConnection() {
                 state = ENDGAME;
             }
             break;
-        // case JOSIAS:
-        //     player_sprite = al_load_bitmap("source/resources/images/characters/Josue.png");
-        //     if(!player_sprite){
-        //         puts("Errou ao carregar Josue, muito pesado ele.");
-        //         state = ENDGAME;
-        //     }
-        //     break;
+        case JOSIAS:
+            player_sprite = al_load_bitmap("source/resources/images/characters/Josias(com limite).png");
+            if(!player_sprite){
+                puts("Errou ao carregar Josias, muito alto ele.");
+                state = ENDGAME;
+            }
+            break;
         case MATIAS:
             player_sprite = al_load_bitmap("source/resources/images/characters/Matias(com limite).png");
             if(!player_sprite){
                 puts("Errou ao carregar Matias, muito rápido ele.");
+                state = ENDGAME;
+            }
+            break;
+        default:
+            player_sprite = al_load_bitmap("source/resources/images/characters/Al Fredo(com limite).png");
+            if(!player_sprite){
+                puts("Errou ao carregar Al Fredo, muito secreto ele.");
                 state = ENDGAME;
             }
             break;
@@ -197,7 +203,7 @@ int main()
     al_start_timer(timer);
     al_start_timer(frameTimer);
 
-    cameraUpdate(cameraPosition,x,y,32,32);
+    //cameraUpdate(cameraPosition,x,y,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
     al_identity_transform(&camera);
     al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
     al_scale_transform(&camera,scale,scale);
@@ -226,7 +232,6 @@ int main()
             oldPosEnemyX = enemy.posX;
             oldPosEnemyY = enemy.posY;
             switch(enemy.skin){
-                case JOSIAS:
                 case JOSUE:
                     enemy_sprite = al_load_bitmap("source/resources/images/characters/Josue(com limite).png");
                     if(!enemy_sprite){
@@ -234,10 +239,24 @@ int main()
                         state = ENDGAME;
                     }
                     break;
+                case JOSIAS:
+                    enemy_sprite = al_load_bitmap("source/resources/images/characters/Josias(com limite).png");
+                    if(!enemy_sprite){
+                        puts("Errou ao carregar Josias no inimigo, muito alto ele.");
+                        state = ENDGAME;
+                    }
+                    break;
                 case MATIAS:
                     enemy_sprite = al_load_bitmap("source/resources/images/characters/Matias(com limite).png");
                     if(!enemy_sprite){
                         puts("Errou ao carregar Matias no inimigo, muito rápido ele.");
+                        state = ENDGAME;
+                    }
+                    break;
+                default:
+                    enemy_sprite = al_load_bitmap("source/resources/images/characters/Al Fredo(com limite).png");
+                    if(!enemy_sprite){
+                        puts("Errou ao carregar Al Fredo no inimigo, muito secreto ele.");
                         state = ENDGAME;
                     }
                     break;
@@ -357,7 +376,7 @@ int main()
                             //printf("x=%g y=%g moveCounter=%g\n",x,y,moveCounter);
                         }
 
-                        cameraUpdate(cameraPosition,x,y,32,32);
+                        cameraUpdate(cameraPosition,x,y,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
                         al_identity_transform(&camera);
                         al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
                         al_scale_transform(&camera,scale,scale);
@@ -406,11 +425,15 @@ int main()
 
                     if(draw)
                     {
-                        ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*32, 32, 32);
-                        ALLEGRO_BITMAP *subBitmapEnemy = al_create_sub_bitmap(enemy_sprite, sourceEnemyX, sourceEnemyY*32, 32, 32);
+                        ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*al_get_bitmap_height(player_sprite)/4,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
+                        ALLEGRO_BITMAP *subBitmapEnemy = al_create_sub_bitmap(enemy_sprite, sourceEnemyX, sourceEnemyY*al_get_bitmap_height(enemy_sprite)/4,al_get_bitmap_width(enemy_sprite)/4,al_get_bitmap_height(enemy_sprite)/4);
                         al_draw_bitmap(background,0,0,0);
-                        al_draw_bitmap(subBitmap,x,y,0);
-                        al_draw_bitmap(subBitmapEnemy,ENx,ENy,0);
+                        // if(skin == JOSIAS) y -= 5;// num e q foi \o/
+                        // if(enemy.skin == JOSIAS) ENy-=5;
+                        if(skin != JOSIAS) al_draw_bitmap(subBitmap,x,y,0);
+                        else al_draw_bitmap(subBitmap,x,y-5,0);
+                        if(enemy.skin != JOSIAS) al_draw_bitmap(subBitmapEnemy,ENx,ENy,0);
+                        else al_draw_bitmap(subBitmapEnemy,ENx,ENy-5,0);
 
                         al_flip_display();
                         al_clear_to_color(al_map_rgb(0,0,0));
