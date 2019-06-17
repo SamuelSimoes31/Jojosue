@@ -63,20 +63,20 @@ void cameraUpdate(float* cameraPosition, float x, float y, int width, int height
 }
 
 enum conn_ret_t tryConnect() {
-	//char server_ip[30];
+	char server_ip[30];
 	
-	//char server_ID[5];
-	//strcpy(server_ip,"172.20.4.");
-	//printf("Please enter the server ID: ");
-	//scanf(" %s", server_ID);
-	//getchar();
-	//strcat(server_ip,server_ID);
+	char server_ID[5];
+	strcpy(server_ip,"172.20.4.");
+	printf("Please enter the server ID: ");
+	scanf(" %s", server_ID);
+	getchar();
+	strcat(server_ip,server_ID);
 	
 	// printf("Please enter the server IP: ");
 	// scanf(" %s", server_ip);
 	// getchar();
-	// return connectToServer(server_ip);
-	return connectToServer("127.0.0.1");
+	return connectToServer(server_ip);
+	//return connectToServer("127.0.0.1");
 }
 
 void assertConnection() {
@@ -223,7 +223,8 @@ int main()
 
             ENx = (enemy.posX + 3)*32;
             ENy = (enemy.posY + 5)*32;
-            
+            oldPosEnemyX = enemy.posX;
+            oldPosEnemyY = enemy.posY;
             switch(enemy.skin){
                 case JOSIAS:
                 case JOSUE:
@@ -387,6 +388,8 @@ int main()
                         if(passosCounterEnemy == passos) {
                             passosCounterEnemy = 0;
                             animateEnemy = false;
+                            oldPosEnemyX = enemy.posX;
+                            oldPosEnemyY = enemy.posY;
                         }
 
                     }
