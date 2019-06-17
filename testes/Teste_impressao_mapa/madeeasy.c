@@ -7,8 +7,8 @@
 #include "Player.h"
 #include <ctype.h>
 
-#define LARGURA_TELA 800
-#define ALTURA_TELA 450
+#define LARGURA_TELA 1600
+#define ALTURA_TELA 900
 
 ALLEGRO_BITMAP *player_sprite;
 ALLEGRO_BITMAP *background;
@@ -107,7 +107,7 @@ void assertConnection() {
     switch(skin){
         case JOSIAS:
         case JOSUE:
-            player_sprite = al_load_bitmap("source/resources/images/characters/Josue.png");
+            player_sprite = al_load_bitmap("source/resources/images/characters/Josue(com limite).png");
             if(!player_sprite){
                 puts("Errou ao carregar Josue, muito pesado ele.");
                 state = ENDGAME;
@@ -121,7 +121,7 @@ void assertConnection() {
         //     }
         //     break;
         case MATIAS:
-            player_sprite = al_load_bitmap("source/resources/images/characters/Matias.png");
+            player_sprite = al_load_bitmap("source/resources/images/characters/Matias(com limite).png");
             if(!player_sprite){
                 puts("Errou ao carregar Matias, muito rápido ele.");
                 state = ENDGAME;
@@ -151,10 +151,10 @@ int main()
         puts("Fala ao iniciar display.\n");
 
     //al_set_window_position(display,200,200);
-
+    int passos=15, passosCounter=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
     bool done = false, draw = true, animate = false ,active = false;
-    float x = 128, y = 192, moveSpeed = 32/15.0, moveCounter = 0;
-    int oldPosX, oldPosY;
+    float x=0, y=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
+    unsigned short oldPosX, oldPosY;
     int dir = DOWN, sourceX = 32, sourceY = 0;
     // / moveSpeed = 32/frameFPS,
 
@@ -166,7 +166,7 @@ int main()
     //     puts("Errou ao carregar Josue, muito pesado ele.");
     //     exit(0);
     // }
-    background = al_load_bitmap("source/resources/images/backgrounds/Mapa.png");
+    background = al_load_bitmap("source/resources/images/backgrounds/MapaComLimites.png");
     if(!background){
         puts("Errou ao carregar Mapa, prefiro o de 26.0 GB.");
         exit(0);
@@ -204,6 +204,8 @@ int main()
 			ret = recvMsgFromServer(&player, WAIT_FOR_IT);
 			printf("Jogador: %s\nPosx = %d\nPosy = %d\n",player.nome,player.posX,player.posY);
 			state=WAITING_ENEMY;
+            x = (player.posX + 3)*32;
+            y = (player.posY + 5)*32;
 		}
 
         while(state == WAITING_ENEMY){
@@ -223,6 +225,7 @@ int main()
         }
 
         while(state == IN_GAME){
+
             ALLEGRO_EVENT events;
             al_wait_for_event(event_queue, &events);
             al_get_keyboard_state(&keyState);
@@ -254,10 +257,10 @@ int main()
 						state = WIN_SCREEN;
 					}
 				}
-			printf("[%d][%d][%d] - HP: %d - TAOK's: %d\n",player.itemArray[0],player.itemArray[1],player.itemArray[2],player.HP,player.money);
+			    printf("[%d][%d][%d] - HP: %d - TAOK's: %d\n",player.itemArray[0],player.itemArray[1],player.itemArray[2],player.HP,player.money);
 			//printf("BOX 1 - %s/%d - BOX 2 - %s/%d - BOX 3 - %s/%d - BOX 4 - %s/%d - BOX 5 - %s/%d\n",(player.boxArray[0].type==PAC?"PAC":(player.boxArray[0].type==SEDEX?"SEDEX":(player.boxArray[0].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[0].addIndex],(player.boxArray[1].type==PAC?"PAC":(player.boxArray[1].type==SEDEX?"SEDEX":(player.boxArray[1].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[1].addIndex],(player.boxArray[2].type==PAC?"PAC":(player.boxArray[2].type==SEDEX?"SEDEX":(player.boxArray[2].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[2].addIndex],(player.boxArray[3].type==PAC?"PAC":(player.boxArray[3].type==SEDEX?"SEDEX":(player.boxArray[3].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[3].addIndex],(player.boxArray[4].type==PAC?"PAC":(player.boxArray[4].type==SEDEX?"SEDEX":(player.boxArray[4].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[4].addIndex]);
 			}
-			
+			  
             if(events.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
             {
                 state = ENDGAME;
@@ -268,28 +271,39 @@ int main()
                 {
                     if(active == false){
                         active = true;
-                        oldPosX = player.posX;
-                        oldPosY = player.posY;
+                        
                         if(al_key_down(&keyState, ALLEGRO_KEY_DOWN)){
+                            puts("Entrou no KEY_DOWN");
                             char key = DOWN_ARROW;
+                            oldPosX = player.posX;
+                            oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
                             //y += moveSpeed;
                             //dir = DOWN;
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_UP)){
+                            puts("Entrou no KEY_UP");
                             char key = UP_ARROW;
+                            oldPosX = player.posX;
+                            oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
                             //y -= moveSpeed;
                             //dir = UP;
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_RIGHT)){
+                            puts("Entrou no KEY_RIGHT");
                             char key = RIGHT_ARROW;
+                            oldPosX = player.posX;
+                            oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
                             //x += moveSpeed;
                             //dir = RIGHT;
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_LEFT)){
+                            puts("Entrou no KEY_LEFT");
                             char key = LEFT_ARROW;
+                            oldPosX = player.posX;
+                            oldPosY = player.posY;
                             sendMsgToServer((char *)&key,1);
                             //x -= moveSpeed;
                             //dir = LEFT;
@@ -301,24 +315,15 @@ int main()
                     //else{
                     if(animate){
                         dir = player.face;
+                        //moveCounter += moveSpeed;
+                        passosCounter++;
 
                         if(oldPosX != player.posX || oldPosY != player.posY){
                             if(dir == DOWN) y += moveSpeed;
                             else if(dir == UP) y -= moveSpeed;
                             else if(dir == RIGHT) x += moveSpeed;
                             else if(dir == LEFT) x -= moveSpeed;
-                        }
-
-                        moveCounter += moveSpeed;
-                        if(moveCounter >= 32) {
-                            moveCounter = 0;
-                            active = false;
-                            animate = false;
-                            // posX = (int)(x/32 - 3);
-                            // posY = (int)(y/32 - 5);
-                            
-                            printf("x=%g y=%g\n",x,y);
-                            printf("posX=%d posY=%d\n",player.posX,player.posY);
+                            //printf("x=%g y=%g moveCounter=%g\n",x,y,moveCounter);
                         }
 
                         cameraUpdate(cameraPosition,x,y,32,32);
@@ -326,6 +331,19 @@ int main()
                         al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
                         al_scale_transform(&camera,scale,scale);
                         al_use_transform(&camera);
+                        
+                        if(passosCounter == passos) {
+                            //printf("terimnou x=%g y=%g moveCounter=%g\n",x,y,moveCounter);
+                            passosCounter = 0;
+                            active = false;
+                            animate = false;
+                            // posX = (int)(x/32 - 3);
+                            // posY = (int)(y/32 - 5);
+                            
+                            //printf("x=%g y=%g\n",x,y);
+                            printf("posX=%d posY=%d\n",player.posX,player.posY);
+                        }
+                        
                     }
 
                     if(al_key_down(&keyState, ALLEGRO_KEY_ESCAPE)){
