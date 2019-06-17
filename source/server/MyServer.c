@@ -179,7 +179,7 @@ int main() {
                     players[ret.client_id].face = UP;
 
                     if(players[ret.client_id].posY-1>=0 && 
-                    //players[ret.client_id].posY-1!=players[!ret.client_id].posY || players[ret.client_id].posX!=players[!ret.client_id].posX &&
+                    !(players[ret.client_id].posY-1==players[!ret.client_id].posY && players[ret.client_id].posX==players[!ret.client_id].posX) &&
                     mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY--;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
@@ -195,7 +195,7 @@ int main() {
                     players[ret.client_id].face = DOWN;
 
                     if(players[ret.client_id].posY+1<30 && 
-                    //players[ret.client_id].posY+1!=players[!ret.client_id].posY || players[ret.client_id].posX!=players[!ret.client_id].posX &&
+                    !(players[ret.client_id].posY+1==players[!ret.client_id].posY && players[ret.client_id].posX==players[!ret.client_id].posX) &&
                     mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY++;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
@@ -211,7 +211,7 @@ int main() {
                     players[ret.client_id].face = LEFT;
 
                     if(players[ret.client_id].posX-1>=0 && 
-                    //players[ret.client_id].posX-1!=players[!ret.client_id].posX || players[ret.client_id].posY!=players[!ret.client_id].posY &&
+                    !(players[ret.client_id].posX-1==players[!ret.client_id].posX && players[ret.client_id].posY==players[!ret.client_id].posY) &&
                     mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1]!=1){
                         players[ret.client_id].posX--;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
@@ -227,7 +227,7 @@ int main() {
                     players[ret.client_id].face = RIGHT;
                                                     
                     if(players[ret.client_id].posX+1<44 && 
-                    //players[ret.client_id].posX+1!=players[!ret.client_id].posX || players[ret.client_id].posY!=players[!ret.client_id].posY &&
+                    !(players[ret.client_id].posX+1==players[!ret.client_id].posX && players[ret.client_id].posY==players[!ret.client_id].posY) &&
                     mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1]!=1){
                         players[ret.client_id].posX++;
                         if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
