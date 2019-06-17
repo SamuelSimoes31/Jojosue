@@ -428,7 +428,7 @@ int main()
                         ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*al_get_bitmap_height(player_sprite)/4,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
                         ALLEGRO_BITMAP *subBitmapEnemy = al_create_sub_bitmap(enemy_sprite, sourceEnemyX, sourceEnemyY*al_get_bitmap_height(enemy_sprite)/4,al_get_bitmap_width(enemy_sprite)/4,al_get_bitmap_height(enemy_sprite)/4);
                         al_draw_bitmap(background,0,0,0);
-                        // if(skin == JOSIAS) y -= 5;// achou errado otario pf, agora tem q sir. copi ae
+                        // if(skin == JOSIAS) y -= 5;// num e q foi \o/
                         // if(enemy.skin == JOSIAS) ENy-=5;
                         if(skin != JOSIAS) al_draw_bitmap(subBitmap,x,y,0);
                         else al_draw_bitmap(subBitmap,x,y-5,0);
