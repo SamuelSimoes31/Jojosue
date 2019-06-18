@@ -27,7 +27,8 @@ ALLEGRO_BITMAP *icon_shuricarta;
 ALLEGRO_BITMAP *icon_trap;
 ALLEGRO_BITMAP *icon_bomb;
 ALLEGRO_BITMAP *icon_dog;
-
+ALLEGRO_BITMAP *icon_boxes;
+ALLEGRO_FONT *fonte_timer;
 ALLEGRO_FONT *fonte_jogo;
 
 //int posX=1, posY=1;
@@ -160,6 +161,7 @@ void destruirBitmaps(){
     al_destroy_bitmap(background);
     al_destroy_bitmap(heart_carta);
     al_destroy_bitmap(icon_dog);
+    al_destroy_bitmap(icon_boxes);
     al_destroy_bitmap(item_bar);
     al_destroy_bitmap(box_bar);    
     al_destroy_bitmap(icon_shuricarta);
@@ -199,6 +201,7 @@ int main()
     int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0;
     char use=0;
     int cnt60=0, cnt240=0;
+    char houses[] = {1,2,4,5,6,7,8,17,19,20,21,22,23,24,40,42,43,44,45,46,48,50,60,61,62,64,66,68,69,71,72,73,74,75,76,77,88,-1};
     //moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
@@ -250,6 +253,12 @@ int main()
         puts("Falha ao carregar El_Catioro.\n");
         state = ENDGAME;
     }
+    icon_boxes = al_load_bitmap("source/resources/images/Caixas.png");
+    if(!icon_boxes){
+        puts("Falha ao carregar Caixas.\n");
+        state = ENDGAME;
+    }
+    
     printf("Antes da fonte\n");
     al_init_font_addon();
     if (!al_init_ttf_addon()){
@@ -257,8 +266,9 @@ int main()
         state = ENDGAME;
     }
     else{
+        fonte_timer = al_load_font("source/resources/fonts/pressStart.ttf", 7, 0); 
         fonte_jogo = al_load_font("source/resources/fonts/pressStart.ttf", 10, 0);
-        if (!fonte_jogo){
+        if (!fonte_jogo || !fonte_timer){
             printf("Falha ao carregar fonte\n");
             state == ENDGAME;
         }
@@ -305,6 +315,7 @@ int main()
 			int ret;
 			assertConnection();
 			ret = recvMsgFromServer(&player, WAIT_FOR_IT);
+            if(player.identifier==BOX_CHANGE) printf("BOX 1 - %s/%d - BOX 2 - %s/%d - BOX 3 - %s/%d - BOX 4 - %s/%d - BOX 5 - %s/%d\n",(player.boxArray[0].type==PAC?"PAC":(player.boxArray[0].type==SEDEX?"SEDEX":(player.boxArray[0].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[0].addIndex],(player.boxArray[1].type==PAC?"PAC":(player.boxArray[1].type==SEDEX?"SEDEX":(player.boxArray[1].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[1].addIndex],(player.boxArray[2].type==PAC?"PAC":(player.boxArray[2].type==SEDEX?"SEDEX":(player.boxArray[2].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[2].addIndex],(player.boxArray[3].type==PAC?"PAC":(player.boxArray[3].type==SEDEX?"SEDEX":(player.boxArray[3].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[3].addIndex],(player.boxArray[4].type==PAC?"PAC":(player.boxArray[4].type==SEDEX?"SEDEX":(player.boxArray[4].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[4].addIndex]);
 			state=WAITING_ENEMY;
             x = (player.posX + 3)*32;
             y = (player.posY + 5)*32;
@@ -558,6 +569,11 @@ int main()
                         char key = ITEM3_BUTTON;
                         sendMsgToServer((char *)&key,1);
                     }
+                    else if(!use && al_key_down(&keyState, ALLEGRO_KEY_SPACE)){
+                        use = 1;
+                        char key = ACTION_MESSAGE;
+                        sendMsgToServer((char *)&key,1);
+                    }
                     // else if(comprou != NO_ITEM && events.type == ALLEGRO_EVENT_KEY_UP){
                     //     comprou = NO_ITEM;
                     // }
@@ -604,6 +620,7 @@ int main()
 
                         al_draw_scaled_bitmap(item_bar,0,0,34,96,0,ALTURA_TELA/4,68,192,NULL);
                         al_draw_scaled_bitmap(box_bar,0,0,160,40,(LARGURA_TELA/2)-160,ALTURA_TELA-80,320,80,NULL);
+
                         for(int i=0;i<3;i++){
                             if(player.itemArray[i] != NO_ITEM){
                                 switch (player.itemArray[i]){
@@ -620,6 +637,26 @@ int main()
                                         al_draw_scaled_bitmap(icon_dog,0,0,32,32,0,ALTURA_TELA/4 + i*62,64,64,NULL);
                                         break;
                                 }
+                            }
+                        }
+
+                        for(int i = 0; i<5; i++){
+                            if(player.boxArray[i].type != NO_BOX){
+                                switch (player.boxArray[i].type){
+                                    case PAC:
+                                        al_draw_scaled_bitmap(icon_boxes,0,0,32,32,(LARGURA_TELA/2)-160+(i*62),ALTURA_TELA-80,64,64,0);
+                                        break;
+                                    case SEDEX:
+                                        al_draw_scaled_bitmap(icon_boxes,32,0,32,32,(LARGURA_TELA/2)-160+(i*62),ALTURA_TELA-80,64,64,0);
+                                        break;
+                                    case EXPRESS:
+                                        al_draw_scaled_bitmap(icon_boxes,64,0,32,32,(LARGURA_TELA/2)-160+(i*62),ALTURA_TELA-80,64,64,0);
+                                        break;
+                                }
+
+                                al_draw_textf(fonte_timer,al_map_rgb(255,255,255),(LARGURA_TELA/2)-132+(i*62),ALTURA_TELA-11,0,"%d",player.boxArray[i].timeLast);
+                                al_draw_textf(fonte_timer,al_map_rgb(255,255,255),(LARGURA_TELA/2)-150+(i*62),ALTURA_TELA-59,0,"Casa %d",houses[player.boxArray[i].addIndex]);
+
                             }
                         }
 
