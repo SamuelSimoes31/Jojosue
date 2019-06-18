@@ -197,6 +197,8 @@ int main()
     float x=0, y=0, ENx=0, ENy=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
     unsigned short oldPosX, oldPosY, oldPosEnemyX, oldPosEnemyY;
     int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0;
+    char use=0;
+    int cnt60=0, cnt240=0;
     //moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
@@ -385,9 +387,9 @@ int main()
 
                         // }
                     }
-					// if(player.HP <= 0){
-					// 	state = LOSE_SCREEN;
-					// }
+					if(player.HP <= 0){
+						state = LOSE_SCREEN;
+					}
 
                     // oldPosX = player.posX;
                     // oldPosY = player.posY;
@@ -421,6 +423,11 @@ int main()
             {
                 if(events.timer.source == timer) // 1/60
                 {
+		    if(cnt60++==40){
+			comprou=0;
+            use = 0;
+			cnt60=0;
+		    }
                     
                     if(active == false){
                         active = true;
@@ -515,6 +522,7 @@ int main()
                         scale -= 0.1;
                     }
                     else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_Q)){
+                        puts("Comprei item 1");
                         comprou = SHURICARD;
                         char key = BUY1;
                         sendMsgToServer((char *)&key,1);
@@ -534,15 +542,19 @@ int main()
                         char key = BUY4;
                         sendMsgToServer((char *)&key,1);
                     }
-                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_1)){
+                    else if(!use && al_key_down(&keyState, ALLEGRO_KEY_1)){
+                        use = 1;
+                        puts("usei item 1");
                         char key = ITEM1_BUTTON;
                         sendMsgToServer((char *)&key,1);
                     }
-                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_2)){
+                    else if(!use && al_key_down(&keyState, ALLEGRO_KEY_2)){
+                        use = 1;
                         char key = ITEM2_BUTTON;
                         sendMsgToServer((char *)&key,1);
                     }
-                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_3)){
+                    else if(!use && al_key_down(&keyState, ALLEGRO_KEY_3)){
+                        use = 1;
                         char key = ITEM3_BUTTON;
                         sendMsgToServer((char *)&key,1);
                     }
@@ -648,9 +660,10 @@ int main()
                 draw = true;
 
             }
-            else if(events.type == ALLEGRO_EVENT_KEY_UP){
+            /*else if(events.type == ALLEGRO_EVENT_KEY_UP){
+                printf("ENTROU AQUI %d %c\n",events.keyboard.keycode,events.keyboard.keycode + 'A' -1);
                 if((events.keyboard.keycode == ALLEGRO_KEY_Q && comprou == SHURICARD)||(events.keyboard.keycode == ALLEGRO_KEY_W && comprou == TRAP)||(events.keyboard.keycode == ALLEGRO_KEY_E && comprou == BOMB)||(events.keyboard.keycode == ALLEGRO_KEY_R && comprou == DOG)) comprou = NO_ITEM;
-            }
+            }*/
             // else if(events.type == ALLEGRO_EVENT_KEY_UP && !comprou){
             //     comprou = true;
             //     printf("pode comprou\n");

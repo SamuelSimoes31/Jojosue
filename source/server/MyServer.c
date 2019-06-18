@@ -338,7 +338,10 @@ void rodarServer(){
                             else typeOfItem = 'Z';
 
                             if(players[ret.client_id].face == UP){
-                                if((mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY>0)){
+                                if((mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY>0) 
+                                && !((players[ret.client_id].posX==players[!ret.client_id].posX)&&(players[ret.client_id].posY-1==players[!ret.client_id].posY))
+                                )
+                                {
                                     mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX] = typeOfItem;
 
                                     flagsucesso=1;
@@ -346,7 +349,10 @@ void rodarServer(){
                             }
 
                             else if(players[ret.client_id].face == DOWN){
-                                if((mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY<30)){
+                                if((mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] != 1) && (players[ret.client_id].posY<30) 
+                                && !((players[ret.client_id].posX==players[!ret.client_id].posX)&&(players[ret.client_id].posY+1==players[!ret.client_id].posY))
+                                )
+                                {
                                     mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX] = typeOfItem;
 
                                     flagsucesso=1;
@@ -354,7 +360,10 @@ void rodarServer(){
                             }
 
                             else if(players[ret.client_id].face == LEFT){
-                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] != 1) && (players[ret.client_id].posX>0)){
+                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] != 1) && (players[ret.client_id].posX>0)
+                                && !((players[ret.client_id].posX-1==players[!ret.client_id].posX)&&(players[ret.client_id].posY==players[!ret.client_id].posY))
+                                )
+                                {
                                     mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1] = typeOfItem;
 
                                     flagsucesso=1;
@@ -362,7 +371,10 @@ void rodarServer(){
                             }
 
                             else{
-                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44)){
+                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44) 
+                                && !((players[ret.client_id].posX+1==players[!ret.client_id].posX)&&(players[ret.client_id].posY==players[!ret.client_id].posY))
+                                )
+                                {
                                     mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem;
 
                                     flagsucesso=1;
@@ -570,6 +582,7 @@ void rodarServer(){
                 }
 
                 else if(typeOfChange == BUY1){
+                    printf("COMPROU ITEM 1\n");
                     if(ret.client_id==0){
                         if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 50){
                        // printf("%d\n",players[ret.client_id].money);
@@ -794,7 +807,7 @@ void rodarServer(){
             //serverState = ENDGAME;
         }
     }
-    //serverReset();
+    serverReset();
 }
 
 int main() {
