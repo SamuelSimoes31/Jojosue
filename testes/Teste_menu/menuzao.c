@@ -29,6 +29,13 @@ source/resources/images
 source/resources/images/backgrounds
 source/resources/images/characters
 */
+
+Enemy_Data enemy;
+
+char skin = '-1';
+char type_buffer_name[NOME_MAX_SIZE] = {"nick\0"};
+char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
+
     ALLEGRO_BITMAP *botao_conectar = NULL;
     ALLEGRO_BITMAP *botao_jogar = NULL;
     ALLEGRO_BITMAP *botao_tutorial = NULL;
@@ -71,6 +78,7 @@ source/resources/images/characters
         MAIN_MENU,
         GAME_MENU,
         IN_GAME,
+        WAITING_PLAYER,
         TUTORIAL_MENU,
         LEADERBOARD_MENU,
         ENDGAME   
@@ -415,12 +423,44 @@ void printa(ALLEGRO_EVENT evento, char* str)
         }
     //}
 }
+estados_tela estado_tela = MAIN_MENU;
+enum conn_ret_t tryConnect() {
+	char server_ip[30];
+	char server_ID[5];
+	
+	//strcpy(server_ip,"172.20.4.");
+	//printf("Please enter the server ID: ");
+	//scanf(" %s", server_ID);
+	//getchar();
+	//strcat(server_ip,server_ID);
+	
+	printf("Please enter the server IP: ");
+	scanf(" %s", server_ip);
+	getchar();
+	return connectToServer(server_ip);
+	//return connectToServer("172.20.4.24");
+}
 
 void conecta(){
-    bool sair = false;
-    while(!sair){
-
+    enum conn_ret_t ret = connectToServer(type_buffer_ip);
+    if(ret != SERVER_UP) {
+		if (ret == SERVER_DOWN) {
+			puts("Server is down!");
+		} else if (ret == SERVER_FULL) {
+			puts("Server is full!");
+		} else if (ret == SERVER_CLOSED) {
+			puts("Server is closed for new connections!");
+		} else {
+			puts("Server didn't respond to connection!");
+		}
+  	}
+    else{
+        int len = strlen(type_buffer_name);
+        sendMsgToServer(type_buffer_name, len +1);
+        sendMsgToServer(skin,1);
+        estado_tela = WAITING_PLAYER;
     }
+    
 }
 
 void destroi(){
@@ -471,7 +511,6 @@ int main()
     inicializa_botoes_menu();
 
     estados_botao_menu estado_botao;
-    estados_tela estado_tela = MAIN_MENU;
     int TRAB = 1;
     while(estado_tela != ENDGAME){
         while(estado_tela == MAIN_MENU) {
@@ -626,6 +665,16 @@ int main()
             //al_flip_display();
             //al_rest(0.005);
         }
+        while(estado_tela == WAITING_PLAYER) {
+            
+            // printf("WAITING PLAYER\n");
+			// int ret = recvMsgFromServer(&enemy, WAIT_FOR_IT);
+            printf("WAITING GAME\n");
+
+        }
+        while(estado_tela == IN_GAME) {
+            printf("IN GAME\n");
+        }
 
         cont_frames = 0;
         coluna_atual = 0;
@@ -637,9 +686,7 @@ int main()
         int pos_x_3_sprite = 1250;
         int pos_y_3_sprite = 400;
         int limite = 0;
-        char skin = '-1';
-        char type_buffer_name[NOME_MAX_SIZE] = {"nick\0"};
-        char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
+        
         int type_pointer_name = 0;
         int type_pointer_ip = 0;
         char inicial_name[12] = "mercadinho";
@@ -687,7 +734,7 @@ int main()
                         al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         estado = EM_JOSIAS;
                     }
-                    if(evento.mouse.x >= LARGURA_TELA - al_get_bitmap_width(botao_conectar) - 200 && evento.mouse.x <=LARGURA_TELA && evento.mouse.y >= ALTURA_TELA - 300 && evento.mouse.y <= ALTURA_TELA){
+                    if(evento.mouse.x >= LARGURA_TELA - 425 && evento.mouse.x <=LARGURA_TELA - 100 + al_get_bitmap_width(botao_conectar) && evento.mouse.y >= ALTURA_TELA - 130 && evento.mouse.y <= ALTURA_TELA - 150 + al_get_bitmap_height(botao_conectar)){
                         estado = EM_CONECTAR;
                     }
                 }
