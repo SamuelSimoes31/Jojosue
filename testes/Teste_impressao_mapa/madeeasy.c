@@ -14,13 +14,18 @@
 #include "Player.h"
 #include <ctype.h>
 
-#define LARGURA_TELA 800
-#define ALTURA_TELA 450
+#define LARGURA_TELA 1500
+#define ALTURA_TELA 800
 
 ALLEGRO_BITMAP *player_sprite;
 ALLEGRO_BITMAP *enemy_sprite;
 ALLEGRO_BITMAP *background;
 ALLEGRO_BITMAP *heart_carta;
+ALLEGRO_BITMAP *item_bar;
+ALLEGRO_BITMAP *icon_shuricarta;
+ALLEGRO_BITMAP *icon_trap;
+ALLEGRO_BITMAP *icon_bomb;
+ALLEGRO_BITMAP *icon_dog;
 
 //int posX=1, posY=1;
 //PLAY_SCREEN
@@ -146,7 +151,17 @@ void assertConnection() {
     }
 }
 
-
+void destruirBitmaps(){
+    al_destroy_bitmap(player_sprite);
+    al_destroy_bitmap(enemy_sprite);
+    al_destroy_bitmap(background);
+    al_destroy_bitmap(heart_carta);
+    al_destroy_bitmap(icon_dog);
+    al_destroy_bitmap(item_bar);
+    al_destroy_bitmap(icon_shuricarta);
+    al_destroy_bitmap(icon_trap);
+    al_destroy_bitmap(icon_bomb); 
+}
 
 int main()
 {
@@ -173,10 +188,12 @@ int main()
     
     //al_set_window_position(display,200,200);
     int passos=16, passosCounter=0, passosCounterEnemy=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
-    bool done = false, draw = true, animate = false, animateEnemy=false ,active = false;
+    bool done = false, draw = true, animate = false, animateEnemy=false ,active = false/*,comprou=true*/;
+    char comprou = NO_ITEM;
     float x=0, y=0, ENx=0, ENy=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
     unsigned short oldPosX, oldPosY, oldPosEnemyX, oldPosEnemyY;
     int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0;
+    
     //moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
@@ -191,10 +208,43 @@ int main()
     heart_carta = al_load_bitmap("source/resources/images/Life.png");
     if(!heart_carta){
         puts("Falha ao carregar heart_carta.\n");
+        destruirBitmaps();
         exit(-1);
         state = ENDGAME;
     }
 
+    item_bar = al_load_bitmap("source/resources/images/Barra_de_Itens.png");
+    if(!item_bar){
+        puts("Falha ao carregar Barra_de_Itens.\n");
+        state = ENDGAME;
+    }
+
+    icon_shuricarta = al_load_bitmap("source/resources/images/A_Shurikarta(com limites).png");
+    if(!icon_shuricarta){
+        puts("Falha ao carregar A_Shurikarta.\n");
+        state = ENDGAME;
+    }
+
+    icon_trap = al_load_bitmap("source/resources/images/Armadilha_V1(com limites).png");
+    if(!icon_trap){
+        puts("Falha ao carregar Armadilha_V1.\n");
+        state = ENDGAME;
+    }
+    icon_bomb = al_load_bitmap("source/resources/images/Armadilha_V2.png");
+    if(!icon_bomb){
+        puts("Falha ao carregar Armadilha_V2.\n");
+        state = ENDGAME;
+    }
+    icon_dog = al_load_bitmap("source/resources/images/El_Catioro(com limites).png");
+    if(!icon_dog){
+        puts("Falha ao carregar El_Catioro.\n");
+        state = ENDGAME;
+    }
+    if(state == ENDGAME) {
+        destruirBitmaps();
+        al_destroy_display(display);
+        exit(EXIT_FAILURE);
+    }
     int larguraCarta = al_get_bitmap_width(heart_carta)/7;
     int alturaCarta = al_get_bitmap_height(heart_carta);
 
@@ -305,7 +355,10 @@ int main()
                         if(active) animate = true;
                     }
                     else if(player.identifier == BUY){
-                        
+                        // al_get_keyboard_state(&keyState);
+                        // if(comprou && ){
+
+                        // }
                     }
 					if(player.HP <= 0){
 						state = LOSE_SCREEN;
@@ -387,7 +440,7 @@ int main()
                             else if(player.face == UP) y -= moveSpeed;
                             else if(player.face == RIGHT) x += moveSpeed;
                             else if(player.face == LEFT) x -= moveSpeed;
-                            printf("x=%g y=%g\n",x,y);
+                            //printf("x=%g y=%g\n",x,y);
                         }
                         
                         if(passosCounter == passos) {
@@ -399,7 +452,7 @@ int main()
                             // posY = (int)(y/32 - 5);
                             
                             //printf("x=%g y=%g\n",x,y);
-                            printf("posX=%d posY=%d x=%g y=%g\n",player.posX,player.posY,x,y);
+                            //printf("posX=%d posY=%d x=%g y=%g\n",player.posX,player.posY,x,y);
                         }
                         
                     }
@@ -410,7 +463,7 @@ int main()
                             else if(enemy.face == UP) ENy -= moveSpeed;
                             else if(enemy.face == RIGHT) ENx += moveSpeed;
                             else if(enemy.face == LEFT) ENx -= moveSpeed;
-                            printf("ENx=%g ENy=%g\n",ENx,ENy);
+                            //printf("ENx=%g ENy=%g\n",ENx,ENy);
                         }
 
                         if(passosCounterEnemy == passos) {
@@ -420,7 +473,7 @@ int main()
                             animateEnemy = false;
                             oldPosEnemyX = enemy.posX;
                             oldPosEnemyY = enemy.posY;
-                            printf("enemy.posY=%d enemy.posY=%d ENx=%g ENy=%g\n",enemy.posX,enemy.posY,ENx,ENy);
+                            //printf("enemy.posY=%d enemy.posY=%d ENx=%g ENy=%g\n",enemy.posX,enemy.posY,ENx,ENy);
                         }
 
                     }
@@ -434,22 +487,43 @@ int main()
                     else if(al_key_down(&keyState, ALLEGRO_KEY_X)){
                         scale -= 0.1;
                     }
-                    else if(al_key_down(&keyState, ALLEGRO_KEY_Q)){
+                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_Q)){
+                        comprou = SHURICARD;
                         char key = BUY1;
                         sendMsgToServer((char *)&key,1);
                     }
-                    else if(al_key_down(&keyState, ALLEGRO_KEY_W)){
+                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_W)){
+                        comprou = TRAP;
                         char key = BUY2;
                         sendMsgToServer((char *)&key,1);
                     }
-                    else if(al_key_down(&keyState, ALLEGRO_KEY_E)){
+                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_E)){
+                        comprou = BOMB;
                         char key = BUY3;
                         sendMsgToServer((char *)&key,1);
                     }
-                    else if(al_key_down(&keyState, ALLEGRO_KEY_R)){
+                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_R)){
+                        comprou = DOG;
                         char key = BUY4;
                         sendMsgToServer((char *)&key,1);
                     }
+                    // else if(comprou != NO_ITEM && events.type == ALLEGRO_EVENT_KEY_UP){
+                    //     comprou = NO_ITEM;
+                    // }
+                    // else if(comprou == TRAP && al_key_up(&keyState, ALLEGRO_KEY_W)){
+                    //     comprou = NO_ITEM;
+                    // }
+                    // else if(comprou == BOMB && al_key_up(&keyState, ALLEGRO_KEY_E)){
+                    //     comprou = NO_ITEM;
+                    // }
+                    // else if(comprou == DOG && al_key_up(&keyState, ALLEGRO_KEY_R)){
+                    //     comprou = NO_ITEM;
+                    // }
+                    // else
+                    // {
+                    //     printf("comprou dnv\n");
+                    //     comprou = true;
+                    // }
 
                     if(draw)
                     {
@@ -476,8 +550,24 @@ int main()
                             al_draw_bitmap_region(heart_carta, 0, 0, larguraCarta, alturaCarta, i*larguraCarta + 5, 20, 0);
                         }
 
+                        al_draw_scaled_bitmap(item_bar,0,0,34,96,0,ALTURA_TELA/4,68,192,NULL);
                         for(int i=0;i<3;i++){
-                            if(player.itemArray[i] != NO_ITEM) al_draw_bitmap_region(heart_carta, 0, 0, larguraCarta, alturaCarta, i*larguraCarta + 5, 400, 0);
+                            if(player.itemArray[i] != NO_ITEM){
+                                switch (player.itemArray[i]){
+                                    case SHURICARD:
+                                        al_draw_scaled_bitmap(icon_shuricarta,0,0,32,32,0,ALTURA_TELA/4 + i*62,64,64,NULL);
+                                        break;
+                                    case TRAP:
+                                        al_draw_scaled_bitmap(icon_trap,0,0,32,32,0,ALTURA_TELA/4 + i*62,64,64,NULL);
+                                        break;
+                                    case BOMB:
+                                        al_draw_scaled_bitmap(icon_bomb,0,0,32,32,0,ALTURA_TELA/4 + i*62,64,64,NULL);
+                                        break;
+                                    case DOG:
+                                        al_draw_scaled_bitmap(icon_dog,0,0,32,32,0,ALTURA_TELA/4 + i*62,64,64,NULL);
+                                        break;
+                                }
+                            }
                         }
 
                         al_flip_display();
@@ -517,19 +607,22 @@ int main()
                 draw = true;
 
             }
-
+            else if(comprou != NO_ITEM && events.type == ALLEGRO_EVENT_KEY_UP){
+                        comprou = NO_ITEM;
+            }
+            // else if(events.type == ALLEGRO_EVENT_KEY_UP && !comprou){
+            //     comprou = true;
+            //     printf("pode comprou\n");
+            // }
             
         }
     }
-
+    destruirBitmaps();
     al_destroy_display(display);
     al_destroy_timer(timer);
     al_destroy_timer(frameTimer);
-    al_destroy_bitmap(player_sprite);
-    al_destroy_bitmap(enemy_sprite);
-    al_destroy_bitmap(background);
-    al_destroy_bitmap(heart_carta);
     al_destroy_event_queue(event_queue);
 
     return 0;    
 }
+

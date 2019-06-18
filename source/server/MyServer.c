@@ -54,9 +54,9 @@ void rodarServer(){
                             1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
                             1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,
                             1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,
-                            1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,
-                            1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,
-                            1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,
+                            1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,
+                            1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,
+                            1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,1,1,1,
                             1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,0,0,0,1,1,1,1,0,0,0,1,1,1,1,0,0,0,0,0,
                             1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,
                             1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,
@@ -329,8 +329,8 @@ void rodarServer(){
                         }
 
                         else{ 
-                            if(players[ret.client_id].itemArray[0]==TRAP1) typeOfItem = 'X';
-                            else if(players[ret.client_id].itemArray[0]==TRAP2) typeOfItem = 'Y';
+                            if(players[ret.client_id].itemArray[0]==TRAP) typeOfItem = 'X';
+                            else if(players[ret.client_id].itemArray[0]==BOMB) typeOfItem = 'Y';
                             else typeOfItem = 'Z';
 
                             if(players[ret.client_id].face == UP){
@@ -418,8 +418,8 @@ void rodarServer(){
                         }
                         
                         else {
-                            if(players[ret.client_id].itemArray[1]==TRAP1) typeOfItem = 'X';
-                            else if(players[ret.client_id].itemArray[1]==TRAP2) typeOfItem = 'Y';
+                            if(players[ret.client_id].itemArray[1]==TRAP) typeOfItem = 'X';
+                            else if(players[ret.client_id].itemArray[1]==BOMB) typeOfItem = 'Y';
                             else typeOfItem = 'Z';
 
                             if(players[ret.client_id].face == UP){
@@ -507,8 +507,8 @@ void rodarServer(){
                         }
 
                         else{
-                            if(players[ret.client_id].itemArray[2]==TRAP1) typeOfItem = 'X';
-                            else if(players[ret.client_id].itemArray[2]==TRAP2) typeOfItem = 'Y';
+                            if(players[ret.client_id].itemArray[2]==TRAP) typeOfItem = 'X';
+                            else if(players[ret.client_id].itemArray[2]==BOMB) typeOfItem = 'Y';
                             else typeOfItem = 'Z';
 
                             if(players[ret.client_id].face == UP){
@@ -572,7 +572,7 @@ void rodarServer(){
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
                             if(players[ret.client_id].itemArray[i] == NO_ITEM){
-                                players[ret.client_id].itemArray[i] = TRAP1;
+                                players[ret.client_id].itemArray[i] = TRAP;
                                 players[ret.client_id].money -= 75;
                                 break;
                             }
@@ -588,7 +588,7 @@ void rodarServer(){
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
                             if(players[ret.client_id].itemArray[i] == NO_ITEM){
-                                players[ret.client_id].itemArray[i] = TRAP2;
+                                players[ret.client_id].itemArray[i] = BOMB;
                                 players[ret.client_id].money -= 100;
                                 break;
                             }
@@ -604,7 +604,7 @@ void rodarServer(){
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
                             if(players[ret.client_id].itemArray[i] == NO_ITEM){
-                                players[ret.client_id].itemArray[i] = CATIORO;
+                                players[ret.client_id].itemArray[i] = DOG;
                                 players[ret.client_id].money -= 150;
                                 break;
                             }
