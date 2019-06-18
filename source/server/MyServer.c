@@ -796,10 +796,11 @@ void rodarServer(){
 
                 }
 
-                // for(int i = 0; i<2; i++){
-                //     sendMsgToClient((Player_Data *)&players[i],sizeof(Player_Data),i);
-                //     //broadcast((Player_Data *)&players[i],sizeof(Player_Data));
-                // }
+                for(int i = 0; i<2; i++){
+                    players[i].identifier = BOX_CHANGE;
+                    sendMsgToClient((Player_Data *)&players[i],sizeof(Player_Data),i);
+                    //broadcast((Player_Data *)&players[i],sizeof(Player_Data));
+                }
 
             }
             
