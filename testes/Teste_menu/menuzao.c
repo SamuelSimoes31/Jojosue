@@ -40,7 +40,9 @@ source/resources/images/characters
     ALLEGRO_BITMAP *ip_button = NULL;
     ALLEGRO_DISPLAY *janela = NULL;
     ALLEGRO_BITMAP *fundo = NULL;
+    ALLEGRO_BITMAP *titulo = NULL;
     ALLEGRO_SAMPLE *coin = NULL;
+    ALLEGRO_SAMPLE *clicking = NULL;
     ALLEGRO_TIMER *timer = NULL;
     ALLEGRO_BITMAP *folha_1_sprite = NULL;
     ALLEGRO_BITMAP *folha_2_sprite = NULL;
@@ -50,6 +52,7 @@ source/resources/images/characters
     ALLEGRO_EVENT_QUEUE *fila_eventos_tut = NULL;
     ALLEGRO_FONT *fonte = NULL;
     ALLEGRO_FONT *fonte_tut = NULL;
+    ALLEGRO_AUDIO_STREAM *musica_menu = NULL;
     typedef struct {
         char nome[14];
         int pontuacao;
@@ -126,6 +129,11 @@ int inicializar() {
         return 0;
     }
 
+    clicking = al_load_sample("source/resources/audio/samples/menuNavegacao.wav");
+    if (!clicking) {
+        printf( "Audio nao carregado");
+        return 0;
+    }
 
     timer = al_create_timer(1.0 / FPS);
     if(!timer) {
@@ -139,10 +147,26 @@ int inicializar() {
         return 0;
     }
 
+    titulo = al_load_bitmap("source/resources/images/Titulo_do_jogo.png");
+    if(!titulo) {
+        printf("falha ao carregar titulo\n");
+        return 0;
+    }
+
     if (!al_init_ttf_addon()){
         printf("Falha ao inicializar add-on allegro_ttf");
         return 0;
     }
+
+    musica_menu = al_load_audio_stream("source/resources/audio/musics/Carteiro(musica menu).ogg", 4, 1024);
+    if (!musica_menu)
+    {
+        printf( "Audio nao carregado" );
+        return 0;
+    }
+
+    al_attach_audio_stream_to_mixer(musica_menu, al_get_default_mixer());
+    al_set_audio_stream_playmode(musica_menu, ALLEGRO_PLAYMODE_LOOP);
 
     janela = al_create_display(LARGURA_TELA, ALTURA_TELA);
     if (!janela) {
@@ -258,7 +282,7 @@ void fadeout(int velocidade)
         al_clear_to_color(al_map_rgba(0, 0, 0, 0));
         al_draw_tinted_bitmap(buffer, al_map_rgba(255 - alfa, 255 - alfa, 255 - alfa, alfa), 0, 0, 0);
         al_flip_display();
-        al_rest(0.005); // Não é necessário caso haja controle de FPS
+        
     }
  
     al_destroy_bitmap(buffer);
@@ -368,6 +392,7 @@ int main()
 
     estados_botao_menu estado_botao;
     estados_tela estado_tela = MAIN_MENU;
+    int TRAB = 1;
 
     while(estado_tela == MAIN_MENU) {
         while(!al_is_event_queue_empty(fila_eventos)) {
@@ -420,6 +445,7 @@ int main()
                 evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_jogar) / 2 + 53 &&
                 evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 - 40 &&
                 evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_jogar) / 2 - 28) {
+                    al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     estado_tela = GAME_MENU;
                     //atualiza a tela como o inicio do jogo
                 }
@@ -427,6 +453,7 @@ int main()
                 evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_tutorial) / 2 + 78 &&
                 evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_tutorial) / 2 + 25 &&
                 evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_tutorial) / 2 + 35){
+                    al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     estado_tela = TUTORIAL_MENU;
                     //atualiza a tela com a tela de tutorial
                 }
@@ -434,6 +461,7 @@ int main()
                 evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_leaderboard) / 2 + 135 &&
                 evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_leaderboard) / 2  + 95 &&
                 evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_leaderboard) / 2 + 107) {
+                    al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     estado_tela = LEADERBOARD_MENU;
                     //atualiza a tela com os ranking de melhores jogadores
                 }
@@ -482,6 +510,16 @@ int main()
         al_draw_scaled_bitmap(fundo,
         0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
         0, 0, LARGURA_TELA, ALTURA_TELA, 0);
+
+        al_draw_scaled_bitmap(titulo,
+        0, 0, al_get_bitmap_width(titulo), al_get_bitmap_height(titulo),
+        al_get_bitmap_width(titulo) + 185, al_get_bitmap_height(titulo) - 100 + TRAB, al_get_bitmap_width(titulo) + 200, al_get_bitmap_height(titulo) + 100, 0);
+        
+        TRAB++;
+        if(TRAB == 15) {
+            TRAB = -15;
+        }
+        
 
         al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA / 2 - al_get_bitmap_width(botao_jogar) / 2 + 45,
         ALTURA_TELA / 2 - al_get_bitmap_height(botao_jogar) / 2 - 40, ALLEGRO_ALIGN_CENTER, "JOGAR");
@@ -545,23 +583,29 @@ int main()
             if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
                 if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
                 evento.mouse.y >= 50 && evento.mouse.y <= 50 + al_get_bitmap_height(name_button)) {
+                    al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     estado = EM_NAME;
+                    
                 }
                 if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
                 evento.mouse.y >= 600 && evento.mouse.y <= 600 + al_get_bitmap_height(ip_button)) {
+                    al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     estado = EM_IP;
                 }
                 
                 if(evento.mouse.x >= 1250 && evento.mouse.x <= 1250 + al_get_bitmap_width(matias_button) &&
                 evento.mouse.y >= 400 && evento.mouse.y <= 400 + al_get_bitmap_height(matias_button)) {
+                    al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     estado = EM_MATIAS;
                 }
                 if(evento.mouse.x >= 250 && evento.mouse.x <= 250 + al_get_bitmap_width(josue_button) &&
                 evento.mouse.y >= 400 && evento.mouse.y <= 400 + al_get_bitmap_height(josue_button)) {
+                    al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     estado = EM_JOSUE;
                 }
                 if(evento.mouse.x >= 750 && evento.mouse.x <= 750 + al_get_bitmap_width(josias_button) &&
                 evento.mouse.y >= 400 && evento.mouse.y <= 400 + al_get_bitmap_height(josias_button)) {
+                    al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     estado = EM_JOSIAS;
                 }
             }
@@ -834,6 +878,7 @@ int main()
     al_destroy_bitmap(folha_1_sprite);
     al_destroy_bitmap(folha_2_sprite);
     al_destroy_bitmap(folha_3_sprite);
+    al_destroy_audio_stream(musica_menu);
 
     return 0;
 }
