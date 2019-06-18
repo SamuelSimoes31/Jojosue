@@ -29,6 +29,7 @@ source/resources/images
 source/resources/images/backgrounds
 source/resources/images/characters
 */
+    ALLEGRO_BITMAP *botao_conectar = NULL;
     ALLEGRO_BITMAP *botao_jogar = NULL;
     ALLEGRO_BITMAP *botao_tutorial = NULL;
     ALLEGRO_BITMAP *botao_leaderboard = NULL;
@@ -81,7 +82,8 @@ source/resources/images/characters
         EM_JOSUE,
         EM_JOSIAS,
         EM_IP,
-        EM_VOLTAR
+        EM_VOLTAR,
+        EM_CONECTAR
     } estados_game_menu;
 int inicializar() {
     if (!al_init()) {
@@ -365,11 +367,89 @@ void inicializa_botoes_menu() {
         al_destroy_display(janela);
         exit(0);
     }
+
+    botao_conectar = al_create_bitmap(100, 25);
+    if(!botao_conectar){
+        printf("Falha ao criar bitmap\n");
+        al_destroy_bitmap(janela);
+        exit(0);
+    }
+}
+
+void printa(ALLEGRO_EVENT evento, char* str)
+{
+    // if (evento.type == ALLEGRO_EVENT_KEY_CHAR)
+    // {
+        if (strlen(str) < NOME_MAX_SIZE)
+        {
+            char temp[] = {evento.keyboard.unichar, '\0'};
+            if (evento.keyboard.unichar == ' ')
+            {
+                strcat(str, temp);
+                printf("str==%s\n", str);
+            }
+            else if (evento.keyboard.unichar >= '!' &&
+                     evento.keyboard.unichar <= '?')
+            {
+                strcat(str, temp);
+                printf("str==%s\n", str);
+            }
+            else if (evento.keyboard.unichar >= 'A' &&
+                     evento.keyboard.unichar <= 'Z')
+            {
+                strcat(str, temp);
+                printf("str==%s\n", str);
+            }
+            else if (evento.keyboard.unichar >= 'a' &&
+                     evento.keyboard.unichar <= 'z')
+            {
+                strcat(str, temp);
+                printf("str==%s\n", str);
+            }
+        }
+ 
+        if (evento.keyboard.keycode == ALLEGRO_KEY_BACKSPACE && strlen(str) != 0)
+        {
+            str[strlen(str) - 1] = '\0';
+            printf("str==%s\n", str);
+        }
+    //}
+}
+
+void conecta(){
+    bool sair = false;
+    while(!sair){
+
+    }
+}
+
+void destroi(){
+    al_destroy_bitmap(botao_sair);
+    al_destroy_bitmap(botao_conectar);
+    al_destroy_bitmap(botao_jogar);
+    al_destroy_bitmap(botao_tutorial);
+    al_destroy_bitmap(botao_leaderboard);
+    al_destroy_bitmap(fundo);
+    al_destroy_display(janela);
+    al_destroy_font(fonte);
+    al_destroy_font(fonte_tut);
+    al_destroy_sample(coin);
+    al_destroy_event_queue(fila_eventos);
+    al_destroy_event_queue(fila_eventos_timer);
+    al_destroy_timer(timer);
+    al_destroy_bitmap(name_button);
+    al_destroy_bitmap(matias_button);
+    al_destroy_bitmap(josias_button);
+    al_destroy_bitmap(josue_button);
+    al_destroy_bitmap(ip_button);
+    al_destroy_bitmap(folha_1_sprite);
+    al_destroy_bitmap(folha_2_sprite);
+    al_destroy_bitmap(folha_3_sprite);
+    al_destroy_audio_stream(musica_menu);
 }
 
 int main()
 {
-    int sair = 0;
     int desenha = 1;
     //largura e altura de cada sprite dentro da folha
     int altura_sprite = 32, largura_sprite = 32, altura_2_sprite = 37;
@@ -458,14 +538,7 @@ int main()
                         estado_tela = TUTORIAL_MENU;
                         //atualiza a tela com a tela de tutorial
                     }
-                    if (evento.mouse.x >= LARGURA_TELA / 2 - al_get_bitmap_width(botao_leaderboard) / 2 - 125 &&
-                    evento.mouse.x <= LARGURA_TELA / 2 + al_get_bitmap_width(botao_leaderboard) / 2 + 135 &&
-                    evento.mouse.y >= ALTURA_TELA / 2 - al_get_bitmap_height(botao_leaderboard) / 2  + 95 &&
-                    evento.mouse.y <= ALTURA_TELA / 2 + al_get_bitmap_height(botao_leaderboard) / 2 + 107) {
-                        al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
-                        estado_tela = LEADERBOARD_MENU;
-                        //atualiza a tela com os ranking de melhores jogadores
-                    }
+                    
                 }
             }
             
@@ -565,13 +638,17 @@ int main()
         int pos_y_3_sprite = 400;
         int limite = 0;
         char skin = '-1';
-        char type_buffer_name[NOME_MAX_SIZE] = {0};
-        char type_buffer_ip[NOME_MAX_SIZE] = {0};
-        char inicial_name[12] = "mercadinho";
-        char inicial_ip[5] = "321";
+        char type_buffer_name[NOME_MAX_SIZE] = {"nick\0"};
+        char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
         int type_pointer_name = 0;
         int type_pointer_ip = 0;
+        char inicial_name[12] = "mercadinho";
+        char inicial_ip[5] = "321";
         int meajuda = 0, meajuda2 = 0;
+        int concluido_name = 0;
+        int concluido_ip = 0;
+        int pisca_name = 0;
+        int pisca_ip = 0;
 
         estados_game_menu estado = 99;
 
@@ -586,11 +663,12 @@ int main()
                     evento.mouse.y >= 50 && evento.mouse.y <= 50 + al_get_bitmap_height(name_button)) {
                         al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         estado = EM_NAME;
-                        
+                        //concluido_ip = 1;
                     }
                     if(evento.mouse.x >= 0 && evento.mouse.x <= LARGURA_TELA &&
                     evento.mouse.y >= 600 && evento.mouse.y <= 600 + al_get_bitmap_height(ip_button)) {
                         al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                        //concluido_name = 1;
                         estado = EM_IP;
                     }
                     
@@ -609,6 +687,9 @@ int main()
                         al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         estado = EM_JOSIAS;
                     }
+                    if(evento.mouse.x >= LARGURA_TELA - al_get_bitmap_width(botao_conectar) - 200 && evento.mouse.x <=LARGURA_TELA && evento.mouse.y >= ALTURA_TELA - 300 && evento.mouse.y <= ALTURA_TELA){
+                        estado = EM_CONECTAR;
+                    }
                 }
                 else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
                     estado_tela = MAIN_MENU;
@@ -617,6 +698,15 @@ int main()
                         if(evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                             estado_tela = MAIN_MENU;
                         }
+                }
+                else if (evento.type == ALLEGRO_EVENT_KEY_CHAR){
+                    if(estado == EM_NAME) printa(evento,type_buffer_name);
+                    else if(estado == EM_IP) printa(evento,type_buffer_ip);
+                }
+                if(estado == EM_CONECTAR){
+                    fadeout(3);
+                    conecta();
+                    estado_tela = MAIN_MENU;
                 }
             }
 
@@ -645,7 +735,7 @@ int main()
                 desenha = 1;
             }
 
-            if((desenha && al_is_event_queue_empty(fila_eventos_timer))  || meajuda || meajuda2) {
+            if(desenha && al_is_event_queue_empty(fila_eventos_timer)) {
                     al_draw_scaled_bitmap(folha_1_sprite,
                     regiao_x_folha, regiao_y_folha,
                     largura_sprite, altura_sprite,
@@ -661,12 +751,18 @@ int main()
                     largura_sprite, altura_sprite,
                     pos_x_3_sprite, pos_y_3_sprite, 150, 150, 0);
 
-                    al_draw_text(fonte, al_map_rgb(255, 0, 0), 1150, 100, ALLEGRO_ALIGN_RIGHT, type_buffer_name);
-                    al_draw_text(fonte, al_map_rgb(255, 0, 0), 1250, 600, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
+                    if(estado == EM_NAME){
+                        if(pisca_name++ > 40) pisca_name = 0; 
+                    }
+                    else pisca_name = 0;
+                    if(pisca_name < 25) al_draw_text(fonte, al_map_rgb(255, 0, 0), 1250, 100, ALLEGRO_ALIGN_RIGHT, type_buffer_name);
+                    if(estado == EM_IP){
+                        if(pisca_ip++ > 40) pisca_ip = 0; 
+                    }
+                    else pisca_ip = 0;
+                    if(pisca_ip < 25) al_draw_text(fonte, al_map_rgb(255, 0, 0), 1450, 600, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
 
                     desenha = 0;
-                    //meajuda = 0;
-                    //meajuda2 = 0;
                     al_flip_display();
             }
             
@@ -675,87 +771,51 @@ int main()
             al_draw_scaled_bitmap(fundo,
             0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
             0, 0, LARGURA_TELA, ALTURA_TELA, 0);
-
-            al_draw_text(fonte, al_map_rgb(255, 255, 0), 700, 100, ALLEGRO_ALIGN_RIGHT, "DIGITE SEU NOME: ");
+            al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA - 100, ALTURA_TELA - 150, ALLEGRO_ALIGN_RIGHT, "CONECTAR");
+            al_draw_text(fonte, al_map_rgb(255, 255, 0), 745, 100, ALLEGRO_ALIGN_RIGHT, "DIGITE SEU NOME: ");
             if(estado == EM_NAME) {
-                puts("estado == EM_NAME");
-                //char msg_history[HIST_MAX_SIZE][MSG_MAX_SIZE] = {{0}};
                 
+                //puts("estado == EM_NAME");
+                printf("NAME==%s\n", type_buffer_name);
+                printf("ip==%s\n", type_buffer_ip);
+                // if(!al_is_event_queue_empty(fila_eventos)) {
+                //     ALLEGRO_EVENT evento_nome;
+                //     al_wait_for_event(fila_eventos, &evento_nome);
 
-                //while (1) {
-                    // LER UMA TECLA DIGITADA
-                    char ch = getch();
-                    printf("ch=%c\n",ch);
-                    if (ch == '\n') {
-                        type_buffer_name[type_pointer_name++] = '\0';
-                        //int ret = sendMsgToServer((void *)type_buffer_name, type_pointer);
-        
-                    /*if (ret == SERVER_DISCONNECTED) {
-                        return;
-                    }*/
-                        type_pointer_name = 0;
-                        type_buffer_name[type_pointer_name] = '\0';
-                        //break;
-                        estado = 99;
-                    }
-                    else if (ch == 127 || ch == 8) {
-                        if (type_pointer_name > 0) {
-                            --type_pointer_name;
-                            type_buffer_name[type_pointer_name] = '\0';
-                        }
-                        printf("BACKSPACE %d.%s", type_pointer_name, type_buffer_name);
-                        //al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 100, ALLEGRO_ALIGN_RIGHT, type_buffer_name);
-                    } 
-                    else if (ch != NO_KEY_PRESSED && type_pointer_name + 1 < NOME_MAX_SIZE) {
-                        type_buffer_name[type_pointer_name++] = ch;
-                        type_buffer_name[type_pointer_name] = '\0';
-                        printf("!NO_KEY %d.%s", type_pointer_name, type_buffer_name);
-                        //al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 100, ALLEGRO_ALIGN_RIGHT, type_buffer_name);
-                    }
-                //}
-                meajuda = 1;
+                //     //if (!concluido_name) {
+                //     printa(evento_nome, type_buffer_name);
+                        
+ 
+                //         /*if (evento_nome.type == ALLEGRO_EVENT_KEY_DOWN && evento_nome.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+                //             concluido_name = true;
+                //         }
+                //     }*/
+                // }
             }
 
             
 
-            al_draw_text(fonte, al_map_rgb(255, 255, 0), 780, 600, ALLEGRO_ALIGN_RIGHT, "DIGITE O ID DO PC: ");
+            al_draw_text(fonte, al_map_rgb(255, 255, 0), 985, 600, ALLEGRO_ALIGN_RIGHT, "DIGITE O IP DO SERVER: ");
             if(estado == EM_IP) {
-                puts("estado == EM_IP");
-                //while (1) {
-                    // LER UMA TECLA DIGITADA
-                    char ch = getch();
-                    printf("ch=%c\n",ch);
-                    if (ch == '\n') {
-                        type_buffer_ip[type_pointer_ip++] = '\0';
-                        //int ret = sendMsgToServer((char *)type_buffer, type_pointer);
-                    /*if (ret == SERVER_DISCONNECTED) {
-                        return;
-                    }*/
-                        type_pointer_ip = 0;
-                        type_buffer_ip[type_pointer_ip] = '\0';
-        
-                        //break;
-                        estado = 99;
-                    } 
-                    else if (ch == 127 || ch == 8) {
-                        if (type_pointer_ip > 0) {
-                            --type_pointer_ip;
-                            type_buffer_ip[type_pointer_ip] = '\0';
-                        }
-                        //al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
-                        printf("BACKSPACE %d.%s", type_pointer_ip, type_buffer_name);
-                    } 
-                    else if (ch != NO_KEY_PRESSED && type_pointer_ip + 1 < NOME_MAX_SIZE) {
-                        type_buffer_ip[type_pointer_ip++] = ch;
-                        type_buffer_ip[type_pointer_ip] = '\0';
-                        //al_draw_text(fonte, al_map_rgb(255, 255, 0), 900, 200, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
-                        printf("!NO_KEY %d.%s", type_pointer_ip, type_buffer_ip);
-                    }
-                //}
-                meajuda2 = 1;
+                //puts("estado == EM_IP");
+                printf("name==%s\n", type_buffer_name);
+                printf("IP==%s\n", type_buffer_ip);
+                // if(!al_is_event_queue_empty(fila_eventos)) {
+                //     ALLEGRO_EVENT evento_ip;
+                //     al_wait_for_event(fila_eventos, &evento_ip);
+
+                //     //if (!concluido_ip) {
+                //         printa(evento_ip, type_buffer_ip);
+                //         //printf("ip==%s\n", type_buffer_ip);
+ 
+                //        /* if (evento_ip.type == ALLEGRO_EVENT_KEY_DOWN && evento_ip.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+                //             concluido_ip = true;
+                //         }
+                //     }*/
+                // }
             }
             //al_draw_text(fonte_voltar, al_map_rgb(255, 255, 0), 100, 10, ALLEGRO_ALIGN_RIGHT, "VOLTAR");
-            al_draw_text(fonte, al_map_rgb(255, 255, 0), 750, 300, ALLEGRO_ALIGN_RIGHT, "ESCOLHA SUA SKIN: ");
+            al_draw_text(fonte, al_map_rgb(255, 255, 0), 785, 300, ALLEGRO_ALIGN_RIGHT, "ESCOLHA SUA SKIN: ");
             if(estado == EM_MATIAS) {
                 puts("estado == EM_MATIAS ");
                 skin = '2'; 
@@ -773,7 +833,7 @@ int main()
             }
 
             if(skin != '-1' && strcmp(type_buffer_name, inicial_name) != 0 && strcmp(type_buffer_ip, inicial_ip) != 0) {
-                puts("DEU CERTO KRAI");
+                //puts("DEU CERTO KRAI");
                 int ret = sendMsgToServer((char) &skin, 1);
                 int ret2 = sendMsgToServer((char *) type_buffer_name, type_pointer_name);
 
@@ -788,38 +848,6 @@ int main()
             //al_flip_display();
 
         }
-
-        /*while(estado_tela = LEADERBOARD_MENU) {
-            player_score *listaMelhores = NULL;
-            int tam = 0;
-            player_score player;
-            FILE *melhores;
-            melhores = fopen("melhores.bin", "rb");
-            if(melhores == NULL) {
-                printf("arquivo nao aberto\n");
-                exit(1);
-            }
-            while(!feof(melhores)) {
-                fread(&player, 1, sizeof(player_score), melhores);
-                listaMelhores = (player_score *) realloc(listaMelhores, (tam+1)*sizeof(player_score));
-                if(listaMelhores == NULL) {
-                    printf("falha ao alocar\n");
-                    exit(0);
-                }
-                listaMelhores[tam] = player;
-                tam++;
-            }
-            fclose(melhores);
-
-            al_clear_to_color(al_map_rgb(0, 0, 0));
-            
-            al_draw_scaled_bitmap(fundo,
-            0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
-            0, 0, LARGURA_TELA, ALTURA_TELA, 0);
-
-            al_draw_text(fonte, al_map_rgb(255, 255, 0), 750, 300, ALLEGRO_ALIGN_CENTER, listaMelhores);
-
-        }*/
 
         if(estado_tela == TUTORIAL_MENU) {
             fadein(fundo, 3);
@@ -859,34 +887,13 @@ int main()
                 }
                 else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
                     estado_tela = ENDGAME;
-                    fadeout(3);
                 }
             }
 
         }
 
     }
-    al_destroy_bitmap(botao_sair);
-    al_destroy_bitmap(botao_jogar);
-    al_destroy_bitmap(botao_tutorial);
-    al_destroy_bitmap(botao_leaderboard);
-    al_destroy_bitmap(fundo);
-    al_destroy_display(janela);
-    al_destroy_font(fonte);
-    al_destroy_font(fonte_tut);
-    al_destroy_sample(coin);
-    al_destroy_event_queue(fila_eventos);
-    al_destroy_event_queue(fila_eventos_timer);
-    al_destroy_timer(timer);
-    al_destroy_bitmap(name_button);
-    al_destroy_bitmap(matias_button);
-    al_destroy_bitmap(josias_button);
-    al_destroy_bitmap(josue_button);
-    al_destroy_bitmap(ip_button);
-    al_destroy_bitmap(folha_1_sprite);
-    al_destroy_bitmap(folha_2_sprite);
-    al_destroy_bitmap(folha_3_sprite);
-    al_destroy_audio_stream(musica_menu);
-
+    fadeout(7);
+    destroi();
     return 0;
 }
