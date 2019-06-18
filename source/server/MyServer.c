@@ -366,7 +366,12 @@ void rodarServer(){
                             }
                         }
 
-                        if(flagsucesso) players[ret.client_id].itemArray[0] = NO_ITEM;
+                        if(flagsucesso) {
+                            players[ret.client_id].itemArray[0] = NO_ITEM;
+                            players[ret.client_id].identifier = ITEM_USAGE; 
+                        }
+                        else players[ret.client_id].identifier = NO_CHANGE; 
+                        
                         broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                     }
 
@@ -619,7 +624,7 @@ void rodarServer(){
                 }
                 mapMatrix[players[0].posY][players[0].posX] = '+';
                 mapMatrix[players[1].posY][players[1].posX] = '*';
-                //printMap(mapMatrix);
+                printMap(mapMatrix);
             }
             else if(ret.status==DISCONNECT_MSG){
                 printf("PLAYER(%d) DESCONECTOU\n",ret.client_id);

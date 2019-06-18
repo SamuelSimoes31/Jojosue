@@ -193,7 +193,6 @@ int main()
     float x=0, y=0, ENx=0, ENy=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
     unsigned short oldPosX, oldPosY, oldPosEnemyX, oldPosEnemyY;
     int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0;
-    
     //moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
@@ -396,6 +395,7 @@ int main()
             {
                 if(events.timer.source == timer) // 1/60
                 {
+                    
                     if(active == false){
                         active = true;
                         
@@ -505,6 +505,18 @@ int main()
                     else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_R)){
                         comprou = DOG;
                         char key = BUY4;
+                        sendMsgToServer((char *)&key,1);
+                    }
+                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_1)){
+                        char key = ITEM1_BUTTON;
+                        sendMsgToServer((char *)&key,1);
+                    }
+                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_2)){
+                        char key = ITEM2_BUTTON;
+                        sendMsgToServer((char *)&key,1);
+                    }
+                    else if(!comprou && al_key_down(&keyState, ALLEGRO_KEY_3)){
+                        char key = ITEM3_BUTTON;
                         sendMsgToServer((char *)&key,1);
                     }
                     // else if(comprou != NO_ITEM && events.type == ALLEGRO_EVENT_KEY_UP){
