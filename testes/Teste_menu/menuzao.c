@@ -29,6 +29,7 @@ source/resources/images
 source/resources/images/backgrounds
 source/resources/images/characters
 */
+    ALLEGRO_BITMAP *botao_conectar = NULL;
     ALLEGRO_BITMAP *botao_jogar = NULL;
     ALLEGRO_BITMAP *botao_tutorial = NULL;
     ALLEGRO_BITMAP *botao_leaderboard = NULL;
@@ -81,7 +82,8 @@ source/resources/images/characters
         EM_JOSUE,
         EM_JOSIAS,
         EM_IP,
-        EM_VOLTAR
+        EM_VOLTAR,
+        EM_CONECTAR
     } estados_game_menu;
 int inicializar() {
     if (!al_init()) {
@@ -365,6 +367,13 @@ void inicializa_botoes_menu() {
         al_destroy_display(janela);
         exit(0);
     }
+
+    botao_conectar = al_create_bitmap(100, 25);
+    if(!botao_conectar){
+        printf("Falha ao criar bitmap\n");
+        al_destroy_bitmap(janela);
+        exit(0);
+    }
 }
 
 void printa(ALLEGRO_EVENT evento, char* str)
@@ -407,9 +416,40 @@ void printa(ALLEGRO_EVENT evento, char* str)
     //}
 }
 
+void conecta(){
+    bool sair = false;
+    while(!sair){
+
+    }
+}
+
+void destroi(){
+    al_destroy_bitmap(botao_sair);
+    al_destroy_bitmap(botao_conectar);
+    al_destroy_bitmap(botao_jogar);
+    al_destroy_bitmap(botao_tutorial);
+    al_destroy_bitmap(botao_leaderboard);
+    al_destroy_bitmap(fundo);
+    al_destroy_display(janela);
+    al_destroy_font(fonte);
+    al_destroy_font(fonte_tut);
+    al_destroy_sample(coin);
+    al_destroy_event_queue(fila_eventos);
+    al_destroy_event_queue(fila_eventos_timer);
+    al_destroy_timer(timer);
+    al_destroy_bitmap(name_button);
+    al_destroy_bitmap(matias_button);
+    al_destroy_bitmap(josias_button);
+    al_destroy_bitmap(josue_button);
+    al_destroy_bitmap(ip_button);
+    al_destroy_bitmap(folha_1_sprite);
+    al_destroy_bitmap(folha_2_sprite);
+    al_destroy_bitmap(folha_3_sprite);
+    al_destroy_audio_stream(musica_menu);
+}
+
 int main()
 {
-    int sair = 0;
     int desenha = 1;
     //largura e altura de cada sprite dentro da folha
     int altura_sprite = 32, largura_sprite = 32, altura_2_sprite = 37;
@@ -647,6 +687,9 @@ int main()
                         al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         estado = EM_JOSIAS;
                     }
+                    if(evento.mouse.x >= LARGURA_TELA - al_get_bitmap_width(botao_conectar) - 200 && evento.mouse.x <=LARGURA_TELA && evento.mouse.y >= ALTURA_TELA - 300 && evento.mouse.y <= ALTURA_TELA){
+                        estado = EM_CONECTAR;
+                    }
                 }
                 else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
                     estado_tela = MAIN_MENU;
@@ -659,6 +702,11 @@ int main()
                 else if (evento.type == ALLEGRO_EVENT_KEY_CHAR){
                     if(estado == EM_NAME) printa(evento,type_buffer_name);
                     else if(estado == EM_IP) printa(evento,type_buffer_ip);
+                }
+                if(estado == EM_CONECTAR){
+                    fadeout(3);
+                    conecta();
+                    estado_tela = MAIN_MENU;
                 }
             }
 
@@ -723,7 +771,7 @@ int main()
             al_draw_scaled_bitmap(fundo,
             0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
             0, 0, LARGURA_TELA, ALTURA_TELA, 0);
-
+            al_draw_text(fonte, al_map_rgb(255, 255, 0), LARGURA_TELA - 100, ALTURA_TELA - 150, ALLEGRO_ALIGN_RIGHT, "CONECTAR");
             al_draw_text(fonte, al_map_rgb(255, 255, 0), 745, 100, ALLEGRO_ALIGN_RIGHT, "DIGITE SEU NOME: ");
             if(estado == EM_NAME) {
                 
@@ -839,34 +887,13 @@ int main()
                 }
                 else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
                     estado_tela = ENDGAME;
-                    fadeout(3);
                 }
             }
 
         }
 
     }
-    al_destroy_bitmap(botao_sair);
-    al_destroy_bitmap(botao_jogar);
-    al_destroy_bitmap(botao_tutorial);
-    al_destroy_bitmap(botao_leaderboard);
-    al_destroy_bitmap(fundo);
-    al_destroy_display(janela);
-    al_destroy_font(fonte);
-    al_destroy_font(fonte_tut);
-    al_destroy_sample(coin);
-    al_destroy_event_queue(fila_eventos);
-    al_destroy_event_queue(fila_eventos_timer);
-    al_destroy_timer(timer);
-    al_destroy_bitmap(name_button);
-    al_destroy_bitmap(matias_button);
-    al_destroy_bitmap(josias_button);
-    al_destroy_bitmap(josue_button);
-    al_destroy_bitmap(ip_button);
-    al_destroy_bitmap(folha_1_sprite);
-    al_destroy_bitmap(folha_2_sprite);
-    al_destroy_bitmap(folha_3_sprite);
-    al_destroy_audio_stream(musica_menu);
-
+    fadeout(7);
+    destroi();
     return 0;
 }
