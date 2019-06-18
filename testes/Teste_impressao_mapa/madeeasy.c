@@ -22,10 +22,13 @@ ALLEGRO_BITMAP *enemy_sprite;
 ALLEGRO_BITMAP *background;
 ALLEGRO_BITMAP *heart_carta;
 ALLEGRO_BITMAP *item_bar;
+ALLEGRO_BITMAP *box_bar;
 ALLEGRO_BITMAP *icon_shuricarta;
 ALLEGRO_BITMAP *icon_trap;
 ALLEGRO_BITMAP *icon_bomb;
 ALLEGRO_BITMAP *icon_dog;
+
+ALLEGRO_FONT *fonte_jogo;
 
 //int posX=1, posY=1;
 //PLAY_SCREEN
@@ -158,6 +161,7 @@ void destruirBitmaps(){
     al_destroy_bitmap(heart_carta);
     al_destroy_bitmap(icon_dog);
     al_destroy_bitmap(item_bar);
+    al_destroy_bitmap(box_bar);    
     al_destroy_bitmap(icon_shuricarta);
     al_destroy_bitmap(icon_trap);
     al_destroy_bitmap(icon_bomb); 
@@ -217,6 +221,11 @@ int main()
         puts("Falha ao carregar Barra_de_Itens.\n");
         state = ENDGAME;
     }
+    box_bar = al_load_bitmap("source/resources/images/Barra_de_Caixas.png");
+    if(!box_bar){
+        puts("Falha ao carregar Barra_de_Caixas.\n");
+        state = ENDGAME;
+    }
 
     icon_shuricarta = al_load_bitmap("source/resources/images/A_Shurikarta(com limites).png");
     if(!icon_shuricarta){
@@ -239,6 +248,23 @@ int main()
         puts("Falha ao carregar El_Catioro.\n");
         state = ENDGAME;
     }
+    printf("Antes da fonte\n");
+    al_init_font_addon();
+    if (!al_init_ttf_addon()){
+        printf("Falha ao inicializar add-on allegro_ttf");
+        state = ENDGAME;
+    }
+    else{
+        fonte_jogo = al_load_font("source/resources/fonts/pressStart.ttf", 10, 0);
+        if (!fonte_jogo){
+            printf("Falha ao carregar fonte\n");
+            state == ENDGAME;
+        }
+    }
+    printf("Depois da fonte\n");
+    
+
+
     if(state == ENDGAME) {
         destruirBitmaps();
         al_destroy_display(display);
@@ -272,7 +298,7 @@ int main()
     
 
     while(state != ENDGAME){
-        
+
         if(state == PLAY_SCREEN){
 			int ret;
 			assertConnection();
@@ -359,9 +385,9 @@ int main()
 
                         // }
                     }
-					if(player.HP <= 0){
-						state = LOSE_SCREEN;
-					}
+					// if(player.HP <= 0){
+					// 	state = LOSE_SCREEN;
+					// }
 
                     // oldPosX = player.posX;
                     // oldPosY = player.posY;
@@ -450,7 +476,8 @@ int main()
                             animate = false;
                             // posX = (int)(x/32 - 3);
                             // posY = (int)(y/32 - 5);
-                            
+                            x = (player.posX + 3)*32;
+                            y = (player.posY + 5)*32;
                             //printf("x=%g y=%g\n",x,y);
                             //printf("posX=%d posY=%d x=%g y=%g\n",player.posX,player.posY,x,y);
                         }
@@ -561,8 +588,10 @@ int main()
                         for(int i=0;i<player.HP;i++){
                             al_draw_bitmap_region(heart_carta, 0, 0, larguraCarta, alturaCarta, i*larguraCarta + 5, 20, 0);
                         }
+                        al_draw_textf(fonte_jogo,al_map_rgb(0,255,0),32,alturaCarta +50,0,"%d Taoquei's",player.money);
 
                         al_draw_scaled_bitmap(item_bar,0,0,34,96,0,ALTURA_TELA/4,68,192,NULL);
+                        al_draw_scaled_bitmap(box_bar,0,0,160,40,(LARGURA_TELA/2)-160,ALTURA_TELA-80,320,80,NULL);
                         for(int i=0;i<3;i++){
                             if(player.itemArray[i] != NO_ITEM){
                                 switch (player.itemArray[i]){
@@ -619,8 +648,8 @@ int main()
                 draw = true;
 
             }
-            else if(comprou != NO_ITEM && events.type == ALLEGRO_EVENT_KEY_UP){
-                        comprou = NO_ITEM;
+            else if(events.type == ALLEGRO_EVENT_KEY_UP){
+                if((events.keyboard.keycode == ALLEGRO_KEY_Q && comprou == SHURICARD)||(events.keyboard.keycode == ALLEGRO_KEY_W && comprou == TRAP)||(events.keyboard.keycode == ALLEGRO_KEY_E && comprou == BOMB)||(events.keyboard.keycode == ALLEGRO_KEY_R && comprou == DOG)) comprou = NO_ITEM;
             }
             // else if(events.type == ALLEGRO_EVENT_KEY_UP && !comprou){
             //     comprou = true;
@@ -629,6 +658,8 @@ int main()
             
         }
     }
+
+    
     destruirBitmaps();
     al_destroy_display(display);
     al_destroy_timer(timer);

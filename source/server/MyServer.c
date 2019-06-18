@@ -295,6 +295,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                             players[!(ret.client_id)].HP -= 1;
+                                            players[!(ret.client_id)].identifier = DAMAGE;
                                             break;
                                             }
                                 }
@@ -303,6 +304,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                             players[!(ret.client_id)].HP -= 1;
+                                            players[!(ret.client_id)].identifier = DAMAGE;
                                             break;
                                             }
                                 }
@@ -311,6 +313,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                             players[!(ret.client_id)].HP -= 1;
+                                            players[!(ret.client_id)].identifier = DAMAGE;
                                             break;
                                             }
                                 }
@@ -319,6 +322,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                             players[!(ret.client_id)].HP -= 1;
+                                            players[!(ret.client_id)].identifier = DAMAGE;
                                             break;
                                             }
                                 }
@@ -371,8 +375,8 @@ void rodarServer(){
                             players[ret.client_id].identifier = ITEM_USAGE; 
                         }
                         else players[ret.client_id].identifier = NO_CHANGE; 
-                        
-                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                        for(int i = 0; i<2; i++)
+                        broadcast((Player_Data *)&players[i],sizeof(Player_Data));
                     }
 
                 }
@@ -390,6 +394,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                         players[!(ret.client_id)].HP -= 1;
+                                        players[!(ret.client_id)].identifier = DAMAGE;
                                         break;
                                         }
                                 }
@@ -398,6 +403,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                         players[!(ret.client_id)].HP -= 1;
+                                        players[!(ret.client_id)].identifier = DAMAGE;
                                         break;
                                         }
                                 }
@@ -406,6 +412,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                         players[!(ret.client_id)].HP -= 1;
+                                        players[!(ret.client_id)].identifier = DAMAGE;
                                         break;
                                         }
                                 }
@@ -414,6 +421,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                         players[!(ret.client_id)].HP -= 1;
+                                        players[!(ret.client_id)].identifier = DAMAGE;
                                         break;
                                         }
                                 }
@@ -461,7 +469,8 @@ void rodarServer(){
                         }
 
                         if (flagsucesso) players[ret.client_id].itemArray[1] = NO_ITEM;
-                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                        for(int i = 0; i<2; i++)
+                        broadcast((Player_Data *)&players[i],sizeof(Player_Data));
                     }
 
                 }
@@ -479,6 +488,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                             players[!(ret.client_id)].HP -= 1;
+                                            players[!(ret.client_id)].identifier = DAMAGE;
                                             break;
                                             }
                                 }
@@ -487,6 +497,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                             players[!(ret.client_id)].HP -= 1;
+                                            players[!(ret.client_id)].identifier = DAMAGE;
                                             break;
                                             }
                                 }
@@ -495,6 +506,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                             players[!(ret.client_id)].HP -= 1;
+                                            players[!(ret.client_id)].identifier = DAMAGE;
                                             break;
                                             }
                                 }
@@ -503,6 +515,7 @@ void rodarServer(){
                                 for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                             players[!(ret.client_id)].HP -= 1;
+                                            players[!(ret.client_id)].identifier = DAMAGE;
                                             break;
                                             }
                                 }
@@ -550,13 +563,15 @@ void rodarServer(){
                         }
 
                         if(flagsucesso) players[ret.client_id].itemArray[2] = NO_ITEM;
-                        broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                        for(int i = 0; i<2; i++)
+                        broadcast((Player_Data *)&players[i],sizeof(Player_Data));
                     }
 
                 }
 
                 else if(typeOfChange == BUY1){
-                    if(players[ret.client_id].money >= 50){
+                    if(ret.client_id==0){
+                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 50){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -568,11 +583,29 @@ void rodarServer(){
                         }
                     }
                     players[ret.client_id].identifier= BUY;
+                    }
+                    }
+                    else{
+                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 50){
+                       // printf("%d\n",players[ret.client_id].money);
+                        for(int i=0;i<3;i++){
+                            printf("%d\n",players[ret.client_id].itemArray[i]);
+                            if(players[ret.client_id].itemArray[i] == NO_ITEM){
+                                players[ret.client_id].itemArray[i] = SHURICARD;
+                                players[ret.client_id].money -= 50;
+                                break;
+                            }
+                        }
+                    }
+                    players[ret.client_id].identifier= BUY;
+                    }  
+                    }
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == BUY2){
-                    if(players[ret.client_id].money >= 75){
+                    if(ret.client_id==0){
+                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 50){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -584,11 +617,29 @@ void rodarServer(){
                         }
                     }
                     players[ret.client_id].identifier= BUY;
+                    }
+                    }
+                    else{
+                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 50){
+                       // printf("%d\n",players[ret.client_id].money);
+                        for(int i=0;i<3;i++){
+                            printf("%d\n",players[ret.client_id].itemArray[i]);
+                            if(players[ret.client_id].itemArray[i] == NO_ITEM){
+                                players[ret.client_id].itemArray[i] = TRAP;
+                                players[ret.client_id].money -= 75;
+                                break;
+                            }
+                        }
+                    }
+                    players[ret.client_id].identifier= BUY;
+                    }  
+                    }
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == BUY3){
-                    if(players[ret.client_id].money >= 100){
+                    if(ret.client_id==0){
+                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 50){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -600,11 +651,29 @@ void rodarServer(){
                         }
                     }
                     players[ret.client_id].identifier= BUY;
+                    }
+                    }
+                    else{
+                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 50){
+                       // printf("%d\n",players[ret.client_id].money);
+                        for(int i=0;i<3;i++){
+                            printf("%d\n",players[ret.client_id].itemArray[i]);
+                            if(players[ret.client_id].itemArray[i] == NO_ITEM){
+                                players[ret.client_id].itemArray[i] = BOMB;
+                                players[ret.client_id].money -= 100;
+                                break;
+                            }
+                        }
+                    }
+                    players[ret.client_id].identifier= BUY;
+                    }  
+                    }
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else if(typeOfChange == BUY4){
-                    if(players[ret.client_id].money >= 150){
+                    if(ret.client_id==0){
+                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 50){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -616,14 +685,31 @@ void rodarServer(){
                         }
                     }
                     players[ret.client_id].identifier= BUY;
+                    }
+                    }
+                    else{
+                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 50){
+                       // printf("%d\n",players[ret.client_id].money);
+                        for(int i=0;i<3;i++){
+                            printf("%d\n",players[ret.client_id].itemArray[i]);
+                            if(players[ret.client_id].itemArray[i] == NO_ITEM){
+                                players[ret.client_id].itemArray[i] = DOG;
+                                players[ret.client_id].money -= 150;
+                                break;
+                            }
+                        }
+                    }
+                    players[ret.client_id].identifier= BUY;
+                    }  
+                    }
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
                 else {
                     printf("Invalid message!\nret.status=%d\n%d\n",ret.status,typeOfChange);
                 }
-                mapMatrix[players[0].posY][players[0].posX] = '+';
-                mapMatrix[players[1].posY][players[1].posX] = '*';
+                //mapMatrix[players[0].posY][players[0].posX] = '+';
+                //mapMatrix[players[1].posY][players[1].posX] = '*';
                 printMap(mapMatrix);
             }
             else if(ret.status==DISCONNECT_MSG){
@@ -708,12 +794,14 @@ void rodarServer(){
             //serverState = ENDGAME;
         }
     }
+    //serverReset();
 }
 
 int main() {
     int res = 'y';
     while(1){
         rodarServer();
+        
         printf("Deseja reiniciar o server?[Y/n]\n");
 		while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
 			puts("anh???");

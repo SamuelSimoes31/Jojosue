@@ -58,6 +58,7 @@ enum MsgIdentifier{
     ITEM_USAGE,
     BUY,
     ACTION,
+    DAMAGE,
     BOX_CHANGE,
     WIN,
     LOSE
