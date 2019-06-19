@@ -31,6 +31,10 @@ source/resources/images/characters
 */
 
 Enemy_Data enemy;
+Player_Data player;
+Player_Data auxPlayer;
+
+float x, y;
 
 char skin = 'J';
 char type_buffer_name[NOME_MAX_SIZE] = {"nick\0"};
@@ -81,8 +85,9 @@ char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
     typedef enum {
         MAIN_MENU,
         GAME_MENU,
-        IN_GAME,
         WAITING_PLAYER,
+        PRE_GAME,
+        IN_GAME,
         TUTORIAL_MENU,
         LEADERBOARD_MENU,
         ENDGAME   
@@ -479,7 +484,10 @@ void conecta(){
         int len = strlen(type_buffer_name);
         sendMsgToServer((char *)type_buffer_name, len +1);
         sendMsgToServer((char *)&skin,1);
+        int ans = recvMsgFromServer(&player, WAIT_FOR_IT);
         estado_tela = WAITING_PLAYER;
+        x = (player.posX + 3)*32;
+        y = (player.posY + 5)*32;
         fadeout(10);
     }
     
@@ -699,6 +707,8 @@ int main()
             
             // printf("WAITING PLAYER\n");
 			// int ret = recvMsgFromServer(&enemy, WAIT_FOR_IT);
+            
+
             printf("WAITING GAME\n");
             al_clear_to_color(al_map_rgb(0, 0, 0));
         
@@ -711,8 +721,6 @@ int main()
             if(TRABALHO == 15) {
                 TRABALHO = -15;
             }
-
-            
 
             while(!al_is_event_queue_empty(fila_eventos)) {
                 ALLEGRO_EVENT evento;
@@ -787,9 +795,60 @@ int main()
 
                     al_flip_display();
             }
-
+            int ret = recvMsgFromServer(&enemy, DONT_WAIT);
+            if(ret >= 0) {
+                estado_tela =  PRE_GAME;
+                al_clear_to_color(al_map_rgb(0,0,0));
+                al_flip_display();
+                fadein(fundo,20);
+            }
         }
-        while(estado_tela == IN_GAME) {
+        while(estado_tela == PRE_GAME) {
+            
+            al_draw_scaled_bitmap(fundo,
+            0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
+            0, 0, LARGURA_TELA, ALTURA_TELA, 0);
+            al_draw_text(fonte,al_map_rgb(0,0,255),LARGURA_TELA/2-400 - 128,ALTURA_TELA/2,ALLEGRO_ALIGN_CENTER,type_buffer_name);
+            switch(skin){
+                case JOSUE:
+                    al_draw_scaled_bitmap(folha_1_sprite,0,0,32,32,LARGURA_TELA/2-400,ALTURA_TELA/2 - 100, 256,256,0);
+                    break;
+                case JOSIAS:
+                    al_draw_scaled_bitmap(folha_2_sprite,0,0,32,37,LARGURA_TELA/2-400,ALTURA_TELA/2 - 100, 256,256,0);
+                    break;
+                case MATIAS:
+                    al_draw_scaled_bitmap(folha_3_sprite,0,0,32,32,LARGURA_TELA/2-400,ALTURA_TELA/2 - 100, 256,256,0);
+                    break;
+                default:
+                    al_draw_scaled_bitmap(folha_4_sprite,0,0,32,32,LARGURA_TELA/2-400,ALTURA_TELA/2 - 100, 256,256,0);
+                    break;
+            }
+
+            al_draw_text(fonte,al_map_rgb(0,0,255),LARGURA_TELA/2+400 + 128,ALTURA_TELA/2,ALLEGRO_ALIGN_CENTER,enemy.nome);
+            switch(enemy.skin){
+                case JOSUE:
+                    al_draw_scaled_bitmap(folha_1_sprite,0,0,32,32,LARGURA_TELA/2+400 - 256,ALTURA_TELA/2 - 100, 256,256,0);
+                    break;
+                case JOSIAS:
+                    al_draw_scaled_bitmap(folha_2_sprite,0,0,32,37,LARGURA_TELA/2+400 - 256,ALTURA_TELA/2 - 100, 256,256,0);
+                    break;
+                case MATIAS:
+                    al_draw_scaled_bitmap(folha_3_sprite,0,0,32,32,LARGURA_TELA/2+400 - 256,ALTURA_TELA/2 - 100, 256,256,0);
+                    break;
+                default:
+                    al_draw_scaled_bitmap(folha_4_sprite,0,0,32,32,LARGURA_TELA/2+400 - 256,ALTURA_TELA/2 - 100, 256,256,0);
+                    break;
+            }
+
+            al_draw_text(fonte,al_map_rgb(255,255,0),LARGURA_TELA/2,200,ALLEGRO_ALIGN_CENTER,"CARTEIROS ASSEMBLE");
+
+            al_flip_display();
+            
+            al_rest(6);
+            estado_tela = IN_GAME;
+            fadeout(5);
+        }
+        while(estado_tela == IN_GAME){
             printf("IN GAME\n");
         }
 
@@ -806,8 +865,8 @@ int main()
         
         int type_pointer_name = 0;
         int type_pointer_ip = 0;
-        char inicial_name[12] = "mercadinho";
-        char inicial_ip[5] = "321";
+        // char inicial_name[12] = "mercadinho";
+        // char inicial_ip[5] = "321";
         int meajuda = 0, meajuda2 = 0;
         int concluido_name = 0;
         int concluido_ip = 0;
