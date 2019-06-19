@@ -32,11 +32,11 @@ source/resources/images/characters
 
 Enemy_Data enemy;
 
-char skin = '-1';
+char skin = 'J';
 char type_buffer_name[NOME_MAX_SIZE] = {"nick\0"};
 char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
 
-    ALLEGRO_BITMAP *botao_conectar = NULL;
+
     ALLEGRO_BITMAP *botao_jogar = NULL;
     ALLEGRO_BITMAP *botao_tutorial = NULL;
     ALLEGRO_BITMAP *botao_leaderboard = NULL;
@@ -379,12 +379,6 @@ void inicializa_botoes_menu() {
         exit(0);
     }
 
-    botao_conectar = al_create_bitmap(100, 25);
-    if(!botao_conectar){
-        printf("Falha ao criar bitmap\n");
-        al_destroy_bitmap(janela);
-        exit(0);
-    }
 }
 
 void printa(ALLEGRO_EVENT evento, char* str)
@@ -459,16 +453,16 @@ void conecta(){
   	}
     else{
         int len = strlen(type_buffer_name);
-        sendMsgToServer(type_buffer_name, len +1);
-        sendMsgToServer(skin,1);
+        sendMsgToServer((char *)type_buffer_name, len +1);
+        sendMsgToServer((char *)&skin,1);
         estado_tela = WAITING_PLAYER;
+        fadeout(10);
     }
     
 }
 
 void destroi(){
     al_destroy_bitmap(botao_sair);
-    al_destroy_bitmap(botao_conectar);
     al_destroy_bitmap(botao_jogar);
     al_destroy_bitmap(botao_tutorial);
     al_destroy_bitmap(botao_leaderboard);
@@ -741,8 +735,9 @@ int main()
                         al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         estado = EM_JOSIAS;
                     }
-                    if(evento.mouse.x >= LARGURA_TELA - 425 && evento.mouse.x <=LARGURA_TELA - 100 + al_get_bitmap_width(botao_conectar) && evento.mouse.y >= ALTURA_TELA - 130 && evento.mouse.y <= ALTURA_TELA - 150 + al_get_bitmap_height(botao_conectar)){
-                        estado = EM_CONECTAR;
+                    if(evento.mouse.x >= LARGURA_TELA - 300 && evento.mouse.x <= LARGURA_TELA - 300 + al_get_text_width(fonte, "CONECTAR") && evento.mouse.y >= ALTURA_TELA - 150 && evento.mouse.y <= ALTURA_TELA - 150 + al_get_font_line_height(fonte)) {
+                        //estado = EM_CONECTAR;
+                        conecta();
                     }
                 }
                 else if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -756,11 +751,6 @@ int main()
                 else if (evento.type == ALLEGRO_EVENT_KEY_CHAR){
                     if(estado == EM_NAME) printa(evento,type_buffer_name);
                     else if(estado == EM_IP) printa(evento,type_buffer_ip);
-                }
-                if(estado == EM_CONECTAR){
-                    fadeout(3);
-                    conecta();
-                    estado_tela = MAIN_MENU;
                 }
             }
 
@@ -888,26 +878,24 @@ int main()
             al_draw_text(fonte, al_map_rgb(255, 255, 0), 785, 300, ALLEGRO_ALIGN_RIGHT, "ESCOLHA SUA SKIN: ");
             if(estado == EM_MATIAS) {
                 puts("estado == EM_MATIAS ");
-                skin = '2'; 
-                printf("skin==%c", skin);
+                skin = 2; 
+                printf("skin==%d", skin);
             }
             if(estado == EM_JOSIAS) {
                 puts("estado == EM_JOSIAS ");
-                skin = '1';
-                printf("skin==%c", skin);
+                skin = 1;
+                printf("skin==%d", skin);
             }
             if(estado == EM_JOSUE) {
                 puts("estado == EM_JOSUE ");
-                skin = '0';
-                printf("skin==%c", skin);
+                skin = 0;
+                printf("skin==%d", skin);
             }
 
-            if(skin != '-1' && strcmp(type_buffer_name, inicial_name) != 0 && strcmp(type_buffer_ip, inicial_ip) != 0) {
-                //puts("DEU CERTO KRAI");
-                int ret = sendMsgToServer((char) &skin, 1);
-                int ret2 = sendMsgToServer((char *) type_buffer_name, type_pointer_name);
-
-            }
+            // if(estado == EM_CONECTAR){
+            //         //fadeout(3);
+            //         conecta();
+            // }
             
             /*if(limite == 3) {
                 int ret = sendMsgToServer(&skin, 1);
