@@ -84,8 +84,7 @@ void rodarServer(){
     
     //printf("sizeof(Player_Data)=%d\n",sizeof(Player_Data));
     //char client_names[MAX_CHAT_CLIENTS][LOGIN_MAX_SIZE];
-    serverInit(MAX_CLIENTS);
-    puts("Server is running!!\n");
+    
     
     if(!al_init())
        puts("Falha ao iniciar allegro\n");
@@ -837,6 +836,8 @@ void rodarServer(){
 }
 
 int main() {
+    serverInit(MAX_CLIENTS);
+    puts("Server is running!!\n");
     int res = 'y';
     while(1){
         rodarServer();
@@ -845,8 +846,8 @@ int main() {
 		while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
 			puts("anh???");
 		}
-        if(res == 'n') break;
-        else if(res == 'y') serverReset();
+        // if(res == 'n') break;
+        // else if(res == 'y') serverReset();
     }
     
     puts("MORRI");
