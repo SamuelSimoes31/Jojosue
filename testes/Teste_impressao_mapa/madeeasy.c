@@ -30,12 +30,31 @@ ALLEGRO_BITMAP *icon_shuricarta;
 ALLEGRO_BITMAP *icon_trap;
 ALLEGRO_BITMAP *icon_bomb;
 ALLEGRO_BITMAP *icon_dog;
+ALLEGRO_BITMAP *anim_trap;
+ALLEGRO_BITMAP *anim_bomb;
+ALLEGRO_BITMAP *anim_dog;
+ALLEGRO_BITMAP *atk_throw;
 ALLEGRO_BITMAP *icon_boxes;
 ALLEGRO_FONT *fonte_timer;
 ALLEGRO_FONT *fonte_jogo;
 ALLEGRO_SAMPLE *shurikarta;
-ALLEGRO_SAMPLE *armadilhaDamage = NULL;
+ALLEGRO_SAMPLE *armadilhaDamage;
 ALLEGRO_SAMPLE *armadilhaPlaced;
+ALLEGRO_SAMPLE *bombPlaced;
+ALLEGRO_SAMPLE *armadilhaAtiva;
+ALLEGRO_SAMPLE *cachorro;
+ALLEGRO_SAMPLE *caixaobtida;
+ALLEGRO_SAMPLE *dinheiroObtido;
+ALLEGRO_SAMPLE *dinheiroDropado;
+ALLEGRO_SAMPLE *explosao;
+ALLEGRO_SAMPLE *hospitalcura;
+ALLEGRO_SAMPLE *hospitalPorta;
+ALLEGRO_SAMPLE *josiasDano;
+ALLEGRO_SAMPLE *nani;
+ALLEGRO_SAMPLE *somfalha;
+ALLEGRO_SAMPLE *dano;
+ALLEGRO_SAMPLE *explosao;
+ALLEGRO_SAMPLE *loja;
 
 //int posX=1, posY=1;
 //PLAY_SCREEN
@@ -168,6 +187,7 @@ void destruirBitmaps(){
     al_destroy_bitmap(store_menu);
     al_destroy_bitmap(heart_carta);
     al_destroy_bitmap(icon_dog);
+    al_destroy_bitmap(atk_throw);
     al_destroy_bitmap(icon_boxes);
     al_destroy_bitmap(item_bar);
     al_destroy_bitmap(box_bar);    
@@ -217,33 +237,100 @@ int main()
 
     shurikarta = al_load_sample("source/resources/audio/samples/shurikarta.wav");
     if (!shurikarta) {
-        printf( "Audio nao carregado.");
+        printf( "Audio nao carregado1.");
+        return 0;
+    }
+    bombPlaced= al_load_sample("source/resources/audio/samples/bombPlaced.wav");
+    if (!bombPlaced) {
+        printf( "Audio nao carregado2.");
+        return 0;
+    }
+    cachorro = al_load_sample("source/resources/audio/samples/cachurro.wav");
+    if (!cachorro) {
+        printf( "Audio nao carregado3.");
+        return 0;
+    }
+    caixaobtida = al_load_sample("source/resources/audio/samples/caixaobtida.wav");
+    if (!caixaobtida) {
+        printf( "Audio nao carregado4.");
+        return 0;
+    }
+    dinheiroDropado = al_load_sample("source/resources/audio/samples/dinheiroDropado.wav");
+    if (!dinheiroDropado) {
+        printf( "Audio nao carregado5.");
+        return 0;
+    }
+    dano = al_load_sample("source/resources/audio/samples/dano.wav");
+    if (!dano) {
+        printf( "Audio nao carregado6.");
+        return 0;
+    }
+    dinheiroObtido = al_load_sample("source/resources/audio/samples/dinheiroObtido.wav");
+    if (!dinheiroObtido) {
+        printf( "Audio nao carregado7.");
+        return 0;
+    }
+    explosao = al_load_sample("source/resources/audio/samples/explosao.wav");
+    if (!explosao) {
+        printf( "Audio nao carregado8.");
+        return 0;
+    }
+    hospitalcura = al_load_sample("source/resources/audio/samples/hospitalCura.wav");
+    if (!hospitalcura) {
+        printf( "Audio nao carregado9.");
+        return 0;
+    }
+    hospitalPorta = al_load_sample("source/resources/audio/samples/hospitalPorta.wav");
+    if (!hospitalPorta) {
+        printf( "Audio nao carregado10.");
+        return 0;
+    }
+   josiasDano = al_load_sample("source/resources/audio/samples/josiasDano.wav");
+    if (!josiasDano) {
+        printf( "Audio nao carregado11.");
+        return 0;
+    }
+    nani = al_load_sample("source/resources/audio/samples/nani.wav");
+    if (!nani) {
+        printf( "Audio nao carregado.12");
+        return 0;
+    }
+    somfalha = al_load_sample("source/resources/audio/samples/som de falha.wav");
+    if (!somfalha) {
+        printf( "Audio nao carregado13.");
+        return 0;
+    }
+    armadilhaDamage = al_load_sample("source/resources/audio/samples/armadilha.wav");
+    if (!armadilhaDamage) {
+        printf( "Audio nao carregado14..");
         return 0;
     }
 
-    /*armadilhaDamage = al_load_sample("source/resources/audio/samples/armadilha.wav");
-    if (!armadilhaDamage) {
-        printf( "Audio nao carregado..");
-        return 0;
-    }*/
-
     armadilhaPlaced = al_load_sample("source/resources/audio/samples/armadilhaPlaced.wav");
     if (!armadilhaPlaced) {
-        printf( "Audio nao carregado...");
+        printf( "Audio nao carregado.15..");
+        return 0;
+    }
+    loja = al_load_sample("source/resources/audio/samples/shopDoorBell.wav");
+    if (!loja) {
+        printf( "Audio nao carregado.16..");
         return 0;
     }
 
     
     //al_set_window_position(display,200,200);
     int passos=16, passosCounter=0, passosCounterEnemy=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
-    bool done = false, draw = true, animate = false, animateEnemy=false ,active = false/*,comprou=true*/;
+    bool done = false, draw = true, animate = false, animateEnemy=false, animateDMG=false, animateATK=false, animateTRAP=false ,active = false/*,comprou=true*/;
     char comprou = NO_ITEM;
     float x=0, y=0, ENx=0, ENy=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
     unsigned short oldPosX, oldPosY, oldPosEnemyX, oldPosEnemyY;
-    int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0;
+    int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0, sourceHPX = 0, sourceHPY=0, sourceATKX = 0, sourceATKY=0, sourceTRAPX = 0, sourceTRAPY = 0;
     char use=0;
     int cnt60=0, cnt240=0;
     char houses[] = {1,2,4,5,6,7,8,17,19,20,21,22,23,24,40,42,43,44,45,46,48,50,60,61,62,64,66,68,69,71,72,73,74,75,76,77,88,-1};
+    char dmg;
+    char tempface;
+    char item_used;
     //moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
@@ -264,6 +351,35 @@ int main()
     heart_carta = al_load_bitmap("source/resources/images/Life.png");
     if(!heart_carta){
         puts("Falha ao carregar heart_carta.\n");
+        destruirBitmaps();
+        exit(-1);
+        state = ENDGAME;
+    }
+
+    atk_throw = al_load_bitmap("source/resources/images/ATK.png");
+    if(!atk_throw){
+        puts("Falha ao carregar ATK.\n");
+        destruirBitmaps();
+        exit(-1);
+        state = ENDGAME;
+    }
+    anim_dog = al_load_bitmap("source/resources/images/El_Catioro_bmap.png");
+    if(!anim_dog){
+        puts("Falha ao carregar El_Catioro_bmap.\n");
+        destruirBitmaps();
+        exit(-1);
+        state = ENDGAME;
+    }
+    anim_bomb = al_load_bitmap("source/resources/images/Armadilha_V2_bmap.png");
+    if(!anim_bomb){
+        puts("Falha ao carregar Armadilha_V2_bmap.\n");
+        destruirBitmaps();
+        exit(-1);
+        state = ENDGAME;
+    }
+    anim_trap = al_load_bitmap("source/resources/images/Armadilha_V1_bmap.png");
+    if(!anim_trap){
+        puts("Falha ao carregar Armadilha_V1_bmap.\n");
         destruirBitmaps();
         exit(-1);
         state = ENDGAME;
@@ -363,8 +479,11 @@ int main()
 			int ret;
 			assertConnection();
 			ret = recvMsgFromServer(&player, WAIT_FOR_IT);
-            if(player.identifier==BOX_CHANGE) printf("BOX 1 - %s/%d - BOX 2 - %s/%d - BOX 3 - %s/%d - BOX 4 - %s/%d - BOX 5 - %s/%d\n",(player.boxArray[0].type==PAC?"PAC":(player.boxArray[0].type==SEDEX?"SEDEX":(player.boxArray[0].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[0].addIndex],(player.boxArray[1].type==PAC?"PAC":(player.boxArray[1].type==SEDEX?"SEDEX":(player.boxArray[1].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[1].addIndex],(player.boxArray[2].type==PAC?"PAC":(player.boxArray[2].type==SEDEX?"SEDEX":(player.boxArray[2].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[2].addIndex],(player.boxArray[3].type==PAC?"PAC":(player.boxArray[3].type==SEDEX?"SEDEX":(player.boxArray[3].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[3].addIndex],(player.boxArray[4].type==PAC?"PAC":(player.boxArray[4].type==SEDEX?"SEDEX":(player.boxArray[4].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[4].addIndex]);
-			state=WAITING_ENEMY;
+            if(player.identifier==BOX_CHANGE) {
+            printf("BOX 1 - %s/%d - BOX 2 - %s/%d - BOX 3 - %s/%d - BOX 4 - %s/%d - BOX 5 - %s/%d\n",(player.boxArray[0].type==PAC?"PAC":(player.boxArray[0].type==SEDEX?"SEDEX":(player.boxArray[0].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[0].addIndex],(player.boxArray[1].type==PAC?"PAC":(player.boxArray[1].type==SEDEX?"SEDEX":(player.boxArray[1].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[1].addIndex],(player.boxArray[2].type==PAC?"PAC":(player.boxArray[2].type==SEDEX?"SEDEX":(player.boxArray[2].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[2].addIndex],(player.boxArray[3].type==PAC?"PAC":(player.boxArray[3].type==SEDEX?"SEDEX":(player.boxArray[3].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[3].addIndex],(player.boxArray[4].type==PAC?"PAC":(player.boxArray[4].type==SEDEX?"SEDEX":(player.boxArray[4].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[4].addIndex]);
+            //al_play_sample(caixaobtida, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+            }
+            state=WAITING_ENEMY;
             x = (player.posX + 3)*32;
             y = (player.posY + 5)*32;
 		}
@@ -436,15 +555,35 @@ int main()
 			else if(ret != NO_MESSAGE){
 				if(auxPlayer.ID == player.ID){ //se for a estrutura deste jogador
                     puts("Recebeu propria estrutura");
+                    if(auxPlayer.identifier == DAMAGE || auxPlayer.identifier == POSITION){
+                        if(player.HP!=auxPlayer.HP){
+                            animateDMG = 1;
+                            dmg = player.HP - auxPlayer.HP;
+                            if(skin==JOSIAS){
+                                al_play_sample(josiasDano, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                            }
+                            else {
+                                al_play_sample(dano, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);    
+                            }
+                        }
+                    }
+                    if(auxPlayer.identifier == ITEM_USAGE){
+                        for(int i = 0; i<3; i++){
+                            if(player.itemArray[i]!=SHURICARD&&player.itemArray[i]!=NO_ITEM){
+                                if(player.itemArray[i]!=auxPlayer.itemArray[i]){
+                                    item_used = player.itemArray[i];
+                                    animateTRAP = 1;
+                                    break;
+                                }
+                            }
+                        }
+                    }
 					player = auxPlayer;	
                     if(player.identifier == POSITION){
                         if(active) animate = true;
                     }
                     else if(player.identifier == BUY){
-                        // al_get_keyboard_state(&keyState);
-                        // if(comprou && ){
-
-                        // }
+                        al_play_sample(dinheiroDropado, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     }
 					if(player.HP <= 0){
 						state = LOSE_SCREEN;
@@ -482,42 +621,46 @@ int main()
             {
                 if(events.timer.source == timer) // 1/60
                 {
-		    if(cnt60++==40){
-			comprou=0;
-            use = 0;
-			cnt60=0;
-		    }
+                    if(cnt60++==40){
+                    comprou=0;
+                    use = 0;
+                    cnt60=0;
+                    }
                     
-                    if(active == false){
+                    if(active == false && !animateTRAP){
                         active = true;
                         
                         if(al_key_down(&keyState, ALLEGRO_KEY_DOWN)){
                             //puts("Entrou no KEY_DOWN");
+                            //if(!animateTRAP){
                             char key = DOWN_ARROW;
                             oldPosX = player.posX;
                             oldPosY = player.posY;
-                            sendMsgToServer((char *)&key,1);
+                            sendMsgToServer((char *)&key,1);//}
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_UP)){
                             //puts("Entrou no KEY_UP");
+                            //if(!animateTRAP){
                             char key = UP_ARROW;
                             oldPosX = player.posX;
                             oldPosY = player.posY;
-                            sendMsgToServer((char *)&key,1);
+                            sendMsgToServer((char *)&key,1);//}
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_RIGHT)){
                             //puts("Entrou no KEY_RIGHT");
+                            //if(!animateTRAP){
                             char key = RIGHT_ARROW;
                             oldPosX = player.posX;
                             oldPosY = player.posY;
-                            sendMsgToServer((char *)&key,1);
+                            sendMsgToServer((char *)&key,1);//}
                         }
                         else if(al_key_down(&keyState, ALLEGRO_KEY_LEFT)){
                             //puts("Entrou no KEY_LEFT");
+                            //if(!animateTRAP){
                             char key = LEFT_ARROW;
                             oldPosX = player.posX;
                             oldPosY = player.posY;
-                            sendMsgToServer((char *)&key,1);
+                            sendMsgToServer((char *)&key,1);//}
                         }
                         else{
                             active = false;
@@ -603,21 +746,33 @@ int main()
                     }
                     else if(!use && al_key_down(&keyState, ALLEGRO_KEY_1)){
                         use = 1;
-                        al_play_sample(shurikarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                        //al_play_sample(shurikarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         puts("usei item 1");
                         char key = ITEM1_BUTTON;
+                        if(player.itemArray[0]==SHURICARD){
+                            animateATK=1;
+                            tempface = player.face;
+                        }
                         sendMsgToServer((char *)&key,1);
                     }
                     else if(!use && al_key_down(&keyState, ALLEGRO_KEY_2)){
                         use = 1;
-                        al_play_sample(armadilhaPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                        //al_play_sample(armadilhaPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         char key = ITEM2_BUTTON;
                         sendMsgToServer((char *)&key,1);
+                        if(player.itemArray[1]==SHURICARD){
+                            animateATK=1;
+                            tempface = player.face;
+                        }
                     }
                     else if(!use && al_key_down(&keyState, ALLEGRO_KEY_3)){
                         use = 1;
                         char key = ITEM3_BUTTON;
                         sendMsgToServer((char *)&key,1);
+                        if(player.itemArray[2]==SHURICARD){
+                            animateATK=1;
+                            tempface = player.face;
+                        }
                     }
                     else if(!use && al_key_down(&keyState, ALLEGRO_KEY_SPACE)){
                         use = 1;
@@ -653,12 +808,87 @@ int main()
                         ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*al_get_bitmap_height(player_sprite)/4,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
                         ALLEGRO_BITMAP *subBitmapEnemy = al_create_sub_bitmap(enemy_sprite, sourceEnemyX, sourceEnemyY*al_get_bitmap_height(enemy_sprite)/4,al_get_bitmap_width(enemy_sprite)/4,al_get_bitmap_height(enemy_sprite)/4);
                         al_draw_bitmap(background,0,0,0);
-                        
+                        if(animateATK){
+                            if(tempface == UP){
+                                    al_draw_bitmap_region(atk_throw, sourceATKX, 32, 32, 32,x, y-32, 0);
+                                    al_play_sample(shurikarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                            }
+                        }
+                        else if(animateTRAP){
+                            if(item_used == TRAP){ 
+                                switch(player.face){
+                                    case DOWN: al_draw_bitmap_region(anim_trap, sourceTRAPX, 0, 32, 32,x, y+32, 0);
+                                    al_play_sample(armadilhaPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                    case UP: al_draw_bitmap_region(anim_trap, sourceTRAPX, 0, 32, 32,x, y-32, 0);
+                                    al_play_sample(armadilhaPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);                                                        
+                                    break;
+                                    case LEFT: al_draw_bitmap_region(anim_trap, sourceTRAPX, 0, 32, 32,x-32, y, 0);
+                                    al_play_sample(armadilhaPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);                                    
+                                    break;
+                                    case RIGHT: al_draw_bitmap_region(anim_trap, sourceTRAPX, 0, 32, 32,x+32, y, 0);
+                                    al_play_sample(armadilhaPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                }
+                                //al_draw_bitmap_region(anim_trap, sourceTRAPX, 32, 32, 32,x, y-32, 0);
+                            }
+                            else if(item_used == BOMB){
+                                switch(player.face){
+                                    case DOWN: al_draw_bitmap_region(anim_bomb, sourceTRAPX, 0, 32, 32,x, y+32, 0);
+                                    al_play_sample(bombPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                    case UP: al_draw_bitmap_region(anim_bomb, sourceTRAPX, 0, 32, 32,x, y-32, 0);
+                                    al_play_sample(bombPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                    case LEFT: al_draw_bitmap_region(anim_bomb, sourceTRAPX, 0, 32, 32,x-32, y, 0);
+                                    al_play_sample(bombPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                    case RIGHT: al_draw_bitmap_region(anim_bomb, sourceTRAPX, 0, 32, 32,x+32, y, 0);
+                                    al_play_sample(bombPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                }
+                                 //al_draw_bitmap_region(anim_bomb, sourceTRAPX, 32, 32, 32,x, y-32, 0);
+                                 }
+                            else if(item_used == DOG){
+                                switch(player.face){
+                                    case DOWN: al_draw_bitmap_region(anim_dog, sourceTRAPX, 0, 32, 32,x, y+32, 0);
+                                    al_play_sample(cachorro, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                    case UP: al_draw_bitmap_region(anim_dog, sourceTRAPX, 0, 32, 32,x, y-32, 0);
+                                    al_play_sample(cachorro, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                    case LEFT: al_draw_bitmap_region(anim_dog, sourceTRAPX, 0, 32, 32,x-32, y, 0);
+                                    al_play_sample(cachorro, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                    case RIGHT: al_draw_bitmap_region(anim_dog, sourceTRAPX, 0, 32, 32,x+32, y, 0);
+                                    al_play_sample(cachorro, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    break;
+                                }
+                                 //al_draw_bitmap_region(anim_dog, sourceTRAPX, 32, 32, 32,x, y-32, 0);
+                            }
+                        }
                         if(skin != JOSIAS) al_draw_bitmap(subBitmap,x,y,0);
                         else al_draw_bitmap(subBitmap,x,y-5,0);
                         if(enemy.skin != JOSIAS) al_draw_bitmap(subBitmapEnemy,ENx,ENy,0);
                         else al_draw_bitmap(subBitmapEnemy,ENx,ENy-5,0);
+                        if(animateATK){
+                            switch(tempface){
 
+                                case DOWN:
+                                    al_play_sample(shurikarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    al_draw_bitmap_region(atk_throw, sourceATKX, 0, 32, 32,x, y+22, 0);
+                                    break;
+                                case LEFT:
+                                    al_play_sample(shurikarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    al_draw_bitmap_region(atk_throw, sourceATKX, 64, 32, 32,x-22, y, 0);
+                                    break;
+                                case RIGHT:
+                                    al_play_sample(shurikarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    al_draw_bitmap_region(atk_throw, sourceATKX, 92, 32, 32,x+22, y, 0);
+                                    break;
+
+                            }
+                        }
                         al_identity_transform(&camera);
                         al_translate_transform(&camera,0,0);
                         //al_scale_transform(&camera,scale,scale);
@@ -667,8 +897,15 @@ int main()
                         for(int i=0;i<player.HP;i++){
                             al_draw_bitmap_region(heart_carta, 0, 0, larguraCarta, alturaCarta, i*larguraCarta + 5, 20, 0);
                         }
+                        if(animateDMG){
+                            for(int i=0; i<dmg; i++){
+                                //puts("OPLES");
+                                al_draw_bitmap_region(heart_carta, sourceHPX, 0, 32, 32,(i+player.HP)*larguraCarta + 5, 20, 0);
+                            }
+                        }
+                        
                         al_draw_textf(fonte_jogo,al_map_rgb(0,255,0),32,alturaCarta +50,0,"%d Taoquei's",player.money);
-
+                        al_draw_textf(fonte_jogo,al_map_rgb((player.reputation<70? 255: 0),(player.reputation>30? 255: 0),0),32,alturaCarta +80,0,"Reputacao: %d%%",player.reputation);
                         al_draw_scaled_bitmap(item_bar,0,0,34,96,0,ALTURA_TELA/4,68,192,NULL);
                         al_draw_scaled_bitmap(box_bar,0,0,160,40,(LARGURA_TELA/2)-160,ALTURA_TELA-80,320,80,NULL);
 
@@ -704,11 +941,16 @@ int main()
                                         al_draw_scaled_bitmap(icon_boxes,64,0,32,32,(LARGURA_TELA/2)-160+(i*62),ALTURA_TELA-80,64,64,0);
                                         break;
                                 }
-
-                                al_draw_textf(fonte_timer,al_map_rgb(255,255,255),(LARGURA_TELA/2)-132+(i*62),ALTURA_TELA-11,0,"%d",player.boxArray[i].timeLast);
+                                    
+                                al_draw_textf(fonte_timer,al_map_rgb(255,(player.boxArray[i].timeLast>10?255:0),(player.boxArray[i].timeLast>20?255:0)),(LARGURA_TELA/2)-132+(i*62),ALTURA_TELA-11,0,"%d",player.boxArray[i].timeLast);
                                 al_draw_textf(fonte_timer,al_map_rgb(255,255,255),(LARGURA_TELA/2)-150+(i*62),ALTURA_TELA-59,0,"Casa %d",houses[player.boxArray[i].addIndex]);
+                                
+                                if(player.boxArray[i].timeLast<=5){
+                                    al_play_sample(somfalha, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                }
 
                             }
+
                         }
 
                         if(player.ID==0){
@@ -751,6 +993,37 @@ int main()
 
                     if(sourceEnemyX >= al_get_bitmap_width(enemy_sprite)) sourceEnemyX = 0;
                     sourceEnemyY = enemy.face;
+
+                    //VIDA
+                    if(animateDMG){
+                        sourceHPX += 32;
+                        if(sourceHPX==224) animateDMG=0;
+                    }
+                    else{
+                        sourceHPX = 0;
+                        dmg = 0;
+                    }
+                    if(animateATK){
+                        sourceATKX += 32;
+                        sourceATKY = enemy.face;
+                        if(sourceATKX==160) animateATK=0;
+                    }
+                    else{
+                        sourceATKX = 0;
+
+                    }
+
+                    if(animateTRAP){
+                        sourceTRAPX += 32;
+                        sourceTRAPY = 0;
+                        if(item_used == TRAP){ if(sourceTRAPX>=320){ animateTRAP=0; item_used=0;}}
+                        else if(item_used == BOMB){ if(sourceTRAPX>=256){ animateTRAP=0;item_used=0;}}
+                        else if(item_used == DOG){ if(sourceTRAPX>=384){ animateTRAP=0;item_used=0;}}
+                    }
+                    if(!animateTRAP){
+                        sourceTRAPX=0;
+                    }
+                    
 
                 }
 

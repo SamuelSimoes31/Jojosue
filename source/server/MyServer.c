@@ -116,7 +116,7 @@ void rodarServer(){
                     players[id].HP = 10;
                     players[id].reputation = 100;
                     players[id].face = DOWN;
-                    players[id].money = 500;
+                    players[id].money = 100000;
                     players[id].posX = (id==0 ? 1:42);
                     players[id].posY = (id==0 ? 1:27);
                     int i;
@@ -259,18 +259,21 @@ void rodarServer(){
                                     players[ret.client_id].boxArray[i].type = NO_BOX;
                                     players[ret.client_id].boxArray[i].timeLast = 0;
                                     players[ret.client_id].boxArray[i].addIndex = 38;
+                                     if(players[ret.client_id].reputation+3<=100)players[ret.client_id].reputation += 3;
                                 }
                                 else if(players[ret.client_id].boxArray[i].type == SEDEX){
                                     players[ret.client_id].money += 130;
                                     players[ret.client_id].boxArray[i].type = NO_BOX;
                                     players[ret.client_id].boxArray[i].timeLast = 0;
                                     players[ret.client_id].boxArray[i].addIndex = 38;
+                                     if(players[ret.client_id].reputation+5<=100)players[ret.client_id].reputation += 5;
                                 }
                                 else if(players[ret.client_id].boxArray[i].type == EXPRESS){
                                     players[ret.client_id].money += 200;
                                     players[ret.client_id].boxArray[i].type = NO_BOX;
                                     players[ret.client_id].boxArray[i].timeLast = 0;
                                     players[ret.client_id].boxArray[i].addIndex = 38;
+                                    if(players[ret.client_id].reputation+7<=100)players[ret.client_id].reputation += 7;
                                 }
                             }
                         }
@@ -491,7 +494,10 @@ void rodarServer(){
                             }
                         }
 
-                        if (flagsucesso) players[ret.client_id].itemArray[1] = NO_ITEM;
+                        if(flagsucesso) {
+                            players[ret.client_id].itemArray[1] = NO_ITEM;
+                            players[ret.client_id].identifier = ITEM_USAGE; 
+                        }
                         for(int i = 0; i<2; i++)
                         broadcast((Player_Data *)&players[i],sizeof(Player_Data));
                     }
@@ -597,7 +603,10 @@ void rodarServer(){
                             }
                         }
 
-                        if(flagsucesso) players[ret.client_id].itemArray[2] = NO_ITEM;
+                        if(flagsucesso) {
+                            players[ret.client_id].itemArray[2] = NO_ITEM;
+                            players[ret.client_id].identifier = ITEM_USAGE; 
+                        }
                         for(int i = 0; i<2; i++)
                         broadcast((Player_Data *)&players[i],sizeof(Player_Data));
                     }
