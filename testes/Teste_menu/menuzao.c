@@ -61,6 +61,7 @@ char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
     ALLEGRO_FONT *fonte = NULL;
     ALLEGRO_FONT *fonte_tut = NULL;
     ALLEGRO_AUDIO_STREAM *musica_menu = NULL;
+    ALLEGRO_BITMAP *game_icon = NULL;
     typedef struct {
         char nome[14];
         int pontuacao;
@@ -229,6 +230,8 @@ int inicializar() {
         al_destroy_timer(timer);
         return 0;
     }
+    game_icon = al_create_sub_bitmap(folha_1_sprite,32,0,32,32);
+    al_set_display_icon(janela, game_icon);
 
     folha_2_sprite = al_load_bitmap("source/resources/images/characters/Josias.png");
     if(!folha_2_sprite) {
@@ -490,6 +493,7 @@ void destroi(){
 
 int main()
 {
+    
     int desenha = 1;
     //largura e altura de cada sprite dentro da folha
     int altura_sprite = 32, largura_sprite = 32, altura_2_sprite = 37;
@@ -696,6 +700,9 @@ int main()
         int concluido_ip = 0;
         int pisca_name = 0;
         int pisca_ip = 0;
+        int pisca_josias = 0;
+        int pisca_josue = 0;
+        int pisca_matias = 0;
 
         estados_game_menu estado = 99;
 
@@ -783,20 +790,6 @@ int main()
             }
 
             if(desenha && al_is_event_queue_empty(fila_eventos_timer)) {
-                    al_draw_scaled_bitmap(folha_1_sprite,
-                    regiao_x_folha, regiao_y_folha,
-                    largura_sprite, altura_sprite,
-                    pos_x_sprite, pos_y_sprite, 150, 150, 0);
-
-                    al_draw_scaled_bitmap(folha_2_sprite,
-                    regiao_x_folha, regiao_y_2_folha,
-                    largura_sprite, altura_2_sprite,
-                    750, pos_y_2_sprite, 150, 150, 0);
-
-                    al_draw_scaled_bitmap(folha_3_sprite,
-                    regiao_x_folha, regiao_y_folha,
-                    largura_sprite, altura_sprite,
-                    pos_x_3_sprite, pos_y_3_sprite, 150, 150, 0);
 
                     if(estado == EM_NAME){
                         if(pisca_name++ > 40) pisca_name = 0; 
@@ -808,6 +801,36 @@ int main()
                     }
                     else pisca_ip = 0;
                     if(pisca_ip < 25) al_draw_text(fonte, al_map_rgb(255, 0, 0), 1450, 600, ALLEGRO_ALIGN_RIGHT, type_buffer_ip);
+                    if(estado == EM_JOSIAS) {
+                        if(pisca_josias++ > 40) pisca_josias = 0;
+                    }
+                    else pisca_josias = 0;
+                    if(pisca_josias < 25) {
+                        al_draw_scaled_bitmap(folha_2_sprite,
+                        regiao_x_folha, regiao_y_2_folha,
+                        largura_sprite, altura_2_sprite,
+                        750, pos_y_2_sprite, 150, 150, 0);
+                    }
+                    if(estado == EM_JOSUE) {
+                        if(pisca_josue++ > 40) pisca_josue = 0;
+                    }
+                    else pisca_josue = 0;
+                    if(pisca_josue < 25) {
+                        al_draw_scaled_bitmap(folha_1_sprite,
+                        regiao_x_folha, regiao_y_folha,
+                        largura_sprite, altura_sprite,
+                        pos_x_sprite, pos_y_sprite, 150, 150, 0);
+                    }
+                    if(estado == EM_MATIAS) {
+                        if(pisca_matias++ > 40) pisca_matias = 0;
+                    }
+                    else pisca_matias = 0;
+                    if(pisca_matias < 25) {
+                        al_draw_scaled_bitmap(folha_3_sprite,
+                        regiao_x_folha, regiao_y_folha,
+                        largura_sprite, altura_sprite,
+                        pos_x_3_sprite, pos_y_3_sprite, 150, 150, 0);
+                    }
 
                     desenha = 0;
                     al_flip_display();
