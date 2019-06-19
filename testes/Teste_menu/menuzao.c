@@ -17,6 +17,7 @@
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
 #define FPS 60.0
+#define frameFPS 12.0
 #define NOME_MAX_SIZE 13
 //dale dbv
 //-lallegro_ttf -lallegro_font -lallegro
@@ -41,6 +42,9 @@ char type_buffer_name[NOME_MAX_SIZE] = {"nick\0"};
 char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
 
 
+    ALLEGRO_KEYBOARD_STATE keyState;
+    ALLEGRO_TRANSFORM camera;
+    ALLEGRO_EVENT_QUEUE *event_queue = NULL;
     ALLEGRO_BITMAP *botao_jogar = NULL;
     ALLEGRO_BITMAP *botao_tutorial = NULL;
     ALLEGRO_BITMAP *botao_leaderboard = NULL;
@@ -56,6 +60,7 @@ char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
     ALLEGRO_SAMPLE *coin = NULL;
     ALLEGRO_SAMPLE *clicking = NULL;
     ALLEGRO_TIMER *timer = NULL;
+    ALLEGRO_TIMER *frameTimer = NULL;
     ALLEGRO_BITMAP *folha_1_sprite = NULL;
     ALLEGRO_BITMAP *folha_2_sprite = NULL;
     ALLEGRO_BITMAP *folha_3_sprite = NULL;
@@ -69,6 +74,16 @@ char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
     ALLEGRO_FONT *fonte_jogo = NULL;
     ALLEGRO_AUDIO_STREAM *musica_menu = NULL;
     ALLEGRO_BITMAP *game_icon = NULL;
+    ALLEGRO_BITMAP *store_menu = NULL;
+    ALLEGRO_BITMAP *heart_carta = NULL;
+    ALLEGRO_BITMAP *item_bar = NULL;
+    ALLEGRO_BITMAP *box_bar = NULL;
+    ALLEGRO_BITMAP *icon_shuricarta = NULL;
+    ALLEGRO_BITMAP *icon_trap = NULL;
+    ALLEGRO_BITMAP *icon_bomb = NULL;
+    ALLEGRO_BITMAP *icon_dog = NULL;
+    ALLEGRO_BITMAP *icon_boxes = NULL;
+    
     typedef struct {
         char nome[14];
         int pontuacao;
@@ -160,6 +175,12 @@ int inicializar() {
         return 0;
     }
     
+    frameTimer = al_create_timer(1.0/frameFPS);
+    if(!frameTimer) {
+        printf("Falha ao criar timer");
+        return 0;
+    }
+
     fundo = al_load_bitmap("source/resources/images/backgrounds/Mapa.png");
     if(!fundo) {
         printf("Falha ao criar fundo.\n");
@@ -169,6 +190,56 @@ int inicializar() {
     titulo = al_load_bitmap("source/resources/images/Titulo_do_jogo.png");
     if(!titulo) {
         printf("falha ao carregar titulo\n");
+        return 0;
+    }
+
+    store_menu = al_load_bitmap("source/resources/images/backgrounds/Menu de Compras.png");
+    if(!store_menu){
+        puts("Errou ao carregar Menu de Compras.");
+        return 0;
+    }
+
+    heart_carta = al_load_bitmap("source/resources/images/Life.png");
+    if(!heart_carta){
+        puts("Falha ao carregar heart_carta.\n");
+        return 0;
+    }
+
+    item_bar = al_load_bitmap("source/resources/images/Barra_de_Itens.png");
+    if(!item_bar){
+        puts("Falha ao carregar Barra_de_Itens.\n");
+        return 0;
+    }
+    box_bar = al_load_bitmap("source/resources/images/Barra_de_Caixas.png");
+    if(!box_bar){
+        puts("Falha ao carregar Barra_de_Caixas.\n");
+        return 0;
+    }
+
+    icon_shuricarta = al_load_bitmap("source/resources/images/A_Shurikarta(com limites).png");
+    if(!icon_shuricarta){
+        puts("Falha ao carregar A_Shurikarta.\n");
+        return 0;
+    }
+
+    icon_trap = al_load_bitmap("source/resources/images/Armadilha_V1(com limites).png");
+    if(!icon_trap){
+        puts("Falha ao carregar Armadilha_V1.\n");
+        return 0;
+    }
+    icon_bomb = al_load_bitmap("source/resources/images/Armadilha_V2.png");
+    if(!icon_bomb){
+        puts("Falha ao carregar Armadilha_V2.\n");
+        return 0;
+    }
+    icon_dog = al_load_bitmap("source/resources/images/El_Catioro(com limites).png");
+    if(!icon_dog){
+        puts("Falha ao carregar El_Catioro.\n");
+        return 0;
+    }
+    icon_boxes = al_load_bitmap("source/resources/images/Caixas.png");
+    if(!icon_boxes){
+        puts("Falha ao carregar Caixas.\n");
         return 0;
     }
 
@@ -221,6 +292,13 @@ int inicializar() {
  
     fila_eventos = al_create_event_queue();
     if (!fila_eventos) {
+        fprintf(stderr, "Falha ao criar fila de eventos.\n");
+        al_destroy_display(janela);
+        return 0;
+    }
+
+    event_queue = al_create_event_queue();
+    if (!event_queue) {
         fprintf(stderr, "Falha ao criar fila de eventos.\n");
         al_destroy_display(janela);
         return 0;
@@ -295,8 +373,24 @@ int inicializar() {
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     al_register_event_source(fila_eventos_timer, al_get_timer_event_source(timer));
     al_start_timer(timer);
-
+    
     return 1;
+}
+
+float cameraPosition[2] = {0,0}, scale = 3.0;
+void cameraUpdate(float* cameraPosition, float x, float y, int width, int height){
+    int bordaX = al_get_bitmap_width(fundo) - LARGURA_TELA/scale;
+    int bordaY = al_get_bitmap_height(fundo) - ALTURA_TELA/scale;
+    cameraPosition[0] = -(LARGURA_TELA/2/scale) + (x + width/2);
+    cameraPosition[1] = -(ALTURA_TELA/2/scale) + (y + height/2);
+    if(cameraPosition[0] < 0) cameraPosition[0] = 0;
+    else if(cameraPosition[0] > bordaX) cameraPosition[0] = bordaX;
+    if(cameraPosition[1] < 0) cameraPosition[1] = 0;
+    else if(cameraPosition[1] > bordaY) cameraPosition[1] = bordaY;
+    
+    //if(cameraPosition[0] > ALTURA_TELA/); cameraPosition[0] = ALTURA_TELA;
+    //printf("al_get_bitmap_width(background)=%d - %d\n",al_get_bitmap_width(background),LARGURA_TELA/scale);
+    //printf("x=%g y=%g cameraPosition[0]=%g cameraPosition[1]=%g scale=%g \n",x,y,cameraPosition[0],cameraPosition[1],scale);
 }
 
 void fadeout(int velocidade)
@@ -804,7 +898,13 @@ int main()
             }
         }
         while(estado_tela == PRE_GAME) {
+            al_register_event_source(event_queue, al_get_timer_event_source(timer));
+            al_register_event_source(event_queue,al_get_timer_event_source(frameTimer));
+            al_register_event_source(event_queue,al_get_display_event_source(janela));
+            al_register_event_source(event_queue,al_get_keyboard_event_source());
             
+            al_start_timer(frameTimer);
+
             al_draw_scaled_bitmap(fundo,
             0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
             0, 0, LARGURA_TELA, ALTURA_TELA, 0);
@@ -847,6 +947,11 @@ int main()
             al_rest(6);
             estado_tela = IN_GAME;
             fadeout(5);
+
+            al_identity_transform(&camera);
+            al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
+            al_scale_transform(&camera,scale,scale);
+            al_use_transform(&camera);
         }
         while(estado_tela == IN_GAME){
             printf("IN GAME\n");
