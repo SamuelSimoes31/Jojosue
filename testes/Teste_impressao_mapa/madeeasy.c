@@ -41,7 +41,6 @@ ALLEGRO_SAMPLE *shurikarta;
 ALLEGRO_SAMPLE *armadilhaDamage;
 ALLEGRO_SAMPLE *armadilhaPlaced;
 ALLEGRO_SAMPLE *bombPlaced;
-ALLEGRO_SAMPLE *armadilhaAtiva;
 ALLEGRO_SAMPLE *cachorro;
 ALLEGRO_SAMPLE *caixaobtida;
 ALLEGRO_SAMPLE *dinheiroObtido;
