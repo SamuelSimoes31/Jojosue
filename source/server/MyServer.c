@@ -90,7 +90,7 @@ void rodarServer(){
     if(!al_init())
        puts("Falha ao iniciar allegro\n");
 
-    timer = al_create_timer(6.0); //bota sempre .0 nos numeros inteiros, pra ele interpretar como double
+    timer = al_create_timer(8.0); //bota sempre .0 nos numeros inteiros, pra ele interpretar como double
     if(!timer) {puts("timer == NULL");  exit(-1); }
     else puts("Timer funfou");
     decrementTimer = al_create_timer(1.0);
@@ -642,7 +642,7 @@ void rodarServer(){
 
                 else if(typeOfChange == BUY2){
                     if(ret.client_id==0){
-                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 50){
+                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 75){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -657,7 +657,7 @@ void rodarServer(){
                     }
                     }
                     else{
-                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 50){
+                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 75){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -676,7 +676,7 @@ void rodarServer(){
 
                 else if(typeOfChange == BUY3){
                     if(ret.client_id==0){
-                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 50){
+                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 100){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -691,7 +691,7 @@ void rodarServer(){
                     }
                     }
                     else{
-                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 50){
+                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 100){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -710,7 +710,7 @@ void rodarServer(){
 
                 else if(typeOfChange == BUY4){
                     if(ret.client_id==0){
-                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 50){
+                        if(players[ret.client_id].posX==1&&players[ret.client_id].posY==1){if(players[ret.client_id].money >= 150){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -725,7 +725,7 @@ void rodarServer(){
                     }
                     }
                     else{
-                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 50){
+                      if(players[ret.client_id].posX==42&&players[ret.client_id].posY==27){if(players[ret.client_id].money >= 150){
                        // printf("%d\n",players[ret.client_id].money);
                         for(int i=0;i<3;i++){
                             printf("%d\n",players[ret.client_id].itemArray[i]);
@@ -776,6 +776,7 @@ void rodarServer(){
 
                     else if(event.timer.source == timer){
                         printf("ERA PRA ATT CAIXA!\n");
+                        srand(event.timer.count*event.timer.count+event.timer.count);
                         int randomizer = rand()%4;
                         if(randomizer == 0) randomizer = 1;
                         switch(randomizer){

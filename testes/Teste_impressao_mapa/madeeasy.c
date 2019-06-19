@@ -22,6 +22,7 @@
 ALLEGRO_BITMAP *player_sprite;
 ALLEGRO_BITMAP *enemy_sprite;
 ALLEGRO_BITMAP *background;
+ALLEGRO_BITMAP *store_menu;
 ALLEGRO_BITMAP *heart_carta;
 ALLEGRO_BITMAP *item_bar;
 ALLEGRO_BITMAP *box_bar;
@@ -164,6 +165,7 @@ void destruirBitmaps(){
     al_destroy_bitmap(player_sprite);
     al_destroy_bitmap(enemy_sprite);
     al_destroy_bitmap(background);
+    al_destroy_bitmap(store_menu);
     al_destroy_bitmap(heart_carta);
     al_destroy_bitmap(icon_dog);
     al_destroy_bitmap(icon_boxes);
@@ -250,6 +252,12 @@ int main()
     background = al_load_bitmap("source/resources/images/backgrounds/MapaComLimites.png");
     if(!background){
         puts("Errou ao carregar Mapa, prefiro o de 26.0 GB.");
+        exit(0);
+    }
+
+    store_menu = al_load_bitmap("source/resources/images/backgrounds/Menu de Compras.png");
+    if(!store_menu){
+        puts("Errou ao carregar Menu de Compras.");
         exit(0);
     }
 
@@ -645,6 +653,7 @@ int main()
                         ALLEGRO_BITMAP *subBitmap = al_create_sub_bitmap(player_sprite, sourceX, sourceY*al_get_bitmap_height(player_sprite)/4,al_get_bitmap_width(player_sprite)/4,al_get_bitmap_height(player_sprite)/4);
                         ALLEGRO_BITMAP *subBitmapEnemy = al_create_sub_bitmap(enemy_sprite, sourceEnemyX, sourceEnemyY*al_get_bitmap_height(enemy_sprite)/4,al_get_bitmap_width(enemy_sprite)/4,al_get_bitmap_height(enemy_sprite)/4);
                         al_draw_bitmap(background,0,0,0);
+                        
                         if(skin != JOSIAS) al_draw_bitmap(subBitmap,x,y,0);
                         else al_draw_bitmap(subBitmap,x,y-5,0);
                         if(enemy.skin != JOSIAS) al_draw_bitmap(subBitmapEnemy,ENx,ENy,0);
@@ -700,6 +709,15 @@ int main()
                                 al_draw_textf(fonte_timer,al_map_rgb(255,255,255),(LARGURA_TELA/2)-150+(i*62),ALTURA_TELA-59,0,"Casa %d",houses[player.boxArray[i].addIndex]);
 
                             }
+                        }
+
+                        if(player.ID==0){
+                            if(player.posX==1 && player.posY==1)
+                            al_draw_bitmap(store_menu,(LARGURA_TELA/2)-400,(ALTURA_TELA/2)-225,0);
+                        }
+                        else{
+                            if(player.posX==42 && player.posY==27)
+                            al_draw_bitmap(store_menu,(LARGURA_TELA/2)-400,(ALTURA_TELA/2)-225,0);
                         }
 
                         al_flip_display();
