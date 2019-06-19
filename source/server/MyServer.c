@@ -172,8 +172,8 @@ void rodarServer(){
             struct msg_ret_t ret = recvMsg(&typeOfChange);
 
             if(ret.status==MESSAGE_OK){
-                mapMatrix[players[0].posY][players[0].posX] = '0';
-                mapMatrix[players[1].posY][players[1].posX] = '0';
+                mapMatrix[players[0].posY][players[0].posX] = 0;
+                mapMatrix[players[1].posY][players[1].posX] = 0;
                 //printf("%d\n",typeOfChange);
                 if(typeOfChange == UP_ARROW){
                     players[ret.client_id].identifier = POSITION;
@@ -292,7 +292,7 @@ void rodarServer(){
                         if(players[ret.client_id].itemArray[0]==SHURICARD){
 
                             if(players[ret.client_id].face == UP){
-                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!=1 && (players[ret.client_id].posY - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                             players[!(ret.client_id)].HP -= 1;
                                             players[!(ret.client_id)].identifier = DAMAGE;
@@ -301,7 +301,7 @@ void rodarServer(){
                                 }
                             }
                             else if(players[ret.client_id].face == DOWN){
-                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!=1 && (i - players[ret.client_id].posY < 7);i++){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                             players[!(ret.client_id)].HP -= 1;
                                             players[!(ret.client_id)].identifier = DAMAGE;
@@ -310,7 +310,7 @@ void rodarServer(){
                                 }
                             }
                             else if(players[ret.client_id].face == RIGHT){
-                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!=1 && (i - players[ret.client_id].posX < 7);i++){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                             players[!(ret.client_id)].HP -= 1;
                                             players[!(ret.client_id)].identifier = DAMAGE;
@@ -319,7 +319,7 @@ void rodarServer(){
                                 }
                             }
                             else{
-                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!=1 && (players[ret.client_id].posX - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                             players[!(ret.client_id)].HP -= 1;
                                             players[!(ret.client_id)].identifier = DAMAGE;
@@ -371,7 +371,7 @@ void rodarServer(){
                             }
 
                             else{
-                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44) 
+                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<43) 
                                 && !((players[ret.client_id].posX+1==players[!ret.client_id].posX)&&(players[ret.client_id].posY==players[!ret.client_id].posY))
                                 )
                                 {
@@ -403,7 +403,7 @@ void rodarServer(){
                         if(players[ret.client_id].itemArray[1]==SHURICARD){
 
                             if(players[ret.client_id].face == UP){
-                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!=1 && (players[ret.client_id].posY - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                         players[!(ret.client_id)].HP -= 1;
                                         players[!(ret.client_id)].identifier = DAMAGE;
@@ -412,7 +412,7 @@ void rodarServer(){
                                 }
                             }
                             else if(players[ret.client_id].face == DOWN){
-                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!=1 && (i - players[ret.client_id].posY < 7);i++){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                         players[!(ret.client_id)].HP -= 1;
                                         players[!(ret.client_id)].identifier = DAMAGE;
@@ -421,7 +421,7 @@ void rodarServer(){
                                 }
                             }
                             else if(players[ret.client_id].face == RIGHT){
-                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!=1 && (i - players[ret.client_id].posX < 7);i++){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                         players[!(ret.client_id)].HP -= 1;
                                         players[!(ret.client_id)].identifier = DAMAGE;
@@ -430,7 +430,7 @@ void rodarServer(){
                                 }
                             }
                             else{
-                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!=1 && (players[ret.client_id].posX - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                         players[!(ret.client_id)].HP -= 1;
                                         players[!(ret.client_id)].identifier = DAMAGE;
@@ -472,7 +472,7 @@ void rodarServer(){
                             }
 
                             else{
-                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44)){
+                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<43)){
                                     mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem;
                                     
                                     flagsucesso=1;
@@ -497,7 +497,7 @@ void rodarServer(){
                         if(players[ret.client_id].itemArray[2]==SHURICARD){
 
                             if(players[ret.client_id].face == UP){
-                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(players[ret.client_id].posY - i < 7);i--){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!=1 && (players[ret.client_id].posY - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                             players[!(ret.client_id)].HP -= 1;
                                             players[!(ret.client_id)].identifier = DAMAGE;
@@ -506,7 +506,7 @@ void rodarServer(){
                                 }
                             }
                             else if(players[ret.client_id].face == DOWN){
-                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!='1'&&(i - players[ret.client_id].posY < 7);i++){
+                                for(int i = players[ret.client_id].posY; mapMatrix[i][players[ret.client_id].posX]!=1 && (i - players[ret.client_id].posY < 7);i++){
                                     if(players[!(ret.client_id)].posY == i && players[!(ret.client_id)].posX == players[ret.client_id].posX){
                                             players[!(ret.client_id)].HP -= 1;
                                             players[!(ret.client_id)].identifier = DAMAGE;
@@ -515,7 +515,7 @@ void rodarServer(){
                                 }
                             }
                             else if(players[ret.client_id].face == RIGHT){
-                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(i - players[ret.client_id].posX < 7);i++){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!=1 && (i - players[ret.client_id].posX < 7);i++){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                             players[!(ret.client_id)].HP -= 1;
                                             players[!(ret.client_id)].identifier = DAMAGE;
@@ -524,7 +524,7 @@ void rodarServer(){
                                 }
                             }
                             else{
-                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!='1'&&(players[ret.client_id].posX - i < 7);i--){
+                                for(int i = players[ret.client_id].posX; mapMatrix[players[ret.client_id].posY][i]!=1 && (players[ret.client_id].posX - i < 7);i--){
                                     if(players[!(ret.client_id)].posY == players[ret.client_id].posY && players[!(ret.client_id)].posX == i){
                                             players[!(ret.client_id)].HP -= 1;
                                             players[!(ret.client_id)].identifier = DAMAGE;
@@ -566,7 +566,7 @@ void rodarServer(){
                             }
 
                             else{
-                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<44)){
+                                if((mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] != 1) && (players[ret.client_id].posX<43)){
                                     mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1] = typeOfItem;
                                     
                                     flagsucesso=1;
