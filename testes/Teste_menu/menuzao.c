@@ -17,6 +17,7 @@
 #define LARGURA_TELA 1600
 #define ALTURA_TELA 900
 #define FPS 60.0
+#define frameFPS 12.0
 #define NOME_MAX_SIZE 13
 //dale dbv
 //-lallegro_ttf -lallegro_font -lallegro
@@ -34,13 +35,32 @@ Enemy_Data enemy;
 Player_Data player;
 Player_Data auxPlayer;
 
-float x, y;
+int larguraCarta;
+int alturaCarta;
+
+#define passos 16.0
+
+int passosCounter=0, passosCounterEnemy=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
+bool done = false, draw = true, animate = false, animateEnemy=false, animateDMG=false, animateATK=false, animateTRAP=false ,active = false/*,comprou=true*/;
+char comprou = NO_ITEM;
+float x=0, y=0, ENx=0, ENy=0, moveSpeed = 32/passos;// moveCounter = 0;
+unsigned short oldPosX, oldPosY, oldPosEnemyX, oldPosEnemyY;
+int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0, sourceHPX = 0, sourceHPY=0, sourceATKX = 0, sourceATKY=0, sourceTRAPX = 0, sourceTRAPY = 0;
+char use=0;
+int cnt60=0, cnt240=0;
+char houses[] = {1,2,4,5,6,7,8,17,19,20,21,22,23,24,40,42,43,44,45,46,48,50,60,61,62,64,66,68,69,71,72,73,74,75,76,77,88,-1};
+char dmg;
+char tempface;
+char item_used;
 
 char skin = 'J';
 char type_buffer_name[NOME_MAX_SIZE] = {"nick\0"};
 char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
 
 
+    ALLEGRO_KEYBOARD_STATE keyState;
+    ALLEGRO_TRANSFORM camera;
+    ALLEGRO_EVENT_QUEUE *event_queue = NULL;
     ALLEGRO_BITMAP *botao_jogar = NULL;
     ALLEGRO_BITMAP *botao_tutorial = NULL;
     ALLEGRO_BITMAP *botao_leaderboard = NULL;
@@ -56,6 +76,7 @@ char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
     ALLEGRO_SAMPLE *coin = NULL;
     ALLEGRO_SAMPLE *clicking = NULL;
     ALLEGRO_TIMER *timer = NULL;
+    ALLEGRO_TIMER *frameTimer = NULL;
     ALLEGRO_BITMAP *folha_1_sprite = NULL;
     ALLEGRO_BITMAP *folha_2_sprite = NULL;
     ALLEGRO_BITMAP *folha_3_sprite = NULL;
@@ -69,6 +90,40 @@ char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
     ALLEGRO_FONT *fonte_jogo = NULL;
     ALLEGRO_AUDIO_STREAM *musica_menu = NULL;
     ALLEGRO_BITMAP *game_icon = NULL;
+    ALLEGRO_BITMAP *anim_trap = NULL;
+    ALLEGRO_BITMAP *anim_bomb = NULL;
+    ALLEGRO_BITMAP *anim_dog = NULL;
+    ALLEGRO_BITMAP *atk_throw = NULL;
+    ALLEGRO_BITMAP *store_menu = NULL;
+    ALLEGRO_BITMAP *heart_carta = NULL;
+    ALLEGRO_BITMAP *item_bar = NULL;
+    ALLEGRO_BITMAP *box_bar = NULL;
+    ALLEGRO_BITMAP *icon_shuricarta = NULL;
+    ALLEGRO_BITMAP *icon_trap = NULL;
+    ALLEGRO_BITMAP *icon_bomb = NULL;
+    ALLEGRO_BITMAP *icon_dog = NULL;
+    ALLEGRO_BITMAP *icon_boxes = NULL;
+    ALLEGRO_BITMAP *enemy_sprite = NULL;
+    ALLEGRO_BITMAP *player_sprite = NULL;
+    ALLEGRO_SAMPLE *shurikarta = NULL;
+    ALLEGRO_SAMPLE *armadilhaDamage = NULL;
+    ALLEGRO_SAMPLE *armadilhaPlaced = NULL;
+    ALLEGRO_SAMPLE *bombPlaced = NULL;
+    ALLEGRO_SAMPLE *cachorro = NULL;
+    ALLEGRO_SAMPLE *caixaobtida = NULL;
+    ALLEGRO_SAMPLE *dinheiroObtido = NULL;
+    ALLEGRO_SAMPLE *dinheiroDropado = NULL;
+    ALLEGRO_SAMPLE *explosao = NULL;
+    ALLEGRO_SAMPLE *hospitalcura = NULL;
+    ALLEGRO_SAMPLE *hospitalPorta = NULL;
+    ALLEGRO_SAMPLE *josiasDano = NULL;
+    ALLEGRO_SAMPLE *nani = NULL;
+    ALLEGRO_SAMPLE *somfalha = NULL;
+    ALLEGRO_SAMPLE *dano = NULL;
+    ALLEGRO_SAMPLE *explosao = NULL;
+    ALLEGRO_SAMPLE *loja = NULL;
+
+
     typedef struct {
         char nome[14];
         int pontuacao;
@@ -148,6 +203,88 @@ int inicializar() {
         return 0;
     }
 
+     shurikarta = al_load_sample("source/resources/audio/samples/shurikarta.wav");
+    if (!shurikarta) {
+        printf( "Audio nao carregado1.");
+        return 0;
+    }
+    bombPlaced= al_load_sample("source/resources/audio/samples/bombPlaced.wav");
+    if (!bombPlaced) {
+        printf( "Audio nao carregado2.");
+        return 0;
+    }
+    cachorro = al_load_sample("source/resources/audio/samples/cachurro.wav");
+    if (!cachorro) {
+        printf( "Audio nao carregado3.");
+        return 0;
+    }
+    caixaobtida = al_load_sample("source/resources/audio/samples/caixaobtida.wav");
+    if (!caixaobtida) {
+        printf( "Audio nao carregado4.");
+        return 0;
+    }
+    dinheiroDropado = al_load_sample("source/resources/audio/samples/dinheiroDropado.wav");
+    if (!dinheiroDropado) {
+        printf( "Audio nao carregado5.");
+        return 0;
+    }
+    dano = al_load_sample("source/resources/audio/samples/dano.wav");
+    if (!dano) {
+        printf( "Audio nao carregado6.");
+        return 0;
+    }
+    dinheiroObtido = al_load_sample("source/resources/audio/samples/dinheiroObtido.wav");
+    if (!dinheiroObtido) {
+        printf( "Audio nao carregado7.");
+        return 0;
+    }
+    explosao = al_load_sample("source/resources/audio/samples/explosao.wav");
+    if (!explosao) {
+        printf( "Audio nao carregado8.");
+        return 0;
+    }
+    hospitalcura = al_load_sample("source/resources/audio/samples/hospitalCura.wav");
+    if (!hospitalcura) {
+        printf( "Audio nao carregado9.");
+        return 0;
+    }
+    hospitalPorta = al_load_sample("source/resources/audio/samples/hospitalPorta.wav");
+    if (!hospitalPorta) {
+        printf( "Audio nao carregado10.");
+        return 0;
+    }
+   josiasDano = al_load_sample("source/resources/audio/samples/josiasDano.wav");
+    if (!josiasDano) {
+        printf( "Audio nao carregado11.");
+        return 0;
+    }
+    nani = al_load_sample("source/resources/audio/samples/nani.wav");
+    if (!nani) {
+        printf( "Audio nao carregado.12");
+        return 0;
+    }
+    somfalha = al_load_sample("source/resources/audio/samples/som de falha.wav");
+    if (!somfalha) {
+        printf( "Audio nao carregado13.");
+        return 0;
+    }
+    armadilhaDamage = al_load_sample("source/resources/audio/samples/armadilha.wav");
+    if (!armadilhaDamage) {
+        printf( "Audio nao carregado14..");
+        return 0;
+    }
+
+    armadilhaPlaced = al_load_sample("source/resources/audio/samples/armadilhaPlaced.wav");
+    if (!armadilhaPlaced) {
+        printf( "Audio nao carregado.15..");
+        return 0;
+    }
+    loja = al_load_sample("source/resources/audio/samples/shopDoorBell.wav");
+    if (!loja) {
+        printf( "Audio nao carregado.16..");
+        return 0;
+    }
+
     clicking = al_load_sample("source/resources/audio/samples/menuNavegacao.wav");
     if (!clicking) {
         printf( "Audio nao carregado");
@@ -160,6 +297,12 @@ int inicializar() {
         return 0;
     }
     
+    frameTimer = al_create_timer(1.0/frameFPS);
+    if(!frameTimer) {
+        printf("Falha ao criar timer");
+        return 0;
+    }
+
     fundo = al_load_bitmap("source/resources/images/backgrounds/Mapa.png");
     if(!fundo) {
         printf("Falha ao criar fundo.\n");
@@ -169,6 +312,80 @@ int inicializar() {
     titulo = al_load_bitmap("source/resources/images/Titulo_do_jogo.png");
     if(!titulo) {
         printf("falha ao carregar titulo\n");
+        return 0;
+    }
+
+    store_menu = al_load_bitmap("source/resources/images/backgrounds/Menu de Compras.png");
+    if(!store_menu){
+        puts("Errou ao carregar Menu de Compras.");
+        return 0;
+    }
+
+    atk_throw = al_load_bitmap("source/resources/images/ATK.png");
+    if(!atk_throw){
+        puts("Falha ao carregar ATK.\n");
+        return 0;
+    }
+    anim_dog = al_load_bitmap("source/resources/images/El_Catioro_bmap.png");
+    if(!anim_dog){
+        puts("Falha ao carregar El_Catioro_bmap.\n");
+        return 0;
+    }
+    anim_bomb = al_load_bitmap("source/resources/images/Armadilha_V2_bmap.png");
+    if(!anim_bomb){
+        puts("Falha ao carregar Armadilha_V2_bmap.\n");
+        return 0;
+    }
+    anim_trap = al_load_bitmap("source/resources/images/Armadilha_V1_bmap.png");
+    if(!anim_trap){
+        puts("Falha ao carregar Armadilha_V1_bmap.\n");
+        return 0;
+    }
+
+    heart_carta = al_load_bitmap("source/resources/images/Life.png");
+    if(!heart_carta){
+        puts("Falha ao carregar heart_carta.\n");
+        return 0;
+    }
+
+    larguraCarta = al_get_bitmap_width(heart_carta)/7;
+    alturaCarta = al_get_bitmap_height(heart_carta);
+
+    item_bar = al_load_bitmap("source/resources/images/Barra_de_Itens.png");
+    if(!item_bar){
+        puts("Falha ao carregar Barra_de_Itens.\n");
+        return 0;
+    }
+    box_bar = al_load_bitmap("source/resources/images/Barra_de_Caixas.png");
+    if(!box_bar){
+        puts("Falha ao carregar Barra_de_Caixas.\n");
+        return 0;
+    }
+
+    icon_shuricarta = al_load_bitmap("source/resources/images/A_Shurikarta(com limites).png");
+    if(!icon_shuricarta){
+        puts("Falha ao carregar A_Shurikarta.\n");
+        return 0;
+    }
+
+    icon_trap = al_load_bitmap("source/resources/images/Armadilha_V1(com limites).png");
+    if(!icon_trap){
+        puts("Falha ao carregar Armadilha_V1.\n");
+        return 0;
+    }
+    icon_bomb = al_load_bitmap("source/resources/images/Armadilha_V2.png");
+    if(!icon_bomb){
+        puts("Falha ao carregar Armadilha_V2.\n");
+        return 0;
+    }
+    icon_dog = al_load_bitmap("source/resources/images/El_Catioro(com limites).png");
+    if(!icon_dog){
+        puts("Falha ao carregar El_Catioro.\n");
+        return 0;
+    }
+    icon_boxes = al_load_bitmap("source/resources/images/Caixas.png");
+    if(!icon_boxes){
+        puts("Falha ao carregar Caixas.\n");
         return 0;
     }
 
@@ -221,6 +438,13 @@ int inicializar() {
  
     fila_eventos = al_create_event_queue();
     if (!fila_eventos) {
+        fprintf(stderr, "Falha ao criar fila de eventos.\n");
+        al_destroy_display(janela);
+        return 0;
+    }
+
+    event_queue = al_create_event_queue();
+    if (!event_queue) {
         fprintf(stderr, "Falha ao criar fila de eventos.\n");
         al_destroy_display(janela);
         return 0;
@@ -295,8 +519,24 @@ int inicializar() {
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     al_register_event_source(fila_eventos_timer, al_get_timer_event_source(timer));
     al_start_timer(timer);
-
+    
     return 1;
+}
+
+float cameraPosition[2] = {0,0}, scale = 3.0;
+void cameraUpdate(float* cameraPosition, float x, float y, int width, int height){
+    int bordaX = al_get_bitmap_width(fundo) - LARGURA_TELA/scale;
+    int bordaY = al_get_bitmap_height(fundo) - ALTURA_TELA/scale;
+    cameraPosition[0] = -(LARGURA_TELA/2/scale) + (x + width/2);
+    cameraPosition[1] = -(ALTURA_TELA/2/scale) + (y + height/2);
+    if(cameraPosition[0] < 0) cameraPosition[0] = 0;
+    else if(cameraPosition[0] > bordaX) cameraPosition[0] = bordaX;
+    if(cameraPosition[1] < 0) cameraPosition[1] = 0;
+    else if(cameraPosition[1] > bordaY) cameraPosition[1] = bordaY;
+    
+    //if(cameraPosition[0] > ALTURA_TELA/); cameraPosition[0] = ALTURA_TELA;
+    //printf("al_get_bitmap_width(background)=%d - %d\n",al_get_bitmap_width(background),LARGURA_TELA/scale);
+    //printf("x=%g y=%g cameraPosition[0]=%g cameraPosition[1]=%g scale=%g \n",x,y,cameraPosition[0],cameraPosition[1],scale);
 }
 
 void fadeout(int velocidade)
@@ -798,28 +1038,42 @@ int main()
             int ret = recvMsgFromServer(&enemy, DONT_WAIT);
             if(ret >= 0) {
                 estado_tela =  PRE_GAME;
+                ENx = (enemy.posX + 3)*32;
+                ENy = (enemy.posY + 5)*32;
+                oldPosEnemyX = enemy.posX;
+                oldPosEnemyY = enemy.posY;
                 al_clear_to_color(al_map_rgb(0,0,0));
                 al_flip_display();
                 fadein(fundo,20);
             }
         }
         while(estado_tela == PRE_GAME) {
+            al_register_event_source(event_queue, al_get_timer_event_source(timer));
+            al_register_event_source(event_queue,al_get_timer_event_source(frameTimer));
+            al_register_event_source(event_queue,al_get_display_event_source(janela));
+            al_register_event_source(event_queue,al_get_keyboard_event_source());
             
+            al_start_timer(frameTimer);
+
             al_draw_scaled_bitmap(fundo,
             0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
             0, 0, LARGURA_TELA, ALTURA_TELA, 0);
             al_draw_text(fonte,al_map_rgb(0,0,255),LARGURA_TELA/2-400 - 128,ALTURA_TELA/2,ALLEGRO_ALIGN_CENTER,type_buffer_name);
             switch(skin){
                 case JOSUE:
+                    player_sprite = folha_1_sprite;
                     al_draw_scaled_bitmap(folha_1_sprite,0,0,32,32,LARGURA_TELA/2-400,ALTURA_TELA/2 - 100, 256,256,0);
                     break;
                 case JOSIAS:
+                    player_sprite = folha_2_sprite;
                     al_draw_scaled_bitmap(folha_2_sprite,0,0,32,37,LARGURA_TELA/2-400,ALTURA_TELA/2 - 100, 256,256,0);
                     break;
                 case MATIAS:
+                    player_sprite = folha_3_sprite;
                     al_draw_scaled_bitmap(folha_3_sprite,0,0,32,32,LARGURA_TELA/2-400,ALTURA_TELA/2 - 100, 256,256,0);
                     break;
                 default:
+                    player_sprite = folha_4_sprite;
                     al_draw_scaled_bitmap(folha_4_sprite,0,0,32,32,LARGURA_TELA/2-400,ALTURA_TELA/2 - 100, 256,256,0);
                     break;
             }
@@ -827,15 +1081,19 @@ int main()
             al_draw_text(fonte,al_map_rgb(0,0,255),LARGURA_TELA/2+400 + 128,ALTURA_TELA/2,ALLEGRO_ALIGN_CENTER,enemy.nome);
             switch(enemy.skin){
                 case JOSUE:
+                    enemy_sprite = folha_1_sprite;
                     al_draw_scaled_bitmap(folha_1_sprite,0,0,32,32,LARGURA_TELA/2+400 - 256,ALTURA_TELA/2 - 100, 256,256,0);
                     break;
                 case JOSIAS:
+                    enemy_sprite = folha_2_sprite;
                     al_draw_scaled_bitmap(folha_2_sprite,0,0,32,37,LARGURA_TELA/2+400 - 256,ALTURA_TELA/2 - 100, 256,256,0);
                     break;
                 case MATIAS:
+                    enemy_sprite = folha_3_sprite;
                     al_draw_scaled_bitmap(folha_3_sprite,0,0,32,32,LARGURA_TELA/2+400 - 256,ALTURA_TELA/2 - 100, 256,256,0);
                     break;
                 default:
+                    enemy_sprite = folha_4_sprite;
                     al_draw_scaled_bitmap(folha_4_sprite,0,0,32,32,LARGURA_TELA/2+400 - 256,ALTURA_TELA/2 - 100, 256,256,0);
                     break;
             }
@@ -844,9 +1102,18 @@ int main()
 
             al_flip_display();
             
-            al_rest(6);
-            estado_tela = IN_GAME;
-            fadeout(5);
+            char serverResponse;
+            int ret = recvMsgFromServer(&serverResponse, WAIT_FOR_IT);
+            if(serverResponse == 99){
+                al_rest(3);
+                estado_tela = IN_GAME;
+                fadeout(5);
+
+                al_identity_transform(&camera);
+                al_translate_transform(&camera, -cameraPosition[0],-cameraPosition[1]);
+                al_scale_transform(&camera,scale,scale);
+                al_use_transform(&camera);
+            }
         }
         while(estado_tela == IN_GAME){
             printf("IN GAME\n");
