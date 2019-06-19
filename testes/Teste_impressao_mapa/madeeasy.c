@@ -5,6 +5,8 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <math.h>
@@ -30,6 +32,9 @@ ALLEGRO_BITMAP *icon_dog;
 ALLEGRO_BITMAP *icon_boxes;
 ALLEGRO_FONT *fonte_timer;
 ALLEGRO_FONT *fonte_jogo;
+ALLEGRO_SAMPLE *shurikarta;
+ALLEGRO_SAMPLE *armadilhaDamage = NULL;
+ALLEGRO_SAMPLE *armadilhaPlaced;
 
 //int posX=1, posY=1;
 //PLAY_SCREEN
@@ -189,6 +194,41 @@ int main()
         puts("Fala ao iniciar display.\n");
         al_destroy_display(display);
         exit(-1);
+    }
+
+    if(!al_install_audio()){
+        printf("Falha ao inicializar o audio");
+        return 0;
+    }
+ 
+    //addon que da suporte as extensoes de audio
+    if(!al_init_acodec_addon()){
+        printf("Falha ao inicializar o codec de audio");
+        return 0;
+    }
+ 
+    //cria o mixer (e torna ele o mixer padrao), e adciona 5 samples de audio nele
+    if (!al_reserve_samples(5)){
+        printf("Falha ao reservar amostrar de audio");
+        return 0;
+    }
+
+    shurikarta = al_load_sample("source/resources/audio/samples/shurikarta.wav");
+    if (!shurikarta) {
+        printf( "Audio nao carregado.");
+        return 0;
+    }
+
+    /*armadilhaDamage = al_load_sample("source/resources/audio/samples/armadilha.wav");
+    if (!armadilhaDamage) {
+        printf( "Audio nao carregado..");
+        return 0;
+    }*/
+
+    armadilhaPlaced = al_load_sample("source/resources/audio/samples/armadilhaPlaced.wav");
+    if (!armadilhaPlaced) {
+        printf( "Audio nao carregado...");
+        return 0;
     }
 
     
@@ -555,12 +595,14 @@ int main()
                     }
                     else if(!use && al_key_down(&keyState, ALLEGRO_KEY_1)){
                         use = 1;
+                        al_play_sample(shurikarta, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         puts("usei item 1");
                         char key = ITEM1_BUTTON;
                         sendMsgToServer((char *)&key,1);
                     }
                     else if(!use && al_key_down(&keyState, ALLEGRO_KEY_2)){
                         use = 1;
+                        al_play_sample(armadilhaPlaced, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         char key = ITEM2_BUTTON;
                         sendMsgToServer((char *)&key,1);
                     }
