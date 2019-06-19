@@ -55,6 +55,7 @@ char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
     ALLEGRO_BITMAP *folha_1_sprite = NULL;
     ALLEGRO_BITMAP *folha_2_sprite = NULL;
     ALLEGRO_BITMAP *folha_3_sprite = NULL;
+    ALLEGRO_BITMAP *folha_4_sprite = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos_timer = NULL;
     ALLEGRO_EVENT_QUEUE *fila_eventos_tut = NULL;
@@ -245,6 +246,15 @@ int inicializar() {
     folha_3_sprite = al_load_bitmap("source/resources/images/characters/Matias.png");
     if(!folha_3_sprite) {
         printf("Falha ao carregar folha 3 de sprite\n");
+        al_destroy_display(janela);
+        al_destroy_event_queue(fila_eventos);
+        al_destroy_timer(timer);
+        return 0;
+    }
+
+    folha_4_sprite = al_load_bitmap("source/resources/images/characters/Al Fredo.png");
+    if(!folha_4_sprite) {
+        printf("Falha ao carregar folha 4 de sprite\n");
         al_destroy_display(janela);
         al_destroy_event_queue(fila_eventos);
         al_destroy_timer(timer);
@@ -441,6 +451,7 @@ enum conn_ret_t tryConnect() {
 void conecta(){
     enum conn_ret_t ret = connectToServer(type_buffer_ip);
     if(ret != SERVER_UP) {
+        al_play_sample(coin, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 		if (ret == SERVER_DOWN) {
 			puts("Server is down!");
 		} else if (ret == SERVER_FULL) {
@@ -450,6 +461,7 @@ void conecta(){
 		} else {
 			puts("Server didn't respond to connection!");
 		}
+
   	}
     else{
         int len = strlen(type_buffer_name);
@@ -663,11 +675,106 @@ int main()
             //al_flip_display();
             //al_rest(0.005);
         }
+        int linha_atual_waiting = 3;
+        int coluna_atual_waiting = 0;
+        int pos_x_sprite_waiting = -10;
+        int pos_y_sprite_waiting = 700;
+        int velocidade = 8;
+        int TRABALHO = 0;
+        int regiao_y_2_folha_waiting = linha_atual_waiting * altura_2_sprite;
+        int regiao_x_folha_waiting = coluna_atual_waiting * largura_sprite, regiao_y_folha_waiting = linha_atual_waiting * altura_sprite;
         while(estado_tela == WAITING_PLAYER) {
             
             // printf("WAITING PLAYER\n");
 			// int ret = recvMsgFromServer(&enemy, WAIT_FOR_IT);
             printf("WAITING GAME\n");
+            al_clear_to_color(al_map_rgb(0, 0, 0));
+        
+            al_draw_scaled_bitmap(fundo,
+            0, 0, al_get_bitmap_width(fundo), al_get_bitmap_height(fundo),
+            0, 0, LARGURA_TELA, ALTURA_TELA, 0);
+
+            al_draw_text(fonte, al_map_rgb(255, 0, 0), 800, 300 + TRABALHO, ALLEGRO_ALIGN_CENTRE, "WAITING FOR ENEMY");
+            TRABALHO++;
+            if(TRABALHO == 15) {
+                TRABALHO = -15;
+            }
+
+            
+
+            while(!al_is_event_queue_empty(fila_eventos)) {
+                ALLEGRO_EVENT evento;
+                al_wait_for_event(fila_eventos, &evento);
+
+                if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+                    estado_tela = ENDGAME;
+                }
+                else if(evento.type == ALLEGRO_EVENT_KEY_DOWN) {
+                    if(evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+                        //disconecta o player e volta para o game_menu
+                        closeConnection();
+                        estado_tela = GAME_MENU;
+                    }
+                }
+            }
+
+            ALLEGRO_EVENT evento_timer;
+            al_wait_for_event(fila_eventos_timer, &evento_timer);
+            if(evento_timer.type == ALLEGRO_EVENT_TIMER) {
+                cont_frames += 1;
+
+                if(cont_frames >= frames_sprite) {
+                    cont_frames = 0;
+                    coluna_atual_waiting += 1;
+                    if(coluna_atual_waiting >= colunas_folha) {
+                        coluna_atual_waiting = 0;
+
+                    }
+                    regiao_x_folha_waiting = coluna_atual_waiting * largura_sprite;
+                }
+                pos_x_sprite_waiting += velocidade;
+                pos_y_sprite_waiting += 0;
+                if(pos_x_sprite_waiting >= LARGURA_TELA) pos_x_sprite_waiting = -10;
+
+                desenha = 1;
+            }           
+            
+
+            if(desenha && al_is_event_queue_empty(fila_eventos_timer)) {
+                    switch(skin) {
+                        case JOSUE:
+                            al_draw_scaled_bitmap(folha_1_sprite,
+                            regiao_x_folha_waiting, regiao_y_folha_waiting,
+                            largura_sprite, altura_sprite,
+                            pos_x_sprite_waiting, pos_y_sprite_waiting, 100, 100, 0);
+                        break;
+
+                        case JOSIAS:
+                            al_draw_scaled_bitmap(folha_2_sprite,
+                            regiao_x_folha_waiting, 3*37,
+                            largura_sprite, altura_2_sprite,
+                            pos_x_sprite_waiting, pos_y_sprite_waiting, 100, 100, 0);
+                        break;
+
+                        case MATIAS:
+                            al_draw_scaled_bitmap(folha_3_sprite,
+                            regiao_x_folha_waiting, regiao_y_folha_waiting,
+                            largura_sprite, altura_sprite,
+                            pos_x_sprite_waiting, pos_y_sprite_waiting, 100, 100, 0);
+                        break;
+
+                        default:
+                            al_draw_scaled_bitmap(folha_4_sprite,
+                            regiao_x_folha_waiting, regiao_y_folha_waiting,
+                            largura_sprite, altura_sprite,
+                            pos_x_sprite_waiting, pos_y_sprite_waiting, 100, 100, 0);
+                        break;
+                    }
+
+                    desenha = 0;
+
+                    al_flip_display();
+            }
 
         }
         while(estado_tela == IN_GAME) {
@@ -735,7 +842,7 @@ int main()
                         al_play_sample(clicking, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                         estado = EM_JOSIAS;
                     }
-                    if(evento.mouse.x >= LARGURA_TELA - 300 && evento.mouse.x <= LARGURA_TELA - 300 + al_get_text_width(fonte, "CONECTAR") && evento.mouse.y >= ALTURA_TELA - 150 && evento.mouse.y <= ALTURA_TELA - 150 + al_get_font_line_height(fonte)) {
+                    if(evento.mouse.x >= LARGURA_TELA - 420 && evento.mouse.x <= LARGURA_TELA - 300 + al_get_text_width(fonte, "CONECTAR") && evento.mouse.y >= ALTURA_TELA - 150 && evento.mouse.y <= ALTURA_TELA - 150 + al_get_font_line_height(fonte)) {
                         //estado = EM_CONECTAR;
                         conecta();
                     }
