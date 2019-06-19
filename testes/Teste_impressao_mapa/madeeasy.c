@@ -319,17 +319,19 @@ int main()
     
     //al_set_window_position(display,200,200);
     int passos=16, passosCounter=0, passosCounterEnemy=0;//quantos saltos de moveSpeed ele vai fazer até chegar em 32
-    bool done = false, draw = true, animate = false, animateEnemy=false, animateDMG=false, animateATK=false, animateTRAP=false ,active = false/*,comprou=true*/;
+    bool done = false, draw = true, animate = false, animateEnemy=false, animateTRAPDMG=false, animateDMG=false, animateATK=false, animateTRAP=false ,active = false/*,comprou=true*/;
     char comprou = NO_ITEM;
     float x=0, y=0, ENx=0, ENy=0, moveSpeed = 32/(float)passos;// moveCounter = 0;
     unsigned short oldPosX, oldPosY, oldPosEnemyX, oldPosEnemyY;
-    int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0, sourceHPX = 0, sourceHPY=0, sourceATKX = 0, sourceATKY=0, sourceTRAPX = 0, sourceTRAPY = 0;
+    int sourceX = 32, sourceY = 0, sourceEnemyX = 32, sourceEnemyY=0, sourceHPX = 0, sourceHPY=0, sourceATKX = 0, sourceATKY=0, sourceTRAPX = 0, sourceTRAPY = 0, sourceTRAPDMGX = 0, sourceTRAPDMGY = 0;
     char use=0;
-    int cnt60=0, cnt240=0;
+    int cnt60=0, cntDMG=0;
     char houses[] = {1,2,4,5,6,7,8,17,19,20,21,22,23,24,40,42,43,44,45,46,48,50,60,61,62,64,66,68,69,71,72,73,74,75,76,77,88,-1};
     char dmg;
     char tempface;
     char item_used;
+    char trapdmg;
+    bool boool=0;
     //moveSpeed = 32/frameFPS,
 
     al_install_keyboard();
@@ -555,9 +557,11 @@ int main()
 				if(auxPlayer.ID == player.ID){ //se for a estrutura deste jogador
                     puts("Recebeu propria estrutura");
                     if(auxPlayer.identifier == DAMAGE || auxPlayer.identifier == POSITION){
-                        if(player.HP!=auxPlayer.HP){
+                        if(player.HP>auxPlayer.HP){
                             animateDMG = 1;
+                            animateTRAPDMG = 1;
                             dmg = player.HP - auxPlayer.HP;
+                            trapdmg = dmg;
                             if(skin==JOSIAS){
                                 al_play_sample(josiasDano, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                             }
@@ -577,17 +581,29 @@ int main()
                             }
                         }
                     }
+                    if(player.identifier == BOX_CHANGE){
+                        for(int i = 0; i<5; i++){
+                            if(player.boxArray[i].type < auxPlayer.boxArray[i].type){
+                                al_play_sample(caixaobtida, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                            }
+                        }
+                    }
 					player = auxPlayer;	
                     if(player.identifier == POSITION){
+                        boool=1;
                         if(active) animate = true;
                     }
                     else if(player.identifier == BUY){
                         al_play_sample(dinheiroDropado, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     }
-					if(player.HP <= 0){
-						state = LOSE_SCREEN;
+					if(player.identifier == LOSE){
+						state = ENDGAME;
+                        break;
 					}
-
+                    else if(enemy.identifier == LOSE){
+                        state = ENDGAME;
+                        break;
+                    }
                     // oldPosX = player.posX;
                     // oldPosY = player.posY;
                     //player.posX + 3)*32;
@@ -604,7 +620,7 @@ int main()
                     if(enemy.identifier == POSITION){
                         animateEnemy = true;
                     }
-					if(enemy.HP <= 0){
+					if(player.identifier == WIN||enemy.identifier == LOSE){
 						state = WIN_SCREEN;
 					}
 				}
@@ -626,7 +642,7 @@ int main()
                     cnt60=0;
                     }
                     
-                    if(active == false && !animateTRAP){
+                    if(active == false && !animateTRAP && !animateTRAPDMG){
                         active = true;
                         
                         if(al_key_down(&keyState, ALLEGRO_KEY_DOWN)){
@@ -866,10 +882,29 @@ int main()
                                  //al_draw_bitmap_region(anim_dog, sourceTRAPX, 32, 32, 32,x, y-32, 0);
                             }
                         }
+
                         if(skin != JOSIAS) al_draw_bitmap(subBitmap,x,y,0);
                         else al_draw_bitmap(subBitmap,x,y-5,0);
                         if(enemy.skin != JOSIAS) al_draw_bitmap(subBitmapEnemy,ENx,ENy,0);
                         else al_draw_bitmap(subBitmapEnemy,ENx,ENy-5,0);
+
+                        if(animateTRAPDMG){
+                            switch(trapdmg){
+                                case 2:
+                                    al_draw_bitmap_region(anim_trap, sourceTRAPDMGX, 32, 32, 32,(player.posX + 3)*32, (player.posY + 5)*32, 0);
+                                    al_play_sample(armadilhaDamage, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);                                    
+                                break;
+                                case 3:
+                                    al_draw_bitmap_region(anim_bomb, sourceTRAPDMGX, 32, 32, 32,(player.posX + 3)*32, (player.posY + 5)*32, 0);
+                                    al_play_sample(explosao, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                break;
+                                case 5:
+                                    al_draw_bitmap_region(anim_dog, sourceTRAPDMGX, 32, 32, 32,(player.posX + 3)*32, (player.posY + 5)*32, 0);
+                                    al_play_sample(nani, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                break;
+                            }
+                        }
+
                         if(animateATK){
                             switch(tempface){
 
@@ -952,14 +987,27 @@ int main()
 
                         }
 
+                        
                         if(player.ID==0){
-                            if(player.posX==1 && player.posY==1)
-                            al_draw_bitmap(store_menu,(LARGURA_TELA/2)-400,(ALTURA_TELA/2)-225,0);
+                            if(player.posX==1 && player.posY==1){
+                                al_draw_bitmap(store_menu,(LARGURA_TELA/2)-400,(ALTURA_TELA/2)-225,0);
+                                
+                                if(boool){
+                                    al_play_sample(loja, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    boool = 0;
+                                }
+                            }                            
                         }
                         else{
-                            if(player.posX==42 && player.posY==27)
-                            al_draw_bitmap(store_menu,(LARGURA_TELA/2)-400,(ALTURA_TELA/2)-225,0);
+                            if(player.posX==42 && player.posY==27){
+                                al_draw_bitmap(store_menu,(LARGURA_TELA/2)-400,(ALTURA_TELA/2)-225,0);
+                                if(boool){
+                                    al_play_sample(loja, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
+                                    boool = 0;
+                                }
+                            }
                         }
+                        
 
                         al_flip_display();
                         al_clear_to_color(al_map_rgb(0,0,0));
@@ -997,11 +1045,27 @@ int main()
                     if(animateDMG){
                         sourceHPX += 32;
                         if(sourceHPX==224) animateDMG=0;
+                        
                     }
                     else{
                         sourceHPX = 0;
                         dmg = 0;
                     }
+
+                    //TRAP ATIVANDO
+                    if(animateTRAPDMG){
+                        sourceTRAPDMGX += 32;
+                        sourceTRAPDMGY = 1;
+                        if(trapdmg == 2){ if(sourceTRAPDMGX>=96){ animateTRAPDMG=0;}}
+                        else if(trapdmg == 3){ if(sourceTRAPDMGX>=256){ animateTRAPDMG=0;}}
+                        else if(trapdmg == 5){ if(sourceTRAPDMGX>=384){ animateTRAPDMG=0;}}
+                    }
+                    else{
+                        sourceTRAPDMGX = 0;
+                        trapdmg = 0;
+                    }
+
+                    //ATAQUE DA SHURIKARTA
                     if(animateATK){
                         sourceATKX += 32;
                         sourceATKY = enemy.face;
@@ -1012,6 +1076,7 @@ int main()
 
                     }
 
+                    //IMPLANTAÇÃO DAS TRAP
                     if(animateTRAP){
                         sourceTRAPX += 32;
                         sourceTRAPY = 0;

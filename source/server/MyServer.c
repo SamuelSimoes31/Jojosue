@@ -182,11 +182,12 @@ void rodarServer(){
                     !(players[ret.client_id].posY-1==players[!ret.client_id].posY && players[ret.client_id].posX==players[!ret.client_id].posX) &&
                     mapMatrix[players[ret.client_id].posY-1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY--;
-                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 2;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
                         
                     }
+
                     broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
                 }
 
@@ -198,7 +199,7 @@ void rodarServer(){
                     !(players[ret.client_id].posY+1==players[!ret.client_id].posY && players[ret.client_id].posX==players[!ret.client_id].posX) &&
                     mapMatrix[players[ret.client_id].posY+1][players[ret.client_id].posX]!=1){
                         players[ret.client_id].posY++;
-                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 2;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
                         
@@ -214,7 +215,7 @@ void rodarServer(){
                     !(players[ret.client_id].posX-1==players[!ret.client_id].posX && players[ret.client_id].posY==players[!ret.client_id].posY) &&
                     mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX-1]!=1){
                         players[ret.client_id].posX--;
-                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 2;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
                         
@@ -230,7 +231,7 @@ void rodarServer(){
                     !(players[ret.client_id].posX+1==players[!ret.client_id].posX && players[ret.client_id].posY==players[!ret.client_id].posY) &&
                     mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX+1]!=1){
                         players[ret.client_id].posX++;
-                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 1;
+                        if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'X') players[ret.client_id].HP -= 2;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Y') players[ret.client_id].HP -= 3;
                         else if(mapMatrix[players[ret.client_id].posY][players[ret.client_id].posX] == 'Z') players[ret.client_id].HP -= 5;
                         
@@ -756,6 +757,10 @@ void rodarServer(){
                 //mapMatrix[players[0].posY][players[0].posX] = '+';
                 //mapMatrix[players[1].posY][players[1].posX] = '*';
                 printMap(mapMatrix);
+                if(players[ret.client_id].HP <= 0 || players[ret.client_id].reputation <= 0){
+                    players[ret.client_id].identifier = LOSE;
+                    broadcast((Player_Data *)&players[ret.client_id],sizeof(Player_Data));
+                }
             }
             else if(ret.status==DISCONNECT_MSG){
                 printf("PLAYER(%d) DESCONECTOU\n",ret.client_id);
