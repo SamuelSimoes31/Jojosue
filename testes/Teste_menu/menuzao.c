@@ -61,6 +61,8 @@ char type_buffer_ip[NOME_MAX_SIZE] = {"127.0.0.1"};
     ALLEGRO_EVENT_QUEUE *fila_eventos_tut = NULL;
     ALLEGRO_FONT *fonte = NULL;
     ALLEGRO_FONT *fonte_tut = NULL;
+    ALLEGRO_FONT *fonte_timer = NULL;
+    ALLEGRO_FONT *fonte_jogo = NULL;
     ALLEGRO_AUDIO_STREAM *musica_menu = NULL;
     ALLEGRO_BITMAP *game_icon = NULL;
     typedef struct {
@@ -199,8 +201,18 @@ int inicializar() {
         printf("Falha ao carregar fonte\n");
         return -1;
     }
+    fonte_timer = al_load_font("source/resources/fonts/pressStart.ttf", 7, 0); 
+    if (!fonte_timer){
+        printf("Falha ao carregar fonte\n");
+        return -1;
+    }
+    fonte_jogo = al_load_font("source/resources/fonts/pressStart.ttf", 10, 0);
+    if (!fonte_jogo){
+        printf("Falha ao carregar fonte\n");
+        return -1;
+    }
 
-    al_set_window_title(janela, "Beta Menu");
+    al_set_window_title(janela, "JOJOSUE'S BIZARRE ADVENTURE");
  
     fila_eventos = al_create_event_queue();
     if (!fila_eventos) {
@@ -908,6 +920,8 @@ int main()
                         largura_sprite, altura_2_sprite,
                         750, pos_y_2_sprite, 150, 150, 0);
                     }
+                    al_draw_text(fonte_tut, al_map_rgb(0, 0, 255), 750 + 70, pos_y_2_sprite - 30, ALLEGRO_ALIGN_CENTRE, "JOSIAS");
+
                     if(estado == EM_JOSUE) {
                         if(pisca_josue++ > 40) pisca_josue = 0;
                     }
@@ -918,6 +932,8 @@ int main()
                         largura_sprite, altura_sprite,
                         pos_x_sprite, pos_y_sprite, 150, 150, 0);
                     }
+                    al_draw_text(fonte_tut, al_map_rgb(0, 0, 255), pos_x_sprite + 70, pos_y_sprite - 30, ALLEGRO_ALIGN_CENTRE, "JOSUE");
+                    
                     if(estado == EM_MATIAS) {
                         if(pisca_matias++ > 40) pisca_matias = 0;
                     }
@@ -928,7 +944,8 @@ int main()
                         largura_sprite, altura_sprite,
                         pos_x_3_sprite, pos_y_3_sprite, 150, 150, 0);
                     }
-
+                    al_draw_text(fonte_tut, al_map_rgb(0, 0, 255), pos_x_3_sprite + 70, pos_y_3_sprite - 30, ALLEGRO_ALIGN_CENTRE, "MATIAS");
+                    
                     desenha = 0;
                     al_flip_display();
             }
