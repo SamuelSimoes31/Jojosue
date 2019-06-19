@@ -270,7 +270,7 @@ int main()
         fonte_jogo = al_load_font("source/resources/fonts/pressStart.ttf", 10, 0);
         if (!fonte_jogo || !fonte_timer){
             printf("Falha ao carregar fonte\n");
-            state == ENDGAME;
+            state = ENDGAME;
         }
     }
     printf("Depois da fonte\n");
