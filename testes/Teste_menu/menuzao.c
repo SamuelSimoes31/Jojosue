@@ -14,8 +14,8 @@
 #include <allegro5/allegro_primitives.h>
 #include <Player.h>
 
-#define LARGURA_TELA 1600
-#define ALTURA_TELA 900
+#define LARGURA_TELA 1500
+#define ALTURA_TELA 800
 #define FPS 60.0
 #define frameFPS 12.0
 #define NOME_MAX_SIZE 13
@@ -365,13 +365,13 @@ int inicializar() {
         return 0;
     }
 
-    icon_shuricarta = al_load_bitmap("source/resources/images/A_Shurikarta(com limites).png");
+    icon_shuricarta = al_load_bitmap("source/resources/images/A_Shurikarta.png");
     if(!icon_shuricarta){
         puts("Falha ao carregar A_Shurikarta.\n");
         return 0;
     }
 
-    icon_trap = al_load_bitmap("source/resources/images/Armadilha_V1(com limites).png");
+    icon_trap = al_load_bitmap("source/resources/images/Armadilha_V1.png");
     if(!icon_trap){
         puts("Falha ao carregar Armadilha_V1.\n");
         return 0;
@@ -1134,9 +1134,10 @@ int main()
                     if(auxPlayer.identifier == DAMAGE || auxPlayer.identifier == POSITION){
                         if(player.HP>auxPlayer.HP){
                             animateDMG = 1;
-                            animateTRAPDMG = 1;
+                            
                             dmg = player.HP - auxPlayer.HP;
                             trapdmg = dmg;
+                            if(dmg > 1) animateTRAPDMG = 1;
                             if(skin==JOSIAS){
                                 al_play_sample(josiasDano, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                             }
@@ -1197,7 +1198,12 @@ int main()
                     }
 					if(player.identifier == WIN||enemy.identifier == LOSE){
 					    estado_tela = WIN_SCREEN;
+                        break;
 					}
+                    else if(player.identifier == LOSE||enemy.identifier == WIN){
+                        estado_tela = LOSE_SCREEN;
+                        break;
+                    }
 				}
 			    //printf("[%d][%d][%d] - HP: %d - TAOK's: %d\n",player.itemArray[0],player.itemArray[1],player.itemArray[2],player.HP,player.money);
 			//printf("BOX 1 - %s/%d - BOX 2 - %s/%d - BOX 3 - %s/%d - BOX 4 - %s/%d - BOX 5 - %s/%d\n",(player.boxArray[0].type==PAC?"PAC":(player.boxArray[0].type==SEDEX?"SEDEX":(player.boxArray[0].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[0].addIndex],(player.boxArray[1].type==PAC?"PAC":(player.boxArray[1].type==SEDEX?"SEDEX":(player.boxArray[1].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[1].addIndex],(player.boxArray[2].type==PAC?"PAC":(player.boxArray[2].type==SEDEX?"SEDEX":(player.boxArray[2].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[2].addIndex],(player.boxArray[3].type==PAC?"PAC":(player.boxArray[3].type==SEDEX?"SEDEX":(player.boxArray[3].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[3].addIndex],(player.boxArray[4].type==PAC?"PAC":(player.boxArray[4].type==SEDEX?"SEDEX":(player.boxArray[4].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[4].addIndex]);
@@ -1960,8 +1966,23 @@ int main()
             }
 
         }
-        while(estado_tela == WIN){
-            
+        while(estado_tela == WIN_SCREEN){
+            ALLEGRO_BITMAP *vitoria = NULL;
+            vitoria = al_load_bitmap("source/resources/images/Vitoria.png");
+            //ALLEGRO_BITMAP *derrota = NULL;
+            fadein(vitoria,5);
+
+           al_rest(5);
+           estado_tela = MAIN_MENU;
+        }
+        while(estado_tela == LOSE_SCREEN){
+            ALLEGRO_BITMAP *derrota = NULL;
+            derrota = al_load_bitmap("source/resources/images/Derrota.jpg");
+            //ALLEGRO_BITMAP *derrota = NULL;
+            fadein(derrota,5);
+
+           al_rest(5);
+           estado_tela = MAIN_MENU;
         }
 
     }

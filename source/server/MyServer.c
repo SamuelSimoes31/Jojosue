@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #include "Player.h"
 #include "ServerRule.h"
 #include "server.h"
@@ -763,8 +762,9 @@ void rodarServer(){
                 }
             }
             else if(ret.status==DISCONNECT_MSG){
+                --players_connected;
                 printf("PLAYER(%d) DESCONECTOU\n",ret.client_id);
-                serverState = ENDGAME;
+                if(players_connected == 0) serverState = ENDGAME;
             }
             
             while(!al_is_event_queue_empty(eventQueue)){
