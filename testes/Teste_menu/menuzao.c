@@ -381,7 +381,7 @@ int inicializar() {
         puts("Falha ao carregar Armadilha_V2.\n");
         return 0;
     }
-    icon_dog = al_load_bitmap("source/resources/images/El_Catioro(com limites).png");
+    icon_dog = al_load_bitmap("source/resources/images/El_Catioro.png");
     if(!icon_dog){
         puts("Falha ao carregar El_Catioro.\n");
         return 0;
@@ -1173,13 +1173,9 @@ int main()
                         al_play_sample(dinheiroDropado, 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
                     }
 					if(player.identifier == LOSE){
-					    estado_tela = ENDGAME;
+					    estado_tela = LOSE_SCREEN;
                         break;
 					}
-                    else if(enemy.identifier == LOSE){
-                        estado_tela = ENDGAME;
-                        break;
-                    }
                     // oldPosX = player.posX;
                     // oldPosY = player.posY;
                     //player.posX + 3)*32;
@@ -1187,6 +1183,7 @@ int main()
                     
 				}
 				else{ //se for a estrututura do inimigo
+                    
                     puts("Recebeu estrutura inimigo");
 					enemy.posX = auxPlayer.posX;
 					enemy.posY = auxPlayer.posY;
@@ -1196,14 +1193,10 @@ int main()
                     if(enemy.identifier == POSITION){
                         animateEnemy = true;
                     }
-					if(player.identifier == WIN||enemy.identifier == LOSE){
+					if(enemy.identifier == LOSE){
 					    estado_tela = WIN_SCREEN;
                         break;
 					}
-                    else if(player.identifier == LOSE||enemy.identifier == WIN){
-                        estado_tela = LOSE_SCREEN;
-                        break;
-                    }
 				}
 			    //printf("[%d][%d][%d] - HP: %d - TAOK's: %d\n",player.itemArray[0],player.itemArray[1],player.itemArray[2],player.HP,player.money);
 			//printf("BOX 1 - %s/%d - BOX 2 - %s/%d - BOX 3 - %s/%d - BOX 4 - %s/%d - BOX 5 - %s/%d\n",(player.boxArray[0].type==PAC?"PAC":(player.boxArray[0].type==SEDEX?"SEDEX":(player.boxArray[0].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[0].addIndex],(player.boxArray[1].type==PAC?"PAC":(player.boxArray[1].type==SEDEX?"SEDEX":(player.boxArray[1].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[1].addIndex],(player.boxArray[2].type==PAC?"PAC":(player.boxArray[2].type==SEDEX?"SEDEX":(player.boxArray[2].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[2].addIndex],(player.boxArray[3].type==PAC?"PAC":(player.boxArray[3].type==SEDEX?"SEDEX":(player.boxArray[3].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[3].addIndex],(player.boxArray[4].type==PAC?"PAC":(player.boxArray[4].type==SEDEX?"SEDEX":(player.boxArray[4].type==EXPRESS?"EXPRESSO":"SEM CAIXA"))),houses[player.boxArray[4].addIndex]);
@@ -1967,6 +1960,12 @@ int main()
 
         }
         while(estado_tela == WIN_SCREEN){
+            al_flush_event_queue(fila_eventos);
+            al_flush_event_queue(fila_eventos_timer);
+            al_flush_event_queue(fila_eventos_tut);
+            al_flush_event_queue(event_queue);
+            
+            closeConnection();
             ALLEGRO_BITMAP *vitoria = NULL;
             vitoria = al_load_bitmap("source/resources/images/Vitoria.png");
             //ALLEGRO_BITMAP *derrota = NULL;
@@ -1976,6 +1975,11 @@ int main()
            estado_tela = MAIN_MENU;
         }
         while(estado_tela == LOSE_SCREEN){
+            al_flush_event_queue(fila_eventos);
+            al_flush_event_queue(fila_eventos_timer);
+            al_flush_event_queue(fila_eventos_tut);
+            al_flush_event_queue(event_queue);
+            closeConnection();
             ALLEGRO_BITMAP *derrota = NULL;
             derrota = al_load_bitmap("source/resources/images/Derrota.jpg");
             //ALLEGRO_BITMAP *derrota = NULL;

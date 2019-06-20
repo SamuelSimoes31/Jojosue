@@ -115,7 +115,7 @@ void rodarServer(){
                     players[id].HP = 10;
                     players[id].reputation = 100;
                     players[id].face = DOWN;
-                    players[id].money = 100000;
+                    players[id].money = 75;
                     players[id].posX = (id==0 ? 1:42);
                     players[id].posY = (id==0 ? 1:27);
                     int i;
@@ -856,10 +856,10 @@ int main() {
     while(1){
         rodarServer();
         
-        printf("Deseja reiniciar o server?[Y/n]\n");
-		while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
-			puts("anh???");
-		}
+        // printf("Deseja reiniciar o server?[Y/n]\n");
+		// while (res = tolower(getchar()), res != 'n' && res != 'y' && res != '\n'){
+		// 	puts("anh???");
+		// }
         // if(res == 'n') break;
         // else if(res == 'y') serverReset();
     }
