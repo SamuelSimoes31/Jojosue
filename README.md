@@ -1,2 +1,2 @@
 # Jojosué
-Repositório do Jogo de IP
+Repositório do Jogo de IP, chamado Jojosué's Bizarre Adventure.
